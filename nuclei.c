@@ -61,44 +61,44 @@ double gaussian( int dim_in, double std_in, double *ctr_in, double *x_in )
 
 int load_nuclei( char *fn_in, nuclei_t *nuc_in, int fmt_in )
 {
-        int i,j,n,m;
-        char buf[1024],*tok[1024];
-        FILE *fp;
+    int i,j,n,m;
+    char buf[1024],*tok[1024];
+    FILE *fp;
 
-        fp = fopen( fn_in, "r" );
-	if( fp == NULL )
-		return -1;
+    fp = fopen( fn_in, "r" );
+    if( fp == NULL )
+        return -1;
+    n = parse_read_line( fp, buf );
+    if( n <= 0 )
+        return -1;
+    m = parse_stokenize( buf, tok, " \t\n" );
+    if( m != 2 )
+        return -1;
+    nuc_in->dim = atoi( tok[0] );
+    nuc_in->np = atoi( tok[1] );
+    nuc_in->pts = (double*) malloc( nuc_in->dim * nuc_in->np * sizeof(double) );
+    nuc_in->dlt = (double*) malloc( nuc_in->np * sizeof(double) );
+    nuc_in->params = (double*) malloc( 2 * nuc_in->np * sizeof(double) );
+    nuc_in->chg = (double*) malloc( nuc_in->np * sizeof(double) );
+    if( nuc_in->pts == NULL )
+        return -1;
+    for(i=0;i<nuc_in->np;i++)
+    {
         n = parse_read_line( fp, buf );
         if( n <= 0 )
-                return -1;
+            continue;
         m = parse_stokenize( buf, tok, " \t\n" );
-        if( m != 2 )
-                return -1;
-        nuc_in->dim = atoi( tok[0] );
-        nuc_in->np = atoi( tok[1] );
-        nuc_in->pts = (double*) malloc( nuc_in->dim * nuc_in->np * sizeof(double) );
-	nuc_in->dlt = (double*) malloc( nuc_in->np * sizeof(double) );
-	nuc_in->params = (double*) malloc( 2 * nuc_in->np * sizeof(double) );
-	nuc_in->chg = (double*) malloc( nuc_in->np * sizeof(double) );
-        if( nuc_in->pts == NULL )
-                return -1;
-        for(i=0;i<nuc_in->np;i++)
-        {
-                n = parse_read_line( fp, buf );
-                if( n <= 0 )
-                        continue;
-                m = parse_stokenize( buf, tok, " \t\n" );
-                if( m < nuc_in->dim + 4 )
-                        continue;
-                for(j=0;j<nuc_in->dim;j++)
-                        nuc_in->pts[i*nuc_in->dim+j] = atof( tok[j] );
-		nuc_in->chg[i] = atof( tok[nuc_in->dim] );
-		nuc_in->dlt[i] = atof( tok[nuc_in->dim+1] );
-		nuc_in->params[2*i+0] = atof( tok[nuc_in->dim+2] );
-		nuc_in->params[2*i+1] = atof( tok[nuc_in->dim+3] );
-        }
+        if( m < nuc_in->dim + 4 )
+            continue;
+        for(j=0;j<nuc_in->dim;j++)
+            nuc_in->pts[i*nuc_in->dim+j] = atof( tok[j] );
+        nuc_in->chg[i] = atof( tok[nuc_in->dim] );
+        nuc_in->dlt[i] = atof( tok[nuc_in->dim+1] );
+        nuc_in->params[2*i+0] = atof( tok[nuc_in->dim+2] );
+        nuc_in->params[2*i+1] = atof( tok[nuc_in->dim+3] );
+    }
 
-        return 0;
+    return 0;
 }
 
 /**
