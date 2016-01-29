@@ -14,13 +14,13 @@
 
 typedef struct
 {
-        long dim; ///< Dimensionality of points
-        long deg; ///< Degree of polynomial space
-        long pdim; ///< Dimensionality of polynomial space
-        double *nodes; ///< Nodes used to define lagrange basis
-	double *coeffs; ///< Coefficients (pdim of them) defining each of the pdim basis functions
-	double *vdm; ///< The Vandermonde matrix of the function/point system
-	double *vdmlu; ///< The LU decomposition of the Vandermonde matrix in \c vdm
+    long dim; ///< Dimensionality of points
+    long deg; ///< Degree of polynomial space
+    long pdim; ///< Dimensionality of polynomial space
+    double *nodes; ///< Nodes used to define lagrange basis
+    double *coeffs; ///< Coefficients (pdim of them) defining each of the pdim basis functions
+    double *vdm; ///< The Vandermonde matrix of the function/point system
+    double *vdmlu; ///< The LU decomposition of the Vandermonde matrix in \c vdm
 } lagrange_t;
 
 /**

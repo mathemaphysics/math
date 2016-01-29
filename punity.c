@@ -68,6 +68,14 @@ typedef struct
 	 * on the boundary
 	 */
 	char *bdry;
+
+    /**
+     * Adding in rectangular periodic boundary
+     * mode; when pbc == 1, assume the domain
+     * is periodic in each of its orthogonal
+     * dimensions
+     */
+    int pbc;
 } punity_t;
 
 typedef struct
@@ -302,6 +310,12 @@ int punity_init( punity_t *obj_in, int dim_in, int npts_in, double *pts_in, doub
 #endif
 
 	return 0;
+}
+
+int punity_use_pbc( punity_t *obj_in )
+{
+    obj_in->pbc = 1;
+    return 0;
 }
 
 /**

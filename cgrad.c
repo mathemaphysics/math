@@ -11,22 +11,22 @@
  */
 int stmsave( char *fn, int n, double *alpha, double *beta, double *gamma )
 {
-	int i;
-	FILE *fp = fopen( fn, "w" );
-	fprintf( fp, "# name: T\n" );
-	fprintf( fp, "# type: sparse matrix\n" );
-	fprintf( fp, "# rows: %d\n", n );
-	fprintf( fp, "# columns: %d\n", n );
-	for(i=0;i<n;i++)
-	{
-		if( i > 0 )
-			fprintf( fp, "%d %d %18.10f\n", i, i + 1, beta[i] );
-		fprintf( fp, "%d %d %18.10f\n", i + 1, i + 1, alpha[i] );
-		if( i < n - 1 )
-			fprintf( fp, "%d %d %18.10f", i + 2, i + 1, gamma[i+1] );
-		fprintf( fp, "\n" );
-	}
-	fclose( fp );
+    int i;
+    FILE *fp = fopen( fn, "w" );
+    fprintf( fp, "# name: T\n" );
+    fprintf( fp, "# type: sparse matrix\n" );
+    fprintf( fp, "# rows: %d\n", n );
+    fprintf( fp, "# columns: %d\n", n );
+    for(i=0;i<n;i++)
+    {
+        if( i > 0 )
+            fprintf( fp, "%d %d %18.10f\n", i, i + 1, beta[i] );
+        fprintf( fp, "%d %d %18.10f\n", i + 1, i + 1, alpha[i] );
+        if( i < n - 1 )
+            fprintf( fp, "%d %d %18.10f", i + 2, i + 1, gamma[i+1] );
+        fprintf( fp, "\n" );
+    }
+    fclose( fp );
 }
 
 /**
@@ -42,42 +42,42 @@ int stmsave( char *fn, int n, double *alpha, double *beta, double *gamma )
  */
 int smsave( char *fn, long n, long k, long *ia, long *ja, double *a, int mode )
 {
-	long i,j;
-	static int idx = 1;
-	char vn[512];
-	FILE *fp = fopen( fn, "w" );
-	if( fp == NULL )
-		return -1;
+    long i,j;
+    static int idx = 1;
+    char vn[512];
+    FILE *fp = fopen( fn, "w" );
+    if( fp == NULL )
+        return -1;
 
-	switch( mode )
-	{
-		case 0:
-			fprintf( fp, "%d %d\n", n, ia[n] );
-			break;
-		case 1:
-			snprintf( vn, 512, "A%d", idx );
-			fprintf( fp, "# name: %s\n# type: sparse matrix\n# nnz: %d\n# rows: %d\n# columns: %d\n", vn, ia[n], n, k );
-			++idx;
-			break;
-	}
-	for(i=0;i<n;i++)
-	{
-		for(j=ia[i];j<ia[i+1];j++)
-		{
-			switch( mode )
-			{
-				case 0:
-					fprintf( fp, "%d %d %17.12f\n", i, ja[j], a[j] );
-					break;
-				case 1:
-					fprintf( fp, "%d %d %17.12f\n", ja[j] + 1, i + 1, a[j] );
-					break;
-			}
-		}
-	}
+    switch( mode )
+    {
+        case 0:
+            fprintf( fp, "%d %d\n", n, ia[n] );
+            break;
+        case 1:
+            snprintf( vn, 512, "A%d", idx );
+            fprintf( fp, "# name: %s\n# type: sparse matrix\n# nnz: %d\n# rows: %d\n# columns: %d\n", vn, ia[n], n, k );
+            ++idx;
+            break;
+    }
+    for(i=0;i<n;i++)
+    {
+        for(j=ia[i];j<ia[i+1];j++)
+        {
+            switch( mode )
+            {
+                case 0:
+                    fprintf( fp, "%d %d %17.12f\n", i, ja[j], a[j] );
+                    break;
+                case 1:
+                    fprintf( fp, "%d %d %17.12f\n", ja[j] + 1, i + 1, a[j] );
+                    break;
+            }
+        }
+    }
 
-	fclose( fp );
-	return 0;
+    fclose( fp );
+    return 0;
 }
 
 /**
@@ -85,33 +85,33 @@ int smsave( char *fn, long n, long k, long *ia, long *ja, double *a, int mode )
  */
 int msave( char *fn, long n, long k, double *a, int mode )
 {
-        long i,j;
-        static int idx = 1;
-        char vn[512];
-        FILE *fp = fopen( fn, "w" );
-        if( fp == NULL )
-                return -1;
+    long i,j;
+    static int idx = 1;
+    char vn[512];
+    FILE *fp = fopen( fn, "w" );
+    if( fp == NULL )
+        return -1;
 
-        switch( mode )
-        {
-                case 0:
-                        fprintf( fp, "%d %d\n", n, k );
-                        break;
-                case 1:
-                        snprintf( vn, 512, "M%d", idx );
-                        fprintf( fp, "# name: %s\n# type: matrix\n# rows: %d\n# columns: %d\n", vn, n, k );
-                        ++idx;
-                        break;
-        }
-        for(i=0;i<n;i++)
-	{
-                for(j=0;j<k;j++)
-			fprintf( fp, "%17.12f", a[i*k+j] );
-		fprintf( fp, "\n" );
-	}
+    switch( mode )
+    {
+        case 0:
+            fprintf( fp, "%d %d\n", n, k );
+            break;
+        case 1:
+            snprintf( vn, 512, "M%d", idx );
+            fprintf( fp, "# name: %s\n# type: matrix\n# rows: %d\n# columns: %d\n", vn, n, k );
+            ++idx;
+            break;
+    }
+    for(i=0;i<n;i++)
+    {
+        for(j=0;j<k;j++)
+            fprintf( fp, "%17.12f", a[i*k+j] );
+        fprintf( fp, "\n" );
+    }
 
-        fclose( fp );
-        return 0;
+    fclose( fp );
+    return 0;
 }
 
 /**
@@ -122,10 +122,10 @@ int msave( char *fn, long n, long k, double *a, int mode )
  */
 void vprint( FILE *fp, int n, double *x )
 {
-	int i;
-	for(i=0;i<n;i++)
-		fprintf( fp, "%20.13f", x[i] );
-	fprintf( fp, "\n" );
+    int i;
+    for(i=0;i<n;i++)
+        fprintf( fp, "%20.13f", x[i] );
+    fprintf( fp, "\n" );
 }
 
 /**
@@ -135,10 +135,10 @@ void vprint( FILE *fp, int n, double *x )
  */
 int iszero( double x )
 {
-	if( fabs( x ) < CGRAD_ZERO )
-		return 1;
-	else
-		return 0;
+    if( fabs( x ) < CGRAD_ZERO )
+        return 1;
+    else
+        return 0;
 }
 
 /**
@@ -149,10 +149,10 @@ int iszero( double x )
  */
 void copy( int n, double *u, double *v )
 {
-        int i;
+    int i;
 
-        for(i=0;i<n;i++)
-                v[i] = u[i];
+    for(i=0;i<n;i++)
+        v[i] = u[i];
 }
 
 /**
@@ -164,10 +164,10 @@ void copy( int n, double *u, double *v )
  */
 void copyvdiv( int n, double *u, double c, double *v )
 {
-	int i;
+    int i;
 
-	for(i=0;i<n;i++)
-		v[i] = u[i] / c;
+    for(i=0;i<n;i++)
+        v[i] = u[i] / c;
 }
 
 /**
@@ -178,10 +178,10 @@ void copyvdiv( int n, double *u, double c, double *v )
  */
 void vdiv( int n, double *x, double c )
 {
-	int i;
+    int i;
 
-	for(i=0;i<n;i++)
-		x[i] /= c;
+    for(i=0;i<n;i++)
+        x[i] /= c;
 }
 
 /**
@@ -191,10 +191,10 @@ void vdiv( int n, double *x, double c )
  */
 void zerov( int n, double *x )
 {
-	int i;
+    int i;
 
-	for(i=0;i<n;i++)
-		x[i] = 0.0;
+    for(i=0;i<n;i++)
+        x[i] = 0.0;
 }
 
 /**
@@ -206,16 +206,16 @@ void zerov( int n, double *x )
  */
 void normchk( int n, double *x, double tol, int *res )
 {
-	int i;
-	double sum = 0.0;
-	const double tolsq = tol * tol;
+    int i;
+    double sum = 0.0;
+    const double tolsq = tol * tol;
 
-	for(i=0;i<n;i++)
-		sum += x[i] * x[i];
-	if( sum < tolsq )
-		*res = -1;
-	else
-		*res = 1;
+    for(i=0;i<n;i++)
+        sum += x[i] * x[i];
+    if( sum < tolsq )
+        *res = -1;
+    else
+        *res = 1;
 }
 
 /**
@@ -228,15 +228,15 @@ void normchk( int n, double *x, double tol, int *res )
  */
 void dotchk( int n, double *x, double *y, double tol, int *res )
 {
-	int i;
-	double sum = 0.0;
+    int i;
+    double sum = 0.0;
 
-	for(i=0;i<n;i++)
-		sum += x[i] * y[i];
-	if( fabs( sum ) < tol )
-		*res = -1;
-	else
-		*res = 1;
+    for(i=0;i<n;i++)
+        sum += x[i] * y[i];
+    if( fabs( sum ) < tol )
+        *res = -1;
+    else
+        *res = 1;
 }
 
 /**
@@ -247,12 +247,12 @@ void dotchk( int n, double *x, double *y, double tol, int *res )
  */
 void norm( int n, double *x, double *res )
 {
-	int i;
+    int i;
 
-	(*res) = 0.0;
-	for(i=0;i<n;i++)
-		(*res) += x[i] * x[i];
-	(*res) = sqrt( *res );
+    (*res) = 0.0;
+    for(i=0;i<n;i++)
+        (*res) += x[i] * x[i];
+    (*res) = sqrt( *res );
 }
 
 /**
@@ -264,11 +264,11 @@ void norm( int n, double *x, double *res )
  */
 void dotp( int n, double *x, double *y, double *res )
 {
-	int i;
+    int i;
 
-	(*res) = 0.0;
-	for(i=0;i<n;i++)
-		(*res) += x[i] * y[i];
+    (*res) = 0.0;
+    for(i=0;i<n;i++)
+        (*res) += x[i] * y[i];
 }
 
 /**
@@ -281,12 +281,12 @@ void dotp( int n, double *x, double *y, double *res )
  */
 void dotpdiv( int n, double *x, double *y, double c, double *res )
 {
-	int i;
+    int i;
 
-	(*res) = 0.0;
-	for(i=0;i<n;i++)
-		(*res) += x[i] * y[i];
-	(*res) = *res / c;
+    (*res) = 0.0;
+    for(i=0;i<n;i++)
+        (*res) += x[i] * y[i];
+    (*res) = *res / c;
 }
 
 /**
@@ -296,14 +296,14 @@ void dotpdiv( int n, double *x, double *y, double c, double *res )
  */
 void normalize( int n, double *x )
 {
-	int i;
-	double sum = 0.0;
+    int i;
+    double sum = 0.0;
 
-	for(i=0;i<n;i++)
-		sum += x[i] * x[i];
-	sum = sqrt( sum );
-	for(i=0;i<n;i++)
-		x[i] /= sum;
+    for(i=0;i<n;i++)
+        sum += x[i] * x[i];
+    sum = sqrt( sum );
+    for(i=0;i<n;i++)
+        x[i] /= sum;
 }
 
 /**
@@ -314,11 +314,11 @@ void normalize( int n, double *x )
  */
 void nrandv( int n, double *x )
 {
-	int i;
+    int i;
 
-	for(i=0;i<n;i++)
-		x[i] = 0.5 - ( (double) rand() / (double) RAND_MAX );
-	normalize( n, x );
+    for(i=0;i<n;i++)
+        x[i] = 0.5 - ( (double) rand() / (double) RAND_MAX );
+    normalize( n, x );
 }
 
 /**
@@ -330,17 +330,17 @@ void nrandv( int n, double *x )
  */
 void project( int n, double *x, int nv, double *V )
 {
-	int i,j;
-	double f;
+    int i,j;
+    double f;
 
-	for(i=0;i<nv;i++)
-	{
-		f = 0.0;
-		for(j=0;j<n;j++)
-			f += x[j] * V[i*n+j];
-		for(j=0;j<n;j++)
-			x[j] -= f * V[i*n+j];
-	}
+    for(i=0;i<nv;i++)
+    {
+        f = 0.0;
+        for(j=0;j<n;j++)
+            f += x[j] * V[i*n+j];
+        for(j=0;j<n;j++)
+            x[j] -= f * V[i*n+j];
+    }
 }
 
 void bicgstab( int, int, double *, double *, double *, int, double, int, int * );
@@ -350,36 +350,36 @@ void bicgstab( int, int, double *, double *, double *, int, double, int, int * )
  */
 void projectls( int n, double *x, int nv, double *V, int max )
 {
-	int i,j,k,res;
-	double *C = (double*) malloc( n * n * sizeof(double) );
-	double *b = (double*) malloc( nv * sizeof(double) );
-	double *y = (double*) malloc( nv * sizeof(double) );
+    int i,j,k,res;
+    double *C = (double*) malloc( n * n * sizeof(double) );
+    double *b = (double*) malloc( nv * sizeof(double) );
+    double *y = (double*) malloc( nv * sizeof(double) );
 
-	/* Form the V**T V and put it in C */
-	for(i=0;i<nv;i++)
-	{
-		for(j=0;j<nv;j++)
-		{
-			C[i*n+j] = 0.0;
-			for(k=0;k<n;k++)
-				C[i*n+j] += V[i*n+k] * V[j*n+k];
-		}
-	}
-	for(i=0;i<nv;i++)
-	{
-		b[i] = 0.0;
-		for(j=0;j<n;j++)
-			b[i] += V[i*n+j] * x[j];
-	}
+    /* Form the V**T V and put it in C */
+    for(i=0;i<nv;i++)
+    {
+        for(j=0;j<nv;j++)
+        {
+            C[i*n+j] = 0.0;
+            for(k=0;k<n;k++)
+                C[i*n+j] += V[i*n+k] * V[j*n+k];
+        }
+    }
+    for(i=0;i<nv;i++)
+    {
+        b[i] = 0.0;
+        for(j=0;j<n;j++)
+            b[i] += V[i*n+j] * x[j];
+    }
 
-	/* Solve the least squares problem in full rank form */
-	nrandv( nv, y );
-	bicgstab( nv, 0, C, b, y, max, 1e-9, 0, &res );
+    /* Solve the least squares problem in full rank form */
+    nrandv( nv, y );
+    bicgstab( nv, 0, C, b, y, max, 1e-9, 0, &res );
 
-	/* Now calculate the actual projection as x - Cy */
-	for(i=0;i<nv;i++)
-		for(j=0;j<n;j++)
-			x[j] -= y[i] * V[i*n+j];
+    /* Now calculate the actual projection as x - Cy */
+    for(i=0;i<nv;i++)
+        for(j=0;j<n;j++)
+            x[j] -= y[i] * V[i*n+j];
 }
 
 /**
@@ -388,18 +388,18 @@ void projectls( int n, double *x, int nv, double *V, int max )
  */
 void spcheck( int n, double *x, int nv, double *V, double tol, int *res )
 {
-	int i,j;
-	double f;
+    int i,j;
+    double f;
 
-	*res = 0;
-	for(i=0;i<nv;i++)
-	{
-		f = 0.0;
-		for(j=0;j<n;j++)
-			f += x[j] * V[i*n+j];
-		if( fabs( f ) > tol )
-			*res += 1;
-	}
+    *res = 0;
+    for(i=0;i<nv;i++)
+    {
+        f = 0.0;
+        for(j=0;j<n;j++)
+            f += x[j] * V[i*n+j];
+        if( fabs( f ) > tol )
+            *res += 1;
+    }
 }
 
 /**
@@ -413,10 +413,10 @@ void spcheck( int n, double *x, int nv, double *V, double tol, int *res )
  */
 void vsum( int n, double a, double *x, double b, double *y, double *res )
 {
-	int i;
+    int i;
 
-	for(i=0;i<n;i++)
-		res[i] = a * x[i] + b * y[i];
+    for(i=0;i<n;i++)
+        res[i] = a * x[i] + b * y[i];
 }
 
 /**
@@ -424,18 +424,18 @@ void vsum( int n, double a, double *x, double b, double *y, double *res )
  */
 void dgemv( int n, int tt, double *A, double *x, double *res )
 {
-	int i,j;
+    int i,j;
 
-	for(i=0;i<n;i++)
-		res[i] = 0.0;
-	if( tt == 0 )
-		for(i=0;i<n;i++)
-			for(j=0;j<n;j++)
-				res[i] += A[i*n+j] * x[j];
-	else
-		for(i=0;i<n;i++)
-			for(j=0;j<n;j++)
-				res[i] += A[j*n+i] * x[j];
+    for(i=0;i<n;i++)
+        res[i] = 0.0;
+    if( tt == 0 )
+        for(i=0;i<n;i++)
+            for(j=0;j<n;j++)
+                res[i] += A[i*n+j] * x[j];
+    else
+        for(i=0;i<n;i++)
+            for(j=0;j<n;j++)
+                res[i] += A[j*n+i] * x[j];
 }
 
 /**
@@ -443,13 +443,13 @@ void dgemv( int n, int tt, double *A, double *x, double *res )
  */
 void sdgemv( long n, long m, long *ia, long *ja, double *a, long rb, double *b, long rc, double *c )
 {
-	int i,j;
-	for(i=0;i<n;i++)
-	{
-		c[i*rc] = 0.0;
-		for(j=ia[i];j<ia[i+1];j++)
-			c[i*rc] = c[i*rc] + a[j] * b[ja[j]*rb];
-	}
+    int i,j;
+    for(i=0;i<n;i++)
+    {
+        c[i*rc] = 0.0;
+        for(j=ia[i];j<ia[i+1];j++)
+            c[i*rc] = c[i*rc] + a[j] * b[ja[j]*rb];
+    }
 }
 
 /**
@@ -458,28 +458,28 @@ void sdgemv( long n, long m, long *ia, long *ja, double *a, long rb, double *b, 
  */
 void ssdgemv( long n, long *ia, long *ja, double *A, long rx, double *x, long ry, double *y )
 {
-	int i,j;
-	double stemp,rtemp;
+    int i,j;
+    double stemp,rtemp;
 
-	for(i=0;i<n;i++)
-		y[i*ry] = 0.0;
-	for(i=0;i<n;i++)
-	{
-		j = ia[i];
-		rtemp = x[i*rx];
-		stemp = 0.0;
-		if( ja[j] == i )
-		{
-			stemp = A[j] * x[i*rx];
-			j++;
-		}
-		for(;j<ia[i+1];j++)
-		{
-			stemp += A[j] * x[ja[j]*rx];
-			y[ja[j]*ry] += A[j] * rtemp;
-		}
-		y[i*ry] += stemp;
-	}
+    for(i=0;i<n;i++)
+        y[i*ry] = 0.0;
+    for(i=0;i<n;i++)
+    {
+        j = ia[i];
+        rtemp = x[i*rx];
+        stemp = 0.0;
+        if( ja[j] == i )
+        {
+            stemp = A[j] * x[i*rx];
+            j++;
+        }
+        for(;j<ia[i+1];j++)
+        {
+            stemp += A[j] * x[ja[j]*rx];
+            y[ja[j]*ry] += A[j] * rtemp;
+        }
+        y[i*ry] += stemp;
+    }
 }
 
 /**
@@ -487,39 +487,39 @@ void ssdgemv( long n, long *ia, long *ja, double *A, long rx, double *x, long ry
  */
 void stransp( char move, long n, long m, long *ia, long *ja, double *a, long *ib, long *jb, double *b )
 {
-	long i,j,jj;
-	for(i=0;i<m+1;i++)
-		ib[i] = 0;
-	if( move == 1 )
-		for(i=0;i<m;i++)
-			b[i] = 0.0;
+    long i,j,jj;
+    for(i=0;i<m+1;i++)
+        ib[i] = 0;
+    if( move == 1 )
+        for(i=0;i<m;i++)
+            b[i] = 0.0;
 
-	/* count number of new columns in each row */
-	ib[0] = 0;
-	for(i=0;i<n;i++)
-		for(j=ia[i];j<ia[i+1];j++)
-			ib[ja[j]+1] = ib[ja[j]+1] + 1;
+    /* count number of new columns in each row */
+    ib[0] = 0;
+    for(i=0;i<n;i++)
+        for(j=ia[i];j<ia[i+1];j++)
+            ib[ja[j]+1] = ib[ja[j]+1] + 1;
 
-	/* "Integrate" entries forward to get final end positions */
-	for(i=0;i<m;i++)
-		ib[i+1] = ib[i] + ib[i+1];
+    /* "Integrate" entries forward to get final end positions */
+    for(i=0;i<m;i++)
+        ib[i+1] = ib[i] + ib[i+1];
 
-	/* Counting row sizes in b done; now construct jb */
-	for(i=0;i<n;i++)
-	{
-		for(j=ia[i];j<ia[i+1];j++)
-		{
-			jj = ja[j];
-			jb[ib[jj]] = i;
-			if( move == 1 )
-				b[ib[jj]] = a[j];
-			ib[jj] = ib[jj] + 1;
-		}
-	}
+    /* Counting row sizes in b done; now construct jb */
+    for(i=0;i<n;i++)
+    {
+        for(j=ia[i];j<ia[i+1];j++)
+        {
+            jj = ja[j];
+            jb[ib[jj]] = i;
+            if( move == 1 )
+                b[ib[jj]] = a[j];
+            ib[jj] = ib[jj] + 1;
+        }
+    }
 
-	for(i=m;i>0;i--)
-		ib[i] = ib[i-1];
-	ib[0] = 0;
+    for(i=m;i>0;i--)
+        ib[i] = ib[i-1];
+    ib[0] = 0;
 }
 
 /**
@@ -532,12 +532,12 @@ void stransp( char move, long n, long m, long *ia, long *ja, double *a, long *ib
  */
 void mdotp( int n, double *A, double *x, double *y, double *res )
 {
-	int i,j;
+    int i,j;
 
-	(*res) = 0.0;
-	for(i=0;i<n;i++)
-		for(j=0;j<n;j++)
-			(*res) += x[i] * A[i*n+j] * y[j];
+    (*res) = 0.0;
+    for(i=0;i<n;i++)
+        for(j=0;j<n;j++)
+            (*res) += x[i] * A[i*n+j] * y[j];
 }
 
 /**
@@ -545,12 +545,12 @@ void mdotp( int n, double *A, double *x, double *y, double *res )
  */
 void vnormdiff( int n, double *x, double *y, double *res )
 {
-	int i;
-	double sum = 0.0;
+    int i;
+    double sum = 0.0;
 
-	for(i=0;i<n;i++)
-		sum += pow( x[i] - y[i], 2.0 );
-	*res = sqrt( sum );
+    for(i=0;i<n;i++)
+        sum += pow( x[i] - y[i], 2.0 );
+    *res = sqrt( sum );
 }
 
 /**
@@ -558,13 +558,13 @@ void vnormdiff( int n, double *x, double *y, double *res )
  */
 void residual( int n, double *A, double *x, double *b, double *r )
 {
-	int i,j;
+    int i,j;
 
-	for(i=0;i<n;i++)
-		r[i] = b[i];
-	for(i=0;i<n;i++)
-		for(j=0;j<n;j++)
-			r[i] -= A[i*n+j] * x[j];
+    for(i=0;i<n;i++)
+        r[i] = b[i];
+    for(i=0;i<n;i++)
+        for(j=0;j<n;j++)
+            r[i] -= A[i*n+j] * x[j];
 }
 
 /**
@@ -581,36 +581,36 @@ void residual( int n, double *A, double *x, double *b, double *r )
  */
 void smmadd( int n, int tt, double *A, double s, double *x, double *y, double c, double *res )
 {
-	int i,j;
+    int i,j;
 
-	for(i=0;i<n;i++)
-		res[i] = c * y[i];
-	if( tt == 0 ) /* Not transposed */
-	{
-		for(i=0;i<n;i++)
-		{
-			for(j=0;j<n;j++)
-			{
-				if( j == i )
-					res[i] += ( A[i*n+j] - s ) * x[j];
-				else
-					res[i] += A[i*n+j] * x[j];
-			}
-		}
-	}
-	else /* If not zero assume transposed */
-	{
-		for(i=0;i<n;i++)
-		{
-			for(j=0;j<n;j++)
-			{
-				if( j == i )
-					res[i] += ( A[j*n+i] - s ) * x[j];
-				else
-					res[i] += A[j*n+i] * x[j];
-			}
-		}
-	}
+    for(i=0;i<n;i++)
+        res[i] = c * y[i];
+    if( tt == 0 ) /* Not transposed */
+    {
+        for(i=0;i<n;i++)
+        {
+            for(j=0;j<n;j++)
+            {
+                if( j == i )
+                    res[i] += ( A[i*n+j] - s ) * x[j];
+                else
+                    res[i] += A[i*n+j] * x[j];
+            }
+        }
+    }
+    else /* If not zero assume transposed */
+    {
+        for(i=0;i<n;i++)
+        {
+            for(j=0;j<n;j++)
+            {
+                if( j == i )
+                    res[i] += ( A[j*n+i] - s ) * x[j];
+                else
+                    res[i] += A[j*n+i] * x[j];
+            }
+        }
+    }
 }
 
 /**
@@ -628,46 +628,46 @@ void smmadd( int n, int tt, double *A, double s, double *x, double *y, double c,
  */
 void gsmmadd( int n, int tt, double *A, double *B, double s, double *x, double *y, double c, double *res )
 {
-	int i,j;
+    int i,j;
 
-	for(i=0;i<n;i++)
-		res[i] = c * y[i];
-	if( tt == 0 ) /* Not transposed */
-	{
-		for(i=0;i<n;i++)
-			for(j=0;j<n;j++)
-				res[i] += ( A[i*n+j] - s * B[i*n+j] ) * x[j];
-	}
-	else /* If not zero assume transposed */
-	{
-		for(i=0;i<n;i++)
-			for(j=0;j<n;j++)
-				res[i] += ( A[j*n+i] - s * B[j*n+i] ) * x[j];
-	}
+    for(i=0;i<n;i++)
+        res[i] = c * y[i];
+    if( tt == 0 ) /* Not transposed */
+    {
+        for(i=0;i<n;i++)
+            for(j=0;j<n;j++)
+                res[i] += ( A[i*n+j] - s * B[i*n+j] ) * x[j];
+    }
+    else /* If not zero assume transposed */
+    {
+        for(i=0;i<n;i++)
+            for(j=0;j<n;j++)
+                res[i] += ( A[j*n+i] - s * B[j*n+i] ) * x[j];
+    }
 }
 
 void spdiag( long n, long *ia, long *ja, double *A, long *d, int *ret )
 {
-	long i,j;
+    long i,j;
 
-	/* Find indexes of the diagonal elements */
-	for(i=0;i<n;i++)
+    /* Find indexes of the diagonal elements */
+    for(i=0;i<n;i++)
+    {
+        d[i] = -1;
+        for(j=ia[i];j<ia[i+1];j++)
         {
-                d[i] = -1;
-                for(j=ia[i];j<ia[i+1];j++)
-                {
-                        if( ja[j] == i )
-                        {
-                                d[i] = j;
-                                break;
-                        }
-                }
-                if( d[i] == -1 )
-                {
-                        *ret = -1; /* Missing a diagonal element */
-                        break;
-                }
+            if( ja[j] == i )
+            {
+                d[i] = j;
+                break;
+            }
         }
+        if( d[i] == -1 )
+        {
+            *ret = -1; /* Missing a diagonal element */
+            break;
+        }
+    }
 }
 
 /**
@@ -682,15 +682,15 @@ void spdiag( long n, long *ia, long *ja, double *A, long *d, int *ret )
  */
 void spclw( long n, long *ia, long *ja, double *A, double *x, long *d )
 {
-	long i,j;
+    long i,j;
 
-	/* Do the forward substitution */
-	for(i=0;i<n;i++)
-	{
-		for(j=ia[i];j<d[i];j++)
-			x[i] = x[i] - A[j] * x[ja[j]];
-		x[i] = x[i] / A[d[i]];
-	}
+    /* Do the forward substitution */
+    for(i=0;i<n;i++)
+    {
+        for(j=ia[i];j<d[i];j++)
+            x[i] = x[i] - A[j] * x[ja[j]];
+        x[i] = x[i] / A[d[i]];
+    }
 }
 
 /**
@@ -705,15 +705,15 @@ void spclw( long n, long *ia, long *ja, double *A, double *x, long *d )
  */
 void spcup( long n, long *ia, long *ja, double *A, double *x, long *d )
 {
-	long i,j;
+    long i,j;
 
-	/* Do the back substitution */
-	for(i=n-1;i>=0;i--)
-	{
-		for(j=ia[i+1]-1;j>d[i];j--)
-			x[i] = x[i] - A[j] * x[ja[j]];
-		x[i] = x[i] / A[d[i]];
-	}
+    /* Do the back substitution */
+    for(i=n-1;i>=0;i--)
+    {
+        for(j=ia[i+1]-1;j>d[i];j--)
+            x[i] = x[i] - A[j] * x[ja[j]];
+        x[i] = x[i] / A[d[i]];
+    }
 }
 
 /**
@@ -731,44 +731,44 @@ void spcup( long n, long *ia, long *ja, double *A, double *x, long *d )
  */
 void scg( int n, long *ia, long *ja, double *A, double *b, double *x, int max, double tol, int vb, int *ret )
 {
-	int i,j;
-	double alpha,tmp,rso,rsn,*r,*p,*t;
+    int i,j;
+    double alpha,tmp,rso,rsn,*r,*p,*t;
 
-	/* Start out okay and change if necessary */
-	*ret = 0;
+    /* Start out okay and change if necessary */
+    *ret = 0;
 
-	/* Allocate stuff */
-	r = (double*) malloc( n * sizeof(double) );
-	p = (double*) malloc( n * sizeof(double) );
-	t = (double*) malloc( n * sizeof(double) );
+    /* Allocate stuff */
+    r = (double*) malloc( n * sizeof(double) );
+    p = (double*) malloc( n * sizeof(double) );
+    t = (double*) malloc( n * sizeof(double) );
 
-	/* Set up initial vectors and coefficients */
-	ssdgemv( (long) n, ia, ja, A, 1, x, 1, r );
-	for(i=0;i<n;i++)
-		r[i] = b[i] - r[i], p[i] = r[i];
-	dotp( n, r, r, &rso );
+    /* Set up initial vectors and coefficients */
+    ssdgemv( (long) n, ia, ja, A, 1, x, 1, r );
+    for(i=0;i<n;i++)
+        r[i] = b[i] - r[i], p[i] = r[i];
+    dotp( n, r, r, &rso );
 
-	/* Start iterating */
-	for(i=0;i<max;i++)
-	{
-		ssdgemv( (long) n, ia, ja, A, 1, p, 1, t );
-		dotp( n, p, t, &tmp );
-		alpha = rso / tmp;
-		for(j=0;j<n;j++)
-			x[j] = x[j] + alpha * p[j],
-			r[j] = r[j] - alpha * t[j];
-		dotp( n, r, r, &rsn );
-		if( rsn < tol * tol )
-			break;
-		for(j=0;j<n;j++)
-			p[j] = r[j] + rsn / rso * p[j];
-		rso = rsn;
-	}
-	if( vb )
-		fprintf( stderr, "%d: residual = %15.7f\n", i, sqrt( rsn ) );
+    /* Start iterating */
+    for(i=0;i<max;i++)
+    {
+        ssdgemv( (long) n, ia, ja, A, 1, p, 1, t );
+        dotp( n, p, t, &tmp );
+        alpha = rso / tmp;
+        for(j=0;j<n;j++)
+            x[j] = x[j] + alpha * p[j],
+                r[j] = r[j] - alpha * t[j];
+        dotp( n, r, r, &rsn );
+        if( rsn < tol * tol )
+            break;
+        for(j=0;j<n;j++)
+            p[j] = r[j] + rsn / rso * p[j];
+        rso = rsn;
+    }
+    if( vb )
+        fprintf( stderr, "%d: residual = %15.7f\n", i, sqrt( rsn ) );
 
-	/* Clean up */
-	free( r ); free( p ); free( t );
+    /* Clean up */
+    free( r ); free( p ); free( t );
 }
 
 /**
@@ -786,61 +786,61 @@ void scg( int n, long *ia, long *ja, double *A, double *b, double *x, int max, d
  */
 void jpscg( int n, long *ia, long *ja, double *A, double *bb, double *x, int max, double tol, int vb, int *ret )
 {
-	int i,j,res;
-	double alpha,tmp,rso,rsn,*r,*p,*t,*b,*pc;
+    int i,j,res;
+    double alpha,tmp,rso,rsn,*r,*p,*t,*b,*pc;
 
-	/* Start out okay and change if necessary */
-	*ret = 0;
+    /* Start out okay and change if necessary */
+    *ret = 0;
 
-	/* Allocate stuff */
-	r = (double*) malloc( n * sizeof(double) );
-	p = (double*) malloc( n * sizeof(double) );
-	t = (double*) malloc( n * sizeof(double) );
-	b = (double*) malloc( n * sizeof(double) );
-	pc = (double*) malloc( n * sizeof(double) );
+    /* Allocate stuff */
+    r = (double*) malloc( n * sizeof(double) );
+    p = (double*) malloc( n * sizeof(double) );
+    t = (double*) malloc( n * sizeof(double) );
+    b = (double*) malloc( n * sizeof(double) );
+    pc = (double*) malloc( n * sizeof(double) );
 
-	/* Create the Jacobi preconditioner */
-	for(i=0;i<n;i++)
-		for(j=ia[i];j<ia[i+1];j++)
-			if( j == ia[i] || fabs( A[j] ) > fabs( pc[i] ) )
-				pc[i] = fabs( A[j] );
+    /* Create the Jacobi preconditioner */
+    for(i=0;i<n;i++)
+        for(j=ia[i];j<ia[i+1];j++)
+            if( j == ia[i] || fabs( A[j] ) > fabs( pc[i] ) )
+                pc[i] = fabs( A[j] );
 
-	/* Set up the preconditioned system */
-	copy( n, bb, b );
-	for(i=0;i<n;i++)
-		b[i] = b[i] / pc[i];
+    /* Set up the preconditioned system */
+    copy( n, bb, b );
+    for(i=0;i<n;i++)
+        b[i] = b[i] / pc[i];
 
-	/* Set up initial vectors and coefficients */
-	ssdgemv( (long) n, ia, ja, A, 1, x, 1, r );
-	for(i=0;i<n;i++)
-		r[i] = r[i] / pc[i];
-	for(i=0;i<n;i++)
-		r[i] = b[i] - r[i], p[i] = r[i];
-	dotp( n, r, r, &rso );
+    /* Set up initial vectors and coefficients */
+    ssdgemv( (long) n, ia, ja, A, 1, x, 1, r );
+    for(i=0;i<n;i++)
+        r[i] = r[i] / pc[i];
+    for(i=0;i<n;i++)
+        r[i] = b[i] - r[i], p[i] = r[i];
+    dotp( n, r, r, &rso );
 
-	/* Start iterating */
-	for(i=0;i<max;i++)
-	{
-		ssdgemv( (long) n, ia, ja, A, 1, p, 1, t );
-		for(j=0;j<n;j++)
-			t[j] = t[j] / pc[j];
-		dotp( n, p, t, &tmp );
-		alpha = rso / tmp;
-		for(j=0;j<n;j++)
-			x[j] = x[j] + alpha * p[j],
-			r[j] = r[j] - alpha * t[j];
-		dotp( n, r, r, &rsn );
-		if( rsn < tol * tol )
-			break;
-		for(j=0;j<n;j++)
-			p[j] = r[j] + rsn / rso * p[j];
-		rso = rsn;
-		if( vb )
-			fprintf( stderr, "%d: residual = %15.7f\n", i, sqrt( rsn ) );
-	}
+    /* Start iterating */
+    for(i=0;i<max;i++)
+    {
+        ssdgemv( (long) n, ia, ja, A, 1, p, 1, t );
+        for(j=0;j<n;j++)
+            t[j] = t[j] / pc[j];
+        dotp( n, p, t, &tmp );
+        alpha = rso / tmp;
+        for(j=0;j<n;j++)
+            x[j] = x[j] + alpha * p[j],
+                r[j] = r[j] - alpha * t[j];
+        dotp( n, r, r, &rsn );
+        if( rsn < tol * tol )
+            break;
+        for(j=0;j<n;j++)
+            p[j] = r[j] + rsn / rso * p[j];
+        rso = rsn;
+        if( vb )
+            fprintf( stderr, "%d: residual = %15.7f\n", i, sqrt( rsn ) );
+    }
 
-	/* Clean up */
-	free( r ); free( p ); free( t ); free( b ); free( pc );
+    /* Clean up */
+    free( r ); free( p ); free( t ); free( b ); free( pc );
 }
 
 /**
@@ -848,7 +848,7 @@ void jpscg( int n, long *ia, long *ja, double *A, double *bb, double *x, int max
  */
 void bicg( int n, double *A, double *b, double *x, int max, double tol, int vb, int *ret )
 {
-	
+
 }
 
 /**
@@ -856,7 +856,7 @@ void bicg( int n, double *A, double *b, double *x, int max, double tol, int vb, 
  */
 void pbicg( int n, double *A, double *b, double *M, double *x, int max, double tol, int vb, int *ret )
 {
-	
+
 }
 
 /**
@@ -864,9 +864,9 @@ void pbicg( int n, double *A, double *b, double *M, double *x, int max, double t
  */
 void bicgp( int n, double *A, double *b, int nv, double *V, double *x, int max, double tol, int vb, int *ret )
 {
-	int i,j,m;
-	double f,g,rho,rhon,alpha,beta,omega;
-	double *xh,*r,*rh,*p,*ph;
+    int i,j,m;
+    double f,g,rho,rhon,alpha,beta,omega;
+    double *xh,*r,*rh,*p,*ph;
 }
 
 /**
@@ -874,7 +874,7 @@ void bicgp( int n, double *A, double *b, int nv, double *V, double *x, int max, 
  */
 void pbicgp( int n, double *A, double *b, double *M, int nv, double *V, double *x, int max, double tol, int vb, int *ret )
 {
-	
+
 }
 
 /**
@@ -882,127 +882,127 @@ void pbicgp( int n, double *A, double *b, double *M, int nv, double *V, double *
  */
 void bicgstab( int n, int tt, double *A, double *b, double *x, int max, double tol, int vb, int *ret )
 {
-	int i,j,m;
-	double f,g,rho,rhon,alpha,beta,omega;
-	double *r0,*r,*p,*v,*s,*t;
+    int i,j,m;
+    double f,g,rho,rhon,alpha,beta,omega;
+    double *r0,*r,*p,*v,*s,*t;
 
-	r0 = (double*) malloc( n * sizeof(double) );
-	r = (double*) malloc( n * sizeof(double) );
-	p = (double*) malloc( n * sizeof(double) );
-	v = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
-	t = (double*) malloc( n * sizeof(double) );
+    r0 = (double*) malloc( n * sizeof(double) );
+    r = (double*) malloc( n * sizeof(double) );
+    p = (double*) malloc( n * sizeof(double) );
+    v = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
+    t = (double*) malloc( n * sizeof(double) );
 
-	/* Initialize */
-	rho = 1.0;
-	alpha = 1.0;
-	omega = 1.0;
-	for(i=0;i<n;i++)
-	{
-		r[i] = b[i];
-		if( tt == 0 )
-			for(j=0;j<n;j++)
-				r[i] -= A[i*n+j] * x[j];
-		else
-			for(j=0;j<n;j++)
-				r[i] -= A[j*n+i] * x[j];
-		r0[i] = r[i];
-		v[i] = 0.0;
-		p[i] = 0.0;
-	}
+    /* Initialize */
+    rho = 1.0;
+    alpha = 1.0;
+    omega = 1.0;
+    for(i=0;i<n;i++)
+    {
+        r[i] = b[i];
+        if( tt == 0 )
+            for(j=0;j<n;j++)
+                r[i] -= A[i*n+j] * x[j];
+        else
+            for(j=0;j<n;j++)
+                r[i] -= A[j*n+i] * x[j];
+        r0[i] = r[i];
+        v[i] = 0.0;
+        p[i] = 0.0;
+    }
 
-	/* Iterate */
-	if( vb )
-	{
-		fprintf( stderr, "\n" );
-		fprintf( stderr, "----------------------------------------------------------------------\n" );
-		fprintf( stderr, "%10s%15s%15s%15s%15s\n", " Iteration", "Residual ", "Alpha  ", "Beta  ", "Omega  " );
-		fprintf( stderr, "----------------------------------------------------------------------\n" );
-	}
-	*ret = 0;
-	for(m=0;m<max;m++)
-	{
-		rhon = 0.0;
-		for(i=0;i<n;i++)
-			rhon += r0[i] * r[i];
-		beta = ( rhon / rho ) * ( alpha / omega );
-		rho = rhon;
-		for(i=0;i<n;i++)
-			p[i] = r[i] + beta * ( p[i] - omega * v[i] );
-		for(i=0;i<n;i++)
-		{
-			v[i] = 0.0;
-			if( tt == 0 )
-				for(j=0;j<n;j++)
-					v[i] += A[i*n+j] * p[j];
-			else
-				for(j=0;j<n;j++)
-					v[i] += A[j*n+i] * p[j];
-		}
-		f = 0.0;
-		for(i=0;i<n;i++)
-			f += r0[i] * v[i];
-		alpha = rho / f;
-		if( isnan( alpha ) )
-		{
-			*ret = -1; /* Failed to converge */
-			break;
-		}
-		for(i=0;i<n;i++)
-			s[i] = r[i] - alpha * v[i];
-		for(i=0;i<n;i++)
-		{
-			t[i] = 0.0;
-			if( tt == 0 )
-				for(j=0;j<n;j++)
-					t[i] += A[i*n+j] * s[j];
-			else
-				for(j=0;j<n;j++)
-					t[i] += A[j*n+i] * s[j];
-		}
-		f = 0.0, g = 0.0;
-		for(i=0;i<n;i++)
-			f += t[i] * s[i],
-			g += t[i] * t[i];
-		omega = f / g;
-		for(i=0;i<n;i++)
-			x[i] += alpha * p[i] + omega * s[i];
+    /* Iterate */
+    if( vb )
+    {
+        fprintf( stderr, "\n" );
+        fprintf( stderr, "----------------------------------------------------------------------\n" );
+        fprintf( stderr, "%10s%15s%15s%15s%15s\n", " Iteration", "Residual ", "Alpha  ", "Beta  ", "Omega  " );
+        fprintf( stderr, "----------------------------------------------------------------------\n" );
+    }
+    *ret = 0;
+    for(m=0;m<max;m++)
+    {
+        rhon = 0.0;
+        for(i=0;i<n;i++)
+            rhon += r0[i] * r[i];
+        beta = ( rhon / rho ) * ( alpha / omega );
+        rho = rhon;
+        for(i=0;i<n;i++)
+            p[i] = r[i] + beta * ( p[i] - omega * v[i] );
+        for(i=0;i<n;i++)
+        {
+            v[i] = 0.0;
+            if( tt == 0 )
+                for(j=0;j<n;j++)
+                    v[i] += A[i*n+j] * p[j];
+            else
+                for(j=0;j<n;j++)
+                    v[i] += A[j*n+i] * p[j];
+        }
+        f = 0.0;
+        for(i=0;i<n;i++)
+            f += r0[i] * v[i];
+        alpha = rho / f;
+        if( isnan( alpha ) )
+        {
+            *ret = -1; /* Failed to converge */
+            break;
+        }
+        for(i=0;i<n;i++)
+            s[i] = r[i] - alpha * v[i];
+        for(i=0;i<n;i++)
+        {
+            t[i] = 0.0;
+            if( tt == 0 )
+                for(j=0;j<n;j++)
+                    t[i] += A[i*n+j] * s[j];
+            else
+                for(j=0;j<n;j++)
+                    t[i] += A[j*n+i] * s[j];
+        }
+        f = 0.0, g = 0.0;
+        for(i=0;i<n;i++)
+            f += t[i] * s[i],
+              g += t[i] * t[i];
+        omega = f / g;
+        for(i=0;i<n;i++)
+            x[i] += alpha * p[i] + omega * s[i];
 
-		/* Check for convergence here */
-		f = 0.0;
-		for(i=0;i<n;i++)
-			f += r[i] * r[i];
-		f = sqrt( f );
-		if( vb )
-			fprintf( stderr, "%10d%15.7f%15.7f%15.7f%15.7f\n", m, f, alpha, beta, omega );
-		if( f < tol )
-			break;
+        /* Check for convergence here */
+        f = 0.0;
+        for(i=0;i<n;i++)
+            f += r[i] * r[i];
+        f = sqrt( f );
+        if( vb )
+            fprintf( stderr, "%10d%15.7f%15.7f%15.7f%15.7f\n", m, f, alpha, beta, omega );
+        if( f < tol )
+            break;
 
-		for(i=0;i<n;i++)
-			r[i] = s[i] - omega * t[i];
-	}
-	if( f > tol )
-		*ret = -2;
+        for(i=0;i<n;i++)
+            r[i] = s[i] - omega * t[i];
+    }
+    if( f > tol )
+        *ret = -2;
 
-	if( vb )
-	{
-		fprintf( stderr, "----------------------------------------------------------------------\n" );
-		if( *ret == 0 )
-			fprintf( stderr, " Converged                              System size:   %15d\n", n );
-		else
-			fprintf( stderr, " Failed                                 System size:   %15d\n", n );
-		fprintf( stderr, "                                        Tolerance:     %15.3e\n", tol );
-		fprintf( stderr, "                                        Iterations:    %15d\n", m );
-		fprintf( stderr, "                                        Residual:      %15.3e\n", f );
-		fprintf( stderr, "                                        ------------------------------\n" );
-	}
+    if( vb )
+    {
+        fprintf( stderr, "----------------------------------------------------------------------\n" );
+        if( *ret == 0 )
+            fprintf( stderr, " Converged                              System size:   %15d\n", n );
+        else
+            fprintf( stderr, " Failed                                 System size:   %15d\n", n );
+        fprintf( stderr, "                                        Tolerance:     %15.3e\n", tol );
+        fprintf( stderr, "                                        Iterations:    %15d\n", m );
+        fprintf( stderr, "                                        Residual:      %15.3e\n", f );
+        fprintf( stderr, "                                        ------------------------------\n" );
+    }
 
-	free( r0 );
-	free( r );
-	free( p );
-	free( v );
-	free( s );
-	free( t );
+    free( r0 );
+    free( r );
+    free( p );
+    free( v );
+    free( s );
+    free( t );
 }
 
 /**
@@ -1010,107 +1010,107 @@ void bicgstab( int n, int tt, double *A, double *b, double *x, int max, double t
  */
 void sbicgstab( int n, long *ia, long *ja, double *A, double *b, double *x, int max, double tol, int vb, int *ret )
 {
-	int i,j,m;
-	double f,g,rho,rhon,alpha,beta,omega;
-	double *r0,*r,*p,*v,*s,*t;
+    int i,j,m;
+    double f,g,rho,rhon,alpha,beta,omega;
+    double *r0,*r,*p,*v,*s,*t;
 
-	r0 = (double*) malloc( n * sizeof(double) );
-	r = (double*) malloc( n * sizeof(double) );
-	p = (double*) malloc( n * sizeof(double) );
-	v = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
-	t = (double*) malloc( n * sizeof(double) );
+    r0 = (double*) malloc( n * sizeof(double) );
+    r = (double*) malloc( n * sizeof(double) );
+    p = (double*) malloc( n * sizeof(double) );
+    v = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
+    t = (double*) malloc( n * sizeof(double) );
 
-	/* Initialize */
-	rho = 1.0;
-	alpha = 1.0;
-	omega = 1.0;
-	sdgemv( (long) n, (long) n, ia, ja, A, 1, x, 1, r );
-	for(i=0;i<n;i++)
-		r[i] = b[i] - r[i];
-	for(i=0;i<n;i++)
-	{
-		r0[i] = r[i];
-		v[i] = 0.0;
-		p[i] = 0.0;
-	}
+    /* Initialize */
+    rho = 1.0;
+    alpha = 1.0;
+    omega = 1.0;
+    sdgemv( (long) n, (long) n, ia, ja, A, 1, x, 1, r );
+    for(i=0;i<n;i++)
+        r[i] = b[i] - r[i];
+    for(i=0;i<n;i++)
+    {
+        r0[i] = r[i];
+        v[i] = 0.0;
+        p[i] = 0.0;
+    }
 
-	/* Iterate */
-	if( vb )
-	{
-		fprintf( stderr, "\n" );
-		fprintf( stderr, "----------------------------------------------------------------------\n" );
-		fprintf( stderr, "%10s%15s%15s%15s%15s\n", " Iteration", "Residual ", "Alpha  ", "Beta  ", "Omega  " );
-		fprintf( stderr, "----------------------------------------------------------------------\n" );
-	}
-	*ret = 0;
-	for(m=0;m<max;m++)
-	{
-		rhon = 0.0;
-		for(i=0;i<n;i++)
-			rhon += r0[i] * r[i];
-		beta = ( rhon / rho ) * ( alpha / omega );
-		rho = rhon;
-		for(i=0;i<n;i++)
-			p[i] = r[i] + beta * ( p[i] - omega * v[i] );
-		sdgemv( (long) n, (long) n, ia, ja, A, 1, p, 1, v );
+    /* Iterate */
+    if( vb )
+    {
+        fprintf( stderr, "\n" );
+        fprintf( stderr, "----------------------------------------------------------------------\n" );
+        fprintf( stderr, "%10s%15s%15s%15s%15s\n", " Iteration", "Residual ", "Alpha  ", "Beta  ", "Omega  " );
+        fprintf( stderr, "----------------------------------------------------------------------\n" );
+    }
+    *ret = 0;
+    for(m=0;m<max;m++)
+    {
+        rhon = 0.0;
+        for(i=0;i<n;i++)
+            rhon += r0[i] * r[i];
+        beta = ( rhon / rho ) * ( alpha / omega );
+        rho = rhon;
+        for(i=0;i<n;i++)
+            p[i] = r[i] + beta * ( p[i] - omega * v[i] );
+        sdgemv( (long) n, (long) n, ia, ja, A, 1, p, 1, v );
 
-		f = 0.0;
-		for(i=0;i<n;i++)
-			f += r0[i] * v[i];
-		alpha = rho / f;
-		if( isnan( alpha ) )
-		{
-			*ret = -1; /* Failed to converge */
-			break;
-		}
-		for(i=0;i<n;i++)
-			s[i] = r[i] - alpha * v[i];
-		sdgemv( (long) n, (long) n, ia, ja, A, 1, s, 1, t );
+        f = 0.0;
+        for(i=0;i<n;i++)
+            f += r0[i] * v[i];
+        alpha = rho / f;
+        if( isnan( alpha ) )
+        {
+            *ret = -1; /* Failed to converge */
+            break;
+        }
+        for(i=0;i<n;i++)
+            s[i] = r[i] - alpha * v[i];
+        sdgemv( (long) n, (long) n, ia, ja, A, 1, s, 1, t );
 
-		f = 0.0, g = 0.0;
-		for(i=0;i<n;i++)
-			f += t[i] * s[i],
-			g += t[i] * t[i];
-		omega = f / g;
-		for(i=0;i<n;i++)
-			x[i] += alpha * p[i] + omega * s[i];
+        f = 0.0, g = 0.0;
+        for(i=0;i<n;i++)
+            f += t[i] * s[i],
+              g += t[i] * t[i];
+        omega = f / g;
+        for(i=0;i<n;i++)
+            x[i] += alpha * p[i] + omega * s[i];
 
-		/* Check for convergence here */
-		f = 0.0;
-		for(i=0;i<n;i++)
-			f += r[i] * r[i];
-		f = sqrt( f );
-		if( vb )
-			fprintf( stderr, "%10d%15.7f%15.7f%15.7f%15.7f\n", m, f, alpha, beta, omega );
-		if( f < tol )
-			break;
+        /* Check for convergence here */
+        f = 0.0;
+        for(i=0;i<n;i++)
+            f += r[i] * r[i];
+        f = sqrt( f );
+        if( vb )
+            fprintf( stderr, "%10d%15.7f%15.7f%15.7f%15.7f\n", m, f, alpha, beta, omega );
+        if( f < tol )
+            break;
 
-		for(i=0;i<n;i++)
-			r[i] = s[i] - omega * t[i];
-	}
-	if( f > tol )
-		*ret = -2;
+        for(i=0;i<n;i++)
+            r[i] = s[i] - omega * t[i];
+    }
+    if( f > tol )
+        *ret = -2;
 
-	if( vb )
-	{
-		fprintf( stderr, "----------------------------------------------------------------------\n" );
-		if( *ret == 0 )
-			fprintf( stderr, " Converged                              System size:   %15d\n", n );
-		else
-			fprintf( stderr, " Failed                                 System size:   %15d\n", n );
-		fprintf( stderr, "                                        Tolerance:     %15.3e\n", tol );
-		fprintf( stderr, "                                        Iterations:    %15d\n", m );
-		fprintf( stderr, "                                        Residual:      %15.3e\n", f );
-		fprintf( stderr, "                                        ------------------------------\n" );
-	}
+    if( vb )
+    {
+        fprintf( stderr, "----------------------------------------------------------------------\n" );
+        if( *ret == 0 )
+            fprintf( stderr, " Converged                              System size:   %15d\n", n );
+        else
+            fprintf( stderr, " Failed                                 System size:   %15d\n", n );
+        fprintf( stderr, "                                        Tolerance:     %15.3e\n", tol );
+        fprintf( stderr, "                                        Iterations:    %15d\n", m );
+        fprintf( stderr, "                                        Residual:      %15.3e\n", f );
+        fprintf( stderr, "                                        ------------------------------\n" );
+    }
 
-	free( r0 );
-	free( r );
-	free( p );
-	free( v );
-	free( s );
-	free( t );
+    free( r0 );
+    free( r );
+    free( p );
+    free( v );
+    free( s );
+    free( t );
 }
 
 /**
@@ -1118,120 +1118,120 @@ void sbicgstab( int n, long *ia, long *ja, double *A, double *b, double *x, int 
  */
 void lpsbicgstab( int n, long *ia, long *ja, double *A, double *bb, double *x, int max, double tol, int vb, int *ret )
 {
-	int i,j,m,res;
-	double f,g,rho,rhon,alpha,beta,omega;
-	double *r0,*r,*p,*v,*s,*t,*b;
-	long *d;
+    int i,j,m,res;
+    double f,g,rho,rhon,alpha,beta,omega;
+    double *r0,*r,*p,*v,*s,*t,*b;
+    long *d;
 
-	r0 = (double*) malloc( n * sizeof(double) );
-	r = (double*) malloc( n * sizeof(double) );
-	p = (double*) malloc( n * sizeof(double) );
-	v = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
-	t = (double*) malloc( n * sizeof(double) );
-	b = (double*) malloc( n * sizeof(double) );
-	d = (long*) malloc( n * sizeof(long) );
+    r0 = (double*) malloc( n * sizeof(double) );
+    r = (double*) malloc( n * sizeof(double) );
+    p = (double*) malloc( n * sizeof(double) );
+    v = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
+    t = (double*) malloc( n * sizeof(double) );
+    b = (double*) malloc( n * sizeof(double) );
+    d = (long*) malloc( n * sizeof(long) );
 
-	/* Apply the preconditioner to the righthand side */
-	copy( n, bb, b );
-	spdiag( (long) n, ia, ja, A, d, &res );
-	spclw( (long) n, ia, ja, A, b, d );
+    /* Apply the preconditioner to the righthand side */
+    copy( n, bb, b );
+    spdiag( (long) n, ia, ja, A, d, &res );
+    spclw( (long) n, ia, ja, A, b, d );
 
-	/* Initialize */
-	rho = 1.0;
-	alpha = 1.0;
-	omega = 1.0;
-	sdgemv( (long) n, (long) n, ia, ja, A, 1, x, 1, r );
-	spclw( n, ia, ja, A, r, d );
-	for(i=0;i<n;i++)
-		r[i] = b[i] - r[i];
-	for(i=0;i<n;i++)
-	{
-		r0[i] = r[i];
-		v[i] = 0.0;
-		p[i] = 0.0;
-	}
+    /* Initialize */
+    rho = 1.0;
+    alpha = 1.0;
+    omega = 1.0;
+    sdgemv( (long) n, (long) n, ia, ja, A, 1, x, 1, r );
+    spclw( n, ia, ja, A, r, d );
+    for(i=0;i<n;i++)
+        r[i] = b[i] - r[i];
+    for(i=0;i<n;i++)
+    {
+        r0[i] = r[i];
+        v[i] = 0.0;
+        p[i] = 0.0;
+    }
 
-	/* Iterate */
-	if( vb )
-	{
-		fprintf( stderr, "\n" );
-		fprintf( stderr, "----------------------------------------------------------------------\n" );
-		fprintf( stderr, "%10s%15s%15s%15s%15s\n", " Iteration", "Residual ", "Alpha  ", "Beta  ", "Omega  " );
-		fprintf( stderr, "----------------------------------------------------------------------\n" );
-	}
-	*ret = 0;
-	for(m=0;m<max;m++)
-	{
-		rhon = 0.0;
-		for(i=0;i<n;i++)
-			rhon += r0[i] * r[i];
-		beta = ( rhon / rho ) * ( alpha / omega );
-		rho = rhon;
-		for(i=0;i<n;i++)
-			p[i] = r[i] + beta * ( p[i] - omega * v[i] );
-		sdgemv( (long) n, (long) n, ia, ja, A, 1, p, 1, v );
-		spclw( n, ia, ja, A, v, d );
+    /* Iterate */
+    if( vb )
+    {
+        fprintf( stderr, "\n" );
+        fprintf( stderr, "----------------------------------------------------------------------\n" );
+        fprintf( stderr, "%10s%15s%15s%15s%15s\n", " Iteration", "Residual ", "Alpha  ", "Beta  ", "Omega  " );
+        fprintf( stderr, "----------------------------------------------------------------------\n" );
+    }
+    *ret = 0;
+    for(m=0;m<max;m++)
+    {
+        rhon = 0.0;
+        for(i=0;i<n;i++)
+            rhon += r0[i] * r[i];
+        beta = ( rhon / rho ) * ( alpha / omega );
+        rho = rhon;
+        for(i=0;i<n;i++)
+            p[i] = r[i] + beta * ( p[i] - omega * v[i] );
+        sdgemv( (long) n, (long) n, ia, ja, A, 1, p, 1, v );
+        spclw( n, ia, ja, A, v, d );
 
-		f = 0.0;
-		for(i=0;i<n;i++)
-			f += r0[i] * v[i];
-		alpha = rho / f;
-		if( isnan( alpha ) )
-		{
-			*ret = -1; /* Failed to converge */
-			break;
-		}
-		for(i=0;i<n;i++)
-			s[i] = r[i] - alpha * v[i];
-		sdgemv( (long) n, (long) n, ia, ja, A, 1, s, 1, t );
-		spclw( n, ia, ja, A, t, d );
+        f = 0.0;
+        for(i=0;i<n;i++)
+            f += r0[i] * v[i];
+        alpha = rho / f;
+        if( isnan( alpha ) )
+        {
+            *ret = -1; /* Failed to converge */
+            break;
+        }
+        for(i=0;i<n;i++)
+            s[i] = r[i] - alpha * v[i];
+        sdgemv( (long) n, (long) n, ia, ja, A, 1, s, 1, t );
+        spclw( n, ia, ja, A, t, d );
 
-		f = 0.0, g = 0.0;
-		for(i=0;i<n;i++)
-			f += t[i] * s[i],
-			g += t[i] * t[i];
-		omega = f / g;
-		for(i=0;i<n;i++)
-			x[i] += alpha * p[i] + omega * s[i];
+        f = 0.0, g = 0.0;
+        for(i=0;i<n;i++)
+            f += t[i] * s[i],
+              g += t[i] * t[i];
+        omega = f / g;
+        for(i=0;i<n;i++)
+            x[i] += alpha * p[i] + omega * s[i];
 
-		/* Check for convergence here */
-		f = 0.0;
-		for(i=0;i<n;i++)
-			f += r[i] * r[i];
-		f = sqrt( f );
-		if( vb )
-			fprintf( stderr, "%10d%15.7f%15.7f%15.7f%15.7f\n", m, f, alpha, beta, omega );
-		if( f < tol )
-			break;
+        /* Check for convergence here */
+        f = 0.0;
+        for(i=0;i<n;i++)
+            f += r[i] * r[i];
+        f = sqrt( f );
+        if( vb )
+            fprintf( stderr, "%10d%15.7f%15.7f%15.7f%15.7f\n", m, f, alpha, beta, omega );
+        if( f < tol )
+            break;
 
-		for(i=0;i<n;i++)
-			r[i] = s[i] - omega * t[i];
-	}
-	if( f > tol )
-		*ret = -2;
+        for(i=0;i<n;i++)
+            r[i] = s[i] - omega * t[i];
+    }
+    if( f > tol )
+        *ret = -2;
 
-	if( vb )
-	{
-		fprintf( stderr, "----------------------------------------------------------------------\n" );
-		if( *ret == 0 )
-			fprintf( stderr, " Converged                              System size:   %15d\n", n );
-		else
-			fprintf( stderr, " Failed                                 System size:   %15d\n", n );
-		fprintf( stderr, "                                        Tolerance:     %15.3e\n", tol );
-		fprintf( stderr, "                                        Iterations:    %15d\n", m );
-		fprintf( stderr, "                                        Residual:      %15.3e\n", f );
-		fprintf( stderr, "                                        ------------------------------\n" );
-	}
+    if( vb )
+    {
+        fprintf( stderr, "----------------------------------------------------------------------\n" );
+        if( *ret == 0 )
+            fprintf( stderr, " Converged                              System size:   %15d\n", n );
+        else
+            fprintf( stderr, " Failed                                 System size:   %15d\n", n );
+        fprintf( stderr, "                                        Tolerance:     %15.3e\n", tol );
+        fprintf( stderr, "                                        Iterations:    %15d\n", m );
+        fprintf( stderr, "                                        Residual:      %15.3e\n", f );
+        fprintf( stderr, "                                        ------------------------------\n" );
+    }
 
-	free( r0 );
-	free( r );
-	free( p );
-	free( v );
-	free( s );
-	free( t );
-	free( b );
-	free( d );
+    free( r0 );
+    free( r );
+    free( p );
+    free( v );
+    free( s );
+    free( t );
+    free( b );
+    free( d );
 }
 
 /**
@@ -1239,145 +1239,145 @@ void lpsbicgstab( int n, long *ia, long *ja, double *A, double *bb, double *x, i
  */
 void bicgstabp( int n, int tt, double *A, double *b, int nv, double *V, double *x, int max, double tol, int vb, int *ret )
 {
-	int i,j,m;
-	double f,g,alpha,beta,omega;
-	double *r0,*r,*u,*v,*d,*db,*s,*sb,*t;
+    int i,j,m;
+    double f,g,alpha,beta,omega;
+    double *r0,*r,*u,*v,*d,*db,*s,*sb,*t;
 
-	r0 = (double*) malloc( n * sizeof(double) );
-	r = (double*) malloc( n * sizeof(double) );
-	u = (double*) malloc( n * sizeof(double) );
-	v = (double*) malloc( n * sizeof(double) );
-	d = (double*) malloc( n * sizeof(double) );
-	db = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
-	sb = (double*) malloc( n * sizeof(double) );
-	t = (double*) malloc( n * sizeof(double) );
+    r0 = (double*) malloc( n * sizeof(double) );
+    r = (double*) malloc( n * sizeof(double) );
+    u = (double*) malloc( n * sizeof(double) );
+    v = (double*) malloc( n * sizeof(double) );
+    d = (double*) malloc( n * sizeof(double) );
+    db = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
+    sb = (double*) malloc( n * sizeof(double) );
+    t = (double*) malloc( n * sizeof(double) );
 
-	/* Initialize */
-	project( n, x, nv, V );
-	for(i=0;i<n;i++)
-	{
-		r[i] = b[i];
-		if( tt == 0 )
-			for(j=0;j<n;j++)
-				r[i] -= A[i*n+j] * x[j];
-		else
-			for(j=0;j<n;j++)
-				r[i] -= A[j*n+i] * x[j];
-		r0[i] = r[i];
-		d[i] = r[i];
-	}
+    /* Initialize */
+    project( n, x, nv, V );
+    for(i=0;i<n;i++)
+    {
+        r[i] = b[i];
+        if( tt == 0 )
+            for(j=0;j<n;j++)
+                r[i] -= A[i*n+j] * x[j];
+        else
+            for(j=0;j<n;j++)
+                r[i] -= A[j*n+i] * x[j];
+        r0[i] = r[i];
+        d[i] = r[i];
+    }
 
-	/* Project V out of r */
-	project( n, r0, nv, V );
+    /* Project V out of r */
+    project( n, r0, nv, V );
 
-	/* Iterate */
-	if( vb )
-	{
-		fprintf( stderr, "\n" );
-		fprintf( stderr, "----------------------------------------------------------------------\n" );
-		fprintf( stderr, "%10s%15s%15s%15s%15s\n", " Iteration", "Residual ", "Alpha  ", "Beta  ", "Omega  " );
-		fprintf( stderr, "----------------------------------------------------------------------\n" );
-	}
-	*ret = 0;
-	for(m=0;m<max;m++)
-	{
-		/* Project V out of d */
-		copy( n, d, db );
-		project( n, db, nv, V );
+    /* Iterate */
+    if( vb )
+    {
+        fprintf( stderr, "\n" );
+        fprintf( stderr, "----------------------------------------------------------------------\n" );
+        fprintf( stderr, "%10s%15s%15s%15s%15s\n", " Iteration", "Residual ", "Alpha  ", "Beta  ", "Omega  " );
+        fprintf( stderr, "----------------------------------------------------------------------\n" );
+    }
+    *ret = 0;
+    for(m=0;m<max;m++)
+    {
+        /* Project V out of d */
+        copy( n, d, db );
+        project( n, db, nv, V );
 
-		/* Calculate alpha */
-		f = 0.0, g = 0.0;
-		for(i=0;i<n;i++)
-			f += r0[i] * r[i];
-		for(i=0;i<n;i++)
-		{
-			t[i] = 0.0;
-			if( tt == 0 )
-				for(j=0;j<n;j++)
-					t[i] += A[i*n+j] * db[j];
-			else
-				for(j=0;j<n;j++)
-					t[i] += A[j*n+i] * db[j];
-		}
-		for(i=0;i<n;i++)
-			g += r0[i] * t[i];
-		alpha = f / g;
+        /* Calculate alpha */
+        f = 0.0, g = 0.0;
+        for(i=0;i<n;i++)
+            f += r0[i] * r[i];
+        for(i=0;i<n;i++)
+        {
+            t[i] = 0.0;
+            if( tt == 0 )
+                for(j=0;j<n;j++)
+                    t[i] += A[i*n+j] * db[j];
+            else
+                for(j=0;j<n;j++)
+                    t[i] += A[j*n+i] * db[j];
+        }
+        for(i=0;i<n;i++)
+            g += r0[i] * t[i];
+        alpha = f / g;
 
-		/* Update s */
-		for(i=0;i<n;i++)
-			s[i] = r[i] - alpha * t[i];
+        /* Update s */
+        for(i=0;i<n;i++)
+            s[i] = r[i] - alpha * t[i];
 
-		/* Project V out of s */
-		copy( n, s, sb );
-		project( n, sb, nv, V );
+        /* Project V out of s */
+        copy( n, s, sb );
+        project( n, sb, nv, V );
 
-		/* Calculate omega */
-		f = 0.0, g = 0.0;
-		for(i=0;i<n;i++)
-		{
-			v[i] = 0.0;
-			if( tt == 0 )
-				for(j=0;j<n;j++)
-					v[i] += A[i*n+j] * sb[j];
-			else
-				for(j=0;j<n;j++)
-					v[i] += A[j*n+i] * sb[j];
-			f += sb[i] * v[i];
-		}
-		copy( n, v, u );
-		project( n, u, nv, V );
-		for(i=0;i<n;i++)
-			g += v[i] * u[i];
-		omega = f / g;
+        /* Calculate omega */
+        f = 0.0, g = 0.0;
+        for(i=0;i<n;i++)
+        {
+            v[i] = 0.0;
+            if( tt == 0 )
+                for(j=0;j<n;j++)
+                    v[i] += A[i*n+j] * sb[j];
+            else
+                for(j=0;j<n;j++)
+                    v[i] += A[j*n+i] * sb[j];
+            f += sb[i] * v[i];
+        }
+        copy( n, v, u );
+        project( n, u, nv, V );
+        for(i=0;i<n;i++)
+            g += v[i] * u[i];
+        omega = f / g;
 
-		/* Advance x and the residual and calculate beta */
-		f = 0.0, g = 0.0;
-		for(i=0;i<n;i++)
-			g += r0[i] * r[i];
-		for(i=0;i<n;i++)
-		{
-			x[i] += alpha * db[i] + omega * sb[i];
-			r[i] = s[i] - omega * v[i];
-			f += r0[i] * r[i];
-		}
-		beta = alpha / omega * f / g;
+        /* Advance x and the residual and calculate beta */
+        f = 0.0, g = 0.0;
+        for(i=0;i<n;i++)
+            g += r0[i] * r[i];
+        for(i=0;i<n;i++)
+        {
+            x[i] += alpha * db[i] + omega * sb[i];
+            r[i] = s[i] - omega * v[i];
+            f += r0[i] * r[i];
+        }
+        beta = alpha / omega * f / g;
 
-		/* Check for convergence */
-		if( vb )
-			fprintf( stderr, "%10d%15.7f%15.7f%15.7f%15.7f\n", m, f, alpha, beta, omega );
-		if( fabs( f ) < tol )
-			break;
+        /* Check for convergence */
+        if( vb )
+            fprintf( stderr, "%10d%15.7f%15.7f%15.7f%15.7f\n", m, f, alpha, beta, omega );
+        if( fabs( f ) < tol )
+            break;
 
-		/* Advance d */
-		for(i=0;i<n;i++)
-			d[i] = r[i] + beta * ( d[i] - omega * t[i] );
-	}
-	if( f > tol )
-		*ret = -2;
+        /* Advance d */
+        for(i=0;i<n;i++)
+            d[i] = r[i] + beta * ( d[i] - omega * t[i] );
+    }
+    if( f > tol )
+        *ret = -2;
 
-	if( vb )
-	{
-		fprintf( stderr, "----------------------------------------------------------------------\n" );
-		if( *ret == 0 )
-			fprintf( stderr, " Converged                              System size:   %15d\n", n );
-		else
-			fprintf( stderr, " Failed                                 System size:   %15d\n", n );
-		fprintf( stderr, "                                        Tolerance:     %15.3e\n", tol );
-		fprintf( stderr, "                                        Iterations:    %15d\n", m );
-		fprintf( stderr, "                                        Residual:      %15.3e\n", f );
-		fprintf( stderr, "                                        ------------------------------\n" );
-	}
+    if( vb )
+    {
+        fprintf( stderr, "----------------------------------------------------------------------\n" );
+        if( *ret == 0 )
+            fprintf( stderr, " Converged                              System size:   %15d\n", n );
+        else
+            fprintf( stderr, " Failed                                 System size:   %15d\n", n );
+        fprintf( stderr, "                                        Tolerance:     %15.3e\n", tol );
+        fprintf( stderr, "                                        Iterations:    %15d\n", m );
+        fprintf( stderr, "                                        Residual:      %15.3e\n", f );
+        fprintf( stderr, "                                        ------------------------------\n" );
+    }
 
-	free( r0 );
-	free( r );
-	free( u );
-	free( v );
-	free( d );
-	free( db );
-	free( s );
-	free( sb );
-	free( t );
+    free( r0 );
+    free( r );
+    free( u );
+    free( v );
+    free( d );
+    free( db );
+    free( s );
+    free( sb );
+    free( t );
 }
 
 /**
@@ -1394,23 +1394,23 @@ void bicgstabp( int n, int tt, double *A, double *b, int nv, double *V, double *
  */
 void smfsub( long n, long *ia, long *ja, double *A, double *x, double *b, long *d )
 {
-	long i,j;
+    long i,j;
 
-	/* Multiply by the strictly upper triangular part; x <- Fx + b */
-       	for(i=0;i<n;i++)
-       	{
-               	x[i] = b[i];
-               	for(j=d[i]+1;j<ia[i+1];j++)
-                       	x[i] -= A[j] * x[ja[j]];
-       	}
+    /* Multiply by the strictly upper triangular part; x <- Fx + b */
+    for(i=0;i<n;i++)
+    {
+        x[i] = b[i];
+        for(j=d[i]+1;j<ia[i+1];j++)
+            x[i] -= A[j] * x[ja[j]];
+    }
 
-	/* Do the forward substitution */
-	for(i=0;i<n;i++)
-	{
-		for(j=ia[i];j<d[i];j++)
-			x[i] = x[i] - A[j] * x[ja[j]];
-		x[i] = x[i] / A[d[i]];
-	}
+    /* Do the forward substitution */
+    for(i=0;i<n;i++)
+    {
+        for(j=ia[i];j<d[i];j++)
+            x[i] = x[i] - A[j] * x[ja[j]];
+        x[i] = x[i] / A[d[i]];
+    }
 }
 
 /**
@@ -1427,38 +1427,38 @@ void smfsub( long n, long *ia, long *ja, double *A, double *x, double *b, long *
  */
 void sfpgs( long n, long *ia, long *ja, double *A, double *x, double *b, int max, double tol, int vb, int *ret )
 {
-	int m,res;
-	long i,j;
-	long *d = (long*) malloc( n * sizeof(long) );
+    int m,res;
+    long i,j;
+    long *d = (long*) malloc( n * sizeof(long) );
 
-	/* Find diagonal entries only once */
-	*ret = 0;
-        for(i=0;i<n;i++)
+    /* Find diagonal entries only once */
+    *ret = 0;
+    for(i=0;i<n;i++)
+    {
+        d[i] = -1;
+        for(j=ia[i];j<ia[i+1];j++)
         {
-                d[i] = -1;
-                for(j=ia[i];j<ia[i+1];j++)
-                {
-                        if( ja[j] == i )
-                        {
-                                d[i] = j;
-                                break;
-                        }
-                }
-                if( d[i] == -1 )
-                {
-                        *ret = -1; /* Missing a diagonal element */
-                        break;
-                }
+            if( ja[j] == i )
+            {
+                d[i] = j;
+                break;
+            }
         }
+        if( d[i] == -1 )
+        {
+            *ret = -1; /* Missing a diagonal element */
+            break;
+        }
+    }
 
-	/* Iterate */
-	if( *ret == 0 )
-	{
-		for(m=0;m<max;m++)
-		{
-			smfsub( n, ia, ja, A, x, b, d );
-		}
-	}
+    /* Iterate */
+    if( *ret == 0 )
+    {
+        for(m=0;m<max;m++)
+        {
+            smfsub( n, ia, ja, A, x, b, d );
+        }
+    }
 }
 
 /**
@@ -1473,35 +1473,35 @@ void sfpgs( long n, long *ia, long *ja, double *A, double *x, double *b, int max
  */
 void trlusv( int n, double *alpha, double *beta, double *gamma, double *b, double *x )
 {
-	int i;
-	double *d,*l,*u,*y;
+    int i;
+    double *d,*l,*u,*y;
 
-	/* Allocate temp storage for LU factorzation vectors; try to eliminate this by overwriting alpha, beta, gamma */
-	d = (double*) malloc( n * sizeof(double) );
-	l = (double*) malloc( n * sizeof(double) );
-	u = (double*) malloc( n * sizeof(double) );
-	y = (double*) malloc( n * sizeof(double) );
+    /* Allocate temp storage for LU factorzation vectors; try to eliminate this by overwriting alpha, beta, gamma */
+    d = (double*) malloc( n * sizeof(double) );
+    l = (double*) malloc( n * sizeof(double) );
+    u = (double*) malloc( n * sizeof(double) );
+    y = (double*) malloc( n * sizeof(double) );
 
-	/* Calculate the LU decomposition of the tridiagonal system in alpha, beta, gamma */
-	d[0] = alpha[0];
-	u[0] = gamma[0];
-	for(i=1;i<n;i++)
-	{
-		l[i-1] = beta[i-1] / d[i-1];
-		d[i] = alpha[i] - l[i-1] * gamma[i-1];
-		u[i] = gamma[i]; /* This is redundant, of course */
-	}
+    /* Calculate the LU decomposition of the tridiagonal system in alpha, beta, gamma */
+    d[0] = alpha[0];
+    u[0] = gamma[0];
+    for(i=1;i<n;i++)
+    {
+        l[i-1] = beta[i-1] / d[i-1];
+        d[i] = alpha[i] - l[i-1] * gamma[i-1];
+        u[i] = gamma[i]; /* This is redundant, of course */
+    }
 
-	/* Do forward/back-substitution to solve the system */
-	y[0] = b[0];
-	for(i=1;i<n;i++)
-		y[i] = b[i] - l[i-1] * y[i-1];
-	x[n-1] = y[n-1] / d[n-1];
-	for(i=n-2;i>=0;i--)
-		x[i] = ( y[i] - u[i] * x[i+1] ) / d[i];
+    /* Do forward/back-substitution to solve the system */
+    y[0] = b[0];
+    for(i=1;i<n;i++)
+        y[i] = b[i] - l[i-1] * y[i-1];
+    x[n-1] = y[n-1] / d[n-1];
+    for(i=n-2;i>=0;i--)
+        x[i] = ( y[i] - u[i] * x[i+1] ) / d[i];
 
-	/* Clean up */
-	free( d ); free( l ) ; free( u ); free( y );
+    /* Clean up */
+    free( d ); free( l ) ; free( u ); free( y );
 }
 
 /**
@@ -1509,14 +1509,14 @@ void trlusv( int n, double *alpha, double *beta, double *gamma, double *b, doubl
  */
 void gvrot( double a11, double a21, double *c, double *s )
 {
-	double ss;
-	double p;
+    double ss;
+    double p;
 
-	/* Calculate cos and sin components of rank two operation */
-	p = a11 / a21;
-	ss = 1.0 / ( 1.0 + p * p );
-	*s = sqrt( ss );
-	*c = sqrt( 1.0 - ss );
+    /* Calculate cos and sin components of rank two operation */
+    p = a11 / a21;
+    ss = 1.0 / ( 1.0 + p * p );
+    *s = sqrt( ss );
+    *c = sqrt( 1.0 - ss );
 }
 
 /**
@@ -1531,73 +1531,73 @@ void gvrot( double a11, double a21, double *c, double *s )
  */
 void hhref( int n, int idx, int ldx, double *x, int m, double *y, int nq, double *Q )
 {
-	int i,j;
-	double len,lem,*u,*w;
+    int i,j;
+    double len,lem,*u,*w;
 
-	/* Allocate */
-	u = (double*) malloc( n * sizeof(double) );
+    /* Allocate */
+    u = (double*) malloc( n * sizeof(double) );
 
-	/* Compute length of original vector; len must be preserved by transformed vector */
-	len = 0.0;
-	for(i=0;i<n;i++)
-		len += x[i*ldx] * x[i*ldx];
-	len = sqrt( len );
+    /* Compute length of original vector; len must be preserved by transformed vector */
+    len = 0.0;
+    for(i=0;i<n;i++)
+        len += x[i*ldx] * x[i*ldx];
+    len = sqrt( len );
 
-	/* Make u */
-	lem = 0.0;
-	for(i=0;i<n;i++)
-	{
-		if( i == idx )
-			u[i] = x[i*ldx] - len;
-		else
-			u[i] = x[i*ldx];
-		lem += u[i] * u[i];
-	}
-	lem = sqrt( lem );
-	for(i=0;i<n;i++)
-		u[i] /= lem; /* This is the completed normalized reflection vector */
+    /* Make u */
+    lem = 0.0;
+    for(i=0;i<n;i++)
+    {
+        if( i == idx )
+            u[i] = x[i*ldx] - len;
+        else
+            u[i] = x[i*ldx];
+        lem += u[i] * u[i];
+    }
+    lem = sqrt( lem );
+    for(i=0;i<n;i++)
+        u[i] /= lem; /* This is the completed normalized reflection vector */
 
-	/* Apply I - 2 uuT to x and put it in y */
-	for(i=0;i<m;i++)
-	{
-		w = y + i;
-		len = 0.0;
-		for(j=0;j<n;j++)
-			len += w[j*ldx] * u[j];
-		for(j=0;j<n;j++)
-			w[j*ldx] = w[j*ldx] - 2.0 * len * u[j];
-	}
-	for(i=0;i<nq;i++)
-	{
-		w = Q + i;
-		len = 0.0;
-		for(j=0;j<n;j++)
-			len += w[j*nq] * u[j];
-		for(j=0;j<n;j++)
-			w[j*nq] = w[j*nq] - 2.0 * len * u[j];
-	}
+    /* Apply I - 2 uuT to x and put it in y */
+    for(i=0;i<m;i++)
+    {
+        w = y + i;
+        len = 0.0;
+        for(j=0;j<n;j++)
+            len += w[j*ldx] * u[j];
+        for(j=0;j<n;j++)
+            w[j*ldx] = w[j*ldx] - 2.0 * len * u[j];
+    }
+    for(i=0;i<nq;i++)
+    {
+        w = Q + i;
+        len = 0.0;
+        for(j=0;j<n;j++)
+            len += w[j*nq] * u[j];
+        for(j=0;j<n;j++)
+            w[j*nq] = w[j*nq] - 2.0 * len * u[j];
+    }
 }
 
 void hhqrls( int n, int m, double *A, int nq, double *Q )
 {
-	int i,j,k;
-	double *q;
+    int i,j,k;
+    double *q;
 
-	/* Apply the sequence of reflections */
-	for(k=0;k<m;k++)
-		hhref( n - k, 0, m, A + k * ( m + 1 ), m - k, A + k * ( m + 1 ), nq, Q + k * nq );
+    /* Apply the sequence of reflections */
+    for(k=0;k<m;k++)
+        hhref( n - k, 0, m, A + k * ( m + 1 ), m - k, A + k * ( m + 1 ), nq, Q + k * nq );
 
-	/* Now invert the smaller matrix using back substitution */
-	for(k=0;k<nq;k++)
-	{
-		q = Q + k;
-		for(i=m-1;i>=0;i--)
-		{
-			for(j=m-1;j>i;j--)
-				q[i*nq] = q[i*nq] - A[i*m+j] * q[j*nq];
-			q[i*nq] = q[i*nq] / A[i*m+i];
-		}
-	}
+    /* Now invert the smaller matrix using back substitution */
+    for(k=0;k<nq;k++)
+    {
+        q = Q + k;
+        for(i=m-1;i>=0;i--)
+        {
+            for(j=m-1;j>i;j--)
+                q[i*nq] = q[i*nq] - A[i*m+j] * q[j*nq];
+            q[i*nq] = q[i*nq] / A[i*m+i];
+        }
+    }
 }
 
 /**
@@ -1607,13 +1607,13 @@ void hhqrls( int n, int m, double *A, int nq, double *Q )
  */
 void tdgvrot( int n, double *A, int col, int row1, int row2 )
 {
-	int i;
-	double a11,a21,c,s;
+    int i;
+    double a11,a21,c,s;
 
-	/* Form matrix with right entries of A */
-	a11 = A[row1*n+col];
-	a21 = A[row2*n+col];
-	gvrot( a11, a21, &c, &s );
+    /* Form matrix with right entries of A */
+    a11 = A[row1*n+col];
+    a21 = A[row2*n+col];
+    gvrot( a11, a21, &c, &s );
 }
 
 /**
@@ -1622,73 +1622,73 @@ void tdgvrot( int n, double *A, int col, int row1, int row2 )
  */
 void ulanczos( int n, int m, double *A, double *alpha, double *beta, double *gamma, double *r0, double *s0, int *res )
 {
-	int i,j,res1,res2,res3;
-	double *q,*qq,*p,*pp,*r,*s;
+    int i,j,res1,res2,res3;
+    double *q,*qq,*p,*pp,*r,*s;
 
-	/* Allocate storage for iteration vector */
-	q = (double*) malloc( n * sizeof(double) );
-	qq = (double*) malloc( n * sizeof(double) );
-	p = (double*) malloc( n * sizeof(double) );
-	pp = (double*) malloc( n * sizeof(double) );
-	r = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
+    /* Allocate storage for iteration vector */
+    q = (double*) malloc( n * sizeof(double) );
+    qq = (double*) malloc( n * sizeof(double) );
+    p = (double*) malloc( n * sizeof(double) );
+    pp = (double*) malloc( n * sizeof(double) );
+    r = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
 
-	/* Generate an initially orthogonal pair of vectors in p, q */
-	zerov( n, q );
-	zerov( n, p );
-	if( r0 != NULL )
-		copy( n, r0, r );
-	else
-		nrandv( n, r );
-	if( s0 != NULL )
-		copy( n, s0, s );
-	else
-		nrandv( n, s );
+    /* Generate an initially orthogonal pair of vectors in p, q */
+    zerov( n, q );
+    zerov( n, p );
+    if( r0 != NULL )
+        copy( n, r0, r );
+    else
+        nrandv( n, r );
+    if( s0 != NULL )
+        copy( n, s0, s );
+    else
+        nrandv( n, s );
 
-	/* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
-	*res = 0;
-	for(i=0;i<m;)
-	{
-		/* Make sure that r, s do not vanish and are not orthogonal */
-		normchk( n, r, CGRAD_ZERO, &res1 );
-		normchk( n, s, CGRAD_ZERO, &res2 );
-		dotchk( n, r, s, CGRAD_ZERO, &res3 );
+    /* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
+    *res = 0;
+    for(i=0;i<m;)
+    {
+        /* Make sure that r, s do not vanish and are not orthogonal */
+        normchk( n, r, CGRAD_ZERO, &res1 );
+        normchk( n, s, CGRAD_ZERO, &res2 );
+        dotchk( n, r, s, CGRAD_ZERO, &res3 );
 
-		/* Return code which tells which conditions failed */
-		if( res1 == -1 || res2 == -1 || res3 == -1 )
-		{
-			if( res1 == -1 )
-				*res |= ( 1 << 0 );
-			if( res2 == -1 )
-				*res |= ( 1 << 1 );
-			if( res3 == -1 )
-				*res |= ( 1 << 2 );
-			break;
-		}
+        /* Return code which tells which conditions failed */
+        if( res1 == -1 || res2 == -1 || res3 == -1 )
+        {
+            if( res1 == -1 )
+                *res |= ( 1 << 0 );
+            if( res2 == -1 )
+                *res |= ( 1 << 1 );
+            if( res3 == -1 )
+                *res |= ( 1 << 2 );
+            break;
+        }
 
-		/* Build the next vectors and coefficients */
+        /* Build the next vectors and coefficients */
 #ifdef CGRAD_LANCZOS_NORM
-		norm( n, r, &beta[i] );
+        norm( n, r, &beta[i] );
 #else
-		dotp( n, s, r, &beta[i] );
-                beta[i] = sqrt( fabs( beta[i] ) );
+        dotp( n, s, r, &beta[i] );
+        beta[i] = sqrt( fabs( beta[i] ) );
 #endif
-		dotpdiv( n, s, r, beta[i], &gamma[i] );
-		copyvdiv( n, r, beta[i], qq );
-		copyvdiv( n, s, gamma[i], pp );
+        dotpdiv( n, s, r, beta[i], &gamma[i] );
+        copyvdiv( n, r, beta[i], qq );
+        copyvdiv( n, s, gamma[i], pp );
 
-		/* Step forward one */
-		++i;
+        /* Step forward one */
+        ++i;
 
-		/* Calcualte the next diagonal term */
-		mdotp( n, A, pp, qq, &alpha[i] );
-		smmadd( n, 0, A, alpha[i], qq, q, -1.0 * gamma[i-1], r );
-		smmadd( n, 1, A, alpha[i], pp, p, -1.0 * beta[i-1], s );
-		copy( n, qq, q );
-		copy( n, pp, p );
-	}
+        /* Calcualte the next diagonal term */
+        mdotp( n, A, pp, qq, &alpha[i] );
+        smmadd( n, 0, A, alpha[i], qq, q, -1.0 * gamma[i-1], r );
+        smmadd( n, 1, A, alpha[i], pp, p, -1.0 * beta[i-1], s );
+        copy( n, qq, q );
+        copy( n, pp, p );
+    }
 
-	free( q ); free( qq ); free( p ); free( pp ); free( r ); free( s );
+    free( q ); free( qq ); free( p ); free( pp ); free( r ); free( s );
 }
 
 /**
@@ -1698,79 +1698,79 @@ void ulanczos( int n, int m, double *A, double *alpha, double *beta, double *gam
  */
 void ulanczosb( int n, int m, double *A, double *alpha, double *beta, double *gamma, double *r0, double *s0, double *V, double *U, int *res )
 {
-	int i,j,res1,res2,res3;
-	double *q,*qq,*p,*pp,*r,*s;
+    int i,j,res1,res2,res3;
+    double *q,*qq,*p,*pp,*r,*s;
 
-	/* Allocate storage for iteration vector */
-	q = (double*) malloc( n * sizeof(double) );
-	qq = (double*) malloc( n * sizeof(double) );
-	p = (double*) malloc( n * sizeof(double) );
-	pp = (double*) malloc( n * sizeof(double) );
-	r = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
+    /* Allocate storage for iteration vector */
+    q = (double*) malloc( n * sizeof(double) );
+    qq = (double*) malloc( n * sizeof(double) );
+    p = (double*) malloc( n * sizeof(double) );
+    pp = (double*) malloc( n * sizeof(double) );
+    r = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
 
-	/* Generate an initially orthogonal pair of vectors in p, q */
-	zerov( n, q );
-	zerov( n, p );
-	if( r0 != NULL )
-                copy( n, r0, r );
-        else
-                nrandv( n, r );
-        if( s0 != NULL )
-                copy( n, s0, s );
-        else
-                nrandv( n, s );
+    /* Generate an initially orthogonal pair of vectors in p, q */
+    zerov( n, q );
+    zerov( n, p );
+    if( r0 != NULL )
+        copy( n, r0, r );
+    else
+        nrandv( n, r );
+    if( s0 != NULL )
+        copy( n, s0, s );
+    else
+        nrandv( n, s );
 
-	/* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
-	*res = 0;
-	for(i=0;i<m;)
-	{
-		/* Make sure that r, s do not vanish and are not orthogonal */
-		normchk( n, r, CGRAD_ZERO, &res1 );
-		normchk( n, s, CGRAD_ZERO, &res2 );
-		dotchk( n, r, s, CGRAD_ZERO, &res3 );
+    /* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
+    *res = 0;
+    for(i=0;i<m;)
+    {
+        /* Make sure that r, s do not vanish and are not orthogonal */
+        normchk( n, r, CGRAD_ZERO, &res1 );
+        normchk( n, s, CGRAD_ZERO, &res2 );
+        dotchk( n, r, s, CGRAD_ZERO, &res3 );
 
-		/* Return code which tells which conditions failed */
-		if( res1 == -1 || res2 == -1 || res3 == -1 )
-		{
-			if( res1 == -1 )
-				*res |= ( 1 << 0 );
-			if( res2 == -1 )
-				*res |= ( 1 << 1 );
-			if( res3 == -1 )
-				*res |= ( 1 << 2 );
-			break;
-		}
+        /* Return code which tells which conditions failed */
+        if( res1 == -1 || res2 == -1 || res3 == -1 )
+        {
+            if( res1 == -1 )
+                *res |= ( 1 << 0 );
+            if( res2 == -1 )
+                *res |= ( 1 << 1 );
+            if( res3 == -1 )
+                *res |= ( 1 << 2 );
+            break;
+        }
 
-		/* Build the next vectors and coefficients */
+        /* Build the next vectors and coefficients */
 #ifdef CGRAD_LANCZOS_NORM
-		norm( n, r, &beta[i] );
+        norm( n, r, &beta[i] );
 #else
-		dotp( n, s, r, &beta[i] );
-		beta[i] = sqrt( fabs( beta[i] ) );
+        dotp( n, s, r, &beta[i] );
+        beta[i] = sqrt( fabs( beta[i] ) );
 #endif
-		dotpdiv( n, s, r, beta[i], &gamma[i] );
-		copyvdiv( n, r, beta[i], qq );
-		copyvdiv( n, s, gamma[i], pp );
+        dotpdiv( n, s, r, beta[i], &gamma[i] );
+        copyvdiv( n, r, beta[i], qq );
+        copyvdiv( n, s, gamma[i], pp );
 
-		/* Save in the basis set if no breakdown occurs */
-                if( V != NULL )
-                        copy( n, qq, V + i * n );
-                if( U != NULL )
-                        copy( n, pp, U + i * n );
+        /* Save in the basis set if no breakdown occurs */
+        if( V != NULL )
+            copy( n, qq, V + i * n );
+        if( U != NULL )
+            copy( n, pp, U + i * n );
 
-		/* Step forward one */
-		++i;
+        /* Step forward one */
+        ++i;
 
-		/* Calcualte the next diagonal term */
-		mdotp( n, A, pp, qq, &alpha[i] );
-		smmadd( n, 0, A, alpha[i], qq, q, -1.0 * gamma[i-1], r );
-		smmadd( n, 1, A, alpha[i], pp, p, -1.0 * beta[i-1], s );
-		copy( n, qq, q );
-		copy( n, pp, p );
-	}
+        /* Calcualte the next diagonal term */
+        mdotp( n, A, pp, qq, &alpha[i] );
+        smmadd( n, 0, A, alpha[i], qq, q, -1.0 * gamma[i-1], r );
+        smmadd( n, 1, A, alpha[i], pp, p, -1.0 * beta[i-1], s );
+        copy( n, qq, q );
+        copy( n, pp, p );
+    }
 
-	free( q ); free( qq ); free( p ); free( pp ); free( r ); free( s );
+    free( q ); free( qq ); free( p ); free( pp ); free( r ); free( s );
 }
 
 /**
@@ -1778,55 +1778,55 @@ void ulanczosb( int n, int m, double *A, double *alpha, double *beta, double *ga
  */
 void gelzsvm( int n, int m, double *A, double *b, double *x, double *alpha, double *beta, double *gamma, double *V, double *U )
 {
-	int i,j,res;
-	double beta0,tmp,*r0,*s0,*tb,*tx;
+    int i,j,res;
+    double beta0,tmp,*r0,*s0,*tb,*tx;
 
-	r0 = (double*) malloc( n * sizeof(double) );
-	s0 = (double*) malloc( n * sizeof(double) );
-	tb = (double*) malloc( m * sizeof(double) );
-	tx = (double*) malloc( m * sizeof(double) );
+    r0 = (double*) malloc( n * sizeof(double) );
+    s0 = (double*) malloc( n * sizeof(double) );
+    tb = (double*) malloc( m * sizeof(double) );
+    tx = (double*) malloc( m * sizeof(double) );
 
-	/* Calculate the original residual for use in forming tb */
-	residual( n, A, x, b, r0 );
-	norm( n, r0, &beta0 );
-	normalize( n, r0 );
-	nrandv( n, s0 );
-	dotp( n, s0, r0, &tmp );
-	vdiv( n, s0, tmp );
+    /* Calculate the original residual for use in forming tb */
+    residual( n, A, x, b, r0 );
+    norm( n, r0, &beta0 );
+    normalize( n, r0 );
+    nrandv( n, s0 );
+    dotp( n, s0, r0, &tmp );
+    vdiv( n, s0, tmp );
 
-	/* Build the Lanczos matrix and vectors */
-	ulanczosb( n, m, A, alpha, beta, gamma, r0, s0, V, U, &res );
+    /* Build the Lanczos matrix and vectors */
+    ulanczosb( n, m, A, alpha, beta, gamma, r0, s0, V, U, &res );
 
-	/* Form the right-hand side of the projected tridiagonal problem */
-	for(i=0;i<m;i++)
-		if( i == 0 )
-			tb[i] = beta0;
-		else
-			tb[i] = 0.0;
+    /* Form the right-hand side of the projected tridiagonal problem */
+    for(i=0;i<m;i++)
+        if( i == 0 )
+            tb[i] = beta0;
+        else
+            tb[i] = 0.0;
 
-	/* Solve the tridiagonal system; put solution in tx */
-	trlusv( m, alpha + 1, beta + 1, gamma + 1, tb, tx );
+    /* Solve the tridiagonal system; put solution in tx */
+    trlusv( m, alpha + 1, beta + 1, gamma + 1, tb, tx );
 
-	/* Now put the solution back into the original vector space */
-	for(i=0;i<m;i++)
-		for(j=0;j<n;j++)
-			x[j] += tx[i] * V[i*n+j];
+    /* Now put the solution back into the original vector space */
+    for(i=0;i<m;i++)
+        for(j=0;j<n;j++)
+            x[j] += tx[i] * V[i*n+j];
 
-	free( r0 ); free( s0 ); free( tb ); free( tx );
+    free( r0 ); free( s0 ); free( tb ); free( tx );
 }
 
 #define CGRAD_GELZSVT_INC 256
 
 inline void vchkrealloc( int n, int size, int *alloc, double *x, double *b, double *V, double *U )
 {
-	if( size + 1 > *alloc )
-	{
-		x = (double*) realloc( x, ( *alloc + CGRAD_GELZSVT_INC ) * sizeof(double) );
-		b = (double*) realloc( b, ( *alloc + CGRAD_GELZSVT_INC ) * sizeof(double) );
-		V = (double*) realloc( V, ( *alloc + CGRAD_GELZSVT_INC ) * n * sizeof(double) );
-		U = (double*) realloc( U, ( *alloc + CGRAD_GELZSVT_INC ) * n * sizeof(double) );
-		*alloc += CGRAD_GELZSVT_INC;
-	}
+    if( size + 1 > *alloc )
+    {
+        x = (double*) realloc( x, ( *alloc + CGRAD_GELZSVT_INC ) * sizeof(double) );
+        b = (double*) realloc( b, ( *alloc + CGRAD_GELZSVT_INC ) * sizeof(double) );
+        V = (double*) realloc( V, ( *alloc + CGRAD_GELZSVT_INC ) * n * sizeof(double) );
+        U = (double*) realloc( U, ( *alloc + CGRAD_GELZSVT_INC ) * n * sizeof(double) );
+        *alloc += CGRAD_GELZSVT_INC;
+    }
 }
 
 /**
@@ -1836,130 +1836,130 @@ inline void vchkrealloc( int n, int size, int *alloc, double *x, double *b, doub
  */
 void gelzsv( int n, int *m, double *A, double *b, double *x, double *alpha, double *beta, double *gamma, double tol, int *res, int vb )
 {
-	int i,j,talloc,res1,res2,res3;
-	double beta0,tmp,err,*r0,*s0,*tb,*tx,*q,*qq,*p,*pp,*r,*s,*V,*U;
+    int i,j,talloc,res1,res2,res3;
+    double beta0,tmp,err,*r0,*s0,*tb,*tx,*q,*qq,*p,*pp,*r,*s,*V,*U;
 
-	r0 = (double*) malloc( n * sizeof(double) );
-	s0 = (double*) malloc( n * sizeof(double) );
-	q = (double*) malloc( n * sizeof(double) );
-	qq = (double*) malloc( n * sizeof(double) );
-	p = (double*) malloc( n * sizeof(double) );
-	pp = (double*) malloc( n * sizeof(double) );
-	r = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
+    r0 = (double*) malloc( n * sizeof(double) );
+    s0 = (double*) malloc( n * sizeof(double) );
+    q = (double*) malloc( n * sizeof(double) );
+    qq = (double*) malloc( n * sizeof(double) );
+    p = (double*) malloc( n * sizeof(double) );
+    pp = (double*) malloc( n * sizeof(double) );
+    r = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
 
-	/* Initialize tridiagonal space */
-	tx = (double*) malloc( CGRAD_GELZSVT_INC * sizeof(double) );
-	tb = (double*) malloc( CGRAD_GELZSVT_INC * sizeof(double) );
-	V = (double*) malloc( CGRAD_GELZSVT_INC * n * sizeof(double) );
-	U = (double*) malloc( CGRAD_GELZSVT_INC * n * sizeof(double) );
-	talloc = CGRAD_GELZSVT_INC;
+    /* Initialize tridiagonal space */
+    tx = (double*) malloc( CGRAD_GELZSVT_INC * sizeof(double) );
+    tb = (double*) malloc( CGRAD_GELZSVT_INC * sizeof(double) );
+    V = (double*) malloc( CGRAD_GELZSVT_INC * n * sizeof(double) );
+    U = (double*) malloc( CGRAD_GELZSVT_INC * n * sizeof(double) );
+    talloc = CGRAD_GELZSVT_INC;
 
-	/* Write results if verbose on */
-	if( vb )
-	{
-		fprintf( stderr, "\n" );
-		fprintf( stderr, "-------------------------\n" );
-		fprintf( stderr, "%10s%15s\n", " Iteration", "Residual " );
-		fprintf( stderr, "-------------------------\n" );
-	}
+    /* Write results if verbose on */
+    if( vb )
+    {
+        fprintf( stderr, "\n" );
+        fprintf( stderr, "-------------------------\n" );
+        fprintf( stderr, "%10s%15s\n", " Iteration", "Residual " );
+        fprintf( stderr, "-------------------------\n" );
+    }
 
-	/* Start setting up Lanczos steps */
-	zerov( n, q );
-	zerov( n, p );
+    /* Start setting up Lanczos steps */
+    zerov( n, q );
+    zerov( n, p );
 
-	/* Calculate the original residual for use in forming tb */
-	residual( n, A, x, b, r0 );
-	norm( n, r0, &beta0 );
-	normalize( n, r0 );
-	nrandv( n, s0 );
-	dotp( n, s0, r0, &tmp );
-	vdiv( n, s0, tmp );
-	copy( n, r0, r );
-	copy( n, s0, s );
+    /* Calculate the original residual for use in forming tb */
+    residual( n, A, x, b, r0 );
+    norm( n, r0, &beta0 );
+    normalize( n, r0 );
+    nrandv( n, s0 );
+    dotp( n, s0, r0, &tmp );
+    vdiv( n, s0, tmp );
+    copy( n, r0, r );
+    copy( n, s0, s );
 
-	/* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
-	*res = 0;
-	tb[0] = beta0;
-	for(i=0;i<n-1;)
-	{
-		/* Make sure that r, s do not vanish and are not orthogonal */
-		normchk( n, r, CGRAD_ZERO, &res1 );
-		normchk( n, s, CGRAD_ZERO, &res2 );
-		dotchk( n, r, s, CGRAD_ZERO, &res3 );
+    /* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
+    *res = 0;
+    tb[0] = beta0;
+    for(i=0;i<n-1;)
+    {
+        /* Make sure that r, s do not vanish and are not orthogonal */
+        normchk( n, r, CGRAD_ZERO, &res1 );
+        normchk( n, s, CGRAD_ZERO, &res2 );
+        dotchk( n, r, s, CGRAD_ZERO, &res3 );
 
-		/* Return code which tells which conditions failed */
-		if( res1 == -1 || res2 == -1 || res3 == -1 )
-		{
-			if( res1 == -1 )
-				*res |= ( 1 << 0 );
-			if( res2 == -1 )
-				*res |= ( 1 << 1 );
-			if( res3 == -1 )
-				*res |= ( 1 << 2 );
-			break;
-		}
+        /* Return code which tells which conditions failed */
+        if( res1 == -1 || res2 == -1 || res3 == -1 )
+        {
+            if( res1 == -1 )
+                *res |= ( 1 << 0 );
+            if( res2 == -1 )
+                *res |= ( 1 << 1 );
+            if( res3 == -1 )
+                *res |= ( 1 << 2 );
+            break;
+        }
 
-		/* Build the next vectors and coefficients */
-		dotp( n, s, r, &beta[i] );
-		beta[i] = sqrt( fabs( beta[i] ) );
-		dotpdiv( n, s, r, beta[i], &gamma[i] );
+        /* Build the next vectors and coefficients */
+        dotp( n, s, r, &beta[i] );
+        beta[i] = sqrt( fabs( beta[i] ) );
+        dotpdiv( n, s, r, beta[i], &gamma[i] );
 
-		/* Copy new vectors into V and U, respectively */
-		copyvdiv( n, r, beta[i], qq );
-		copyvdiv( n, s, gamma[i], pp );
+        /* Copy new vectors into V and U, respectively */
+        copyvdiv( n, r, beta[i], qq );
+        copyvdiv( n, s, gamma[i], pp );
 
-		/* Save in the basis set if no breakdown occurs */
-                if( V != NULL )
-                        copy( n, qq, V + i * n );
-                if( U != NULL )
-                        copy( n, pp, U + i * n );
+        /* Save in the basis set if no breakdown occurs */
+        if( V != NULL )
+            copy( n, qq, V + i * n );
+        if( U != NULL )
+            copy( n, pp, U + i * n );
 
-		/* Step forward one */
-		++i;
+        /* Step forward one */
+        ++i;
 
-		/* Calculate the next diagonal term */
-		mdotp( n, A, pp, qq, &alpha[i] );
+        /* Calculate the next diagonal term */
+        mdotp( n, A, pp, qq, &alpha[i] );
 
-		/* Allocate more space for tx, tb if needed */
-		vchkrealloc( n, i, &talloc, tx, tb, V, U );
+        /* Allocate more space for tx, tb if needed */
+        vchkrealloc( n, i, &talloc, tx, tb, V, U );
 
-		/* Form the right-hand side of the projected tridiagonal problem */
-		for(j=1;j<i;j++)
-			tb[j] = 0.0;
+        /* Form the right-hand side of the projected tridiagonal problem */
+        for(j=1;j<i;j++)
+            tb[j] = 0.0;
 
-		/* Solve the tridiagonal system for an error estimate */
-		copy( n, tx, r0 ); /* Save old solution */
-		trlusv( i, alpha + 1, beta + 1, gamma + 1, tb, tx );
-		vnormdiff( i, r0, tx, &err );
-		if( err < tol )
-			break;
+        /* Solve the tridiagonal system for an error estimate */
+        copy( n, tx, r0 ); /* Save old solution */
+        trlusv( i, alpha + 1, beta + 1, gamma + 1, tb, tx );
+        vnormdiff( i, r0, tx, &err );
+        if( err < tol )
+            break;
 
-		if( vb )
-			fprintf( stderr, "%10d%15.7f\n", i, err );
+        if( vb )
+            fprintf( stderr, "%10d%15.7f\n", i, err );
 
-		/* Prepare vectors qq, pp for next round */
-		smmadd( n, 0, A, alpha[i], qq, q, -1.0 * gamma[i-1], r );
-		smmadd( n, 1, A, alpha[i], pp, p, -1.0 * beta[i-1], s );
-		copy( n, qq, q );
-		copy( n, pp, p );
-	}
-	*m = i;
+        /* Prepare vectors qq, pp for next round */
+        smmadd( n, 0, A, alpha[i], qq, q, -1.0 * gamma[i-1], r );
+        smmadd( n, 1, A, alpha[i], pp, p, -1.0 * beta[i-1], s );
+        copy( n, qq, q );
+        copy( n, pp, p );
+    }
+    *m = i;
 
-	if( vb )
-	{
-		fprintf( stderr, "-------------------------\n" );
-		fprintf( stderr, "Tolerance: %14.3e\n", tol );
-		fprintf( stderr, " Residual: %14.3e\n", err );
-	}
+    if( vb )
+    {
+        fprintf( stderr, "-------------------------\n" );
+        fprintf( stderr, "Tolerance: %14.3e\n", tol );
+        fprintf( stderr, " Residual: %14.3e\n", err );
+    }
 
-	/* Now put the solution back into the original vector space */
-	for(i=0;i<*m;i++)
-		for(j=0;j<n;j++)
-			x[j] += tx[i] * V[i*n+j];
+    /* Now put the solution back into the original vector space */
+    for(i=0;i<*m;i++)
+        for(j=0;j<n;j++)
+            x[j] += tx[i] * V[i*n+j];
 
-	free( r0 ); free( s0 ); free( tb ); free( tx ); free( tx ); free( tb );
-	free( V ); free( U ); free( q ); free( qq ); free( p ); free( pp );
+    free( r0 ); free( s0 ); free( tb ); free( tx ); free( tx ); free( tb );
+    free( V ); free( U ); free( q ); free( qq ); free( p ); free( pp );
 }
 
 /**
@@ -1969,97 +1969,97 @@ void gelzsv( int n, int *m, double *A, double *b, double *x, double *alpha, doub
  */
 void gulanczos( int n, int m, double *A, double *B, double *alpha, double *beta, double *gamma, double *r0, double *s0, double tol, int max, int vb, int *res )
 {
-	/* Must apply the inverse of B at each step!!! */
-	int i,j,res1,res2,res3;
-	double *q,*qq,*p,*pp,*r,*s,*t,*u,*v,*w;
+    /* Must apply the inverse of B at each step!!! */
+    int i,j,res1,res2,res3;
+    double *q,*qq,*p,*pp,*r,*s,*t,*u,*v,*w;
 
-	/* Allocate storage for iteration vector */
-	q = (double*) malloc( n * sizeof(double) );
-	qq = (double*) malloc( n * sizeof(double) );
-	p = (double*) malloc( n * sizeof(double) );
-	pp = (double*) malloc( n * sizeof(double) );
-	r = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
-	t = (double*) malloc( n * sizeof(double) );
-	w = (double*) malloc( n * sizeof(double) );
-	u = (double*) malloc( n * sizeof(double) );
-	v = (double*) malloc( n * sizeof(double) );
+    /* Allocate storage for iteration vector */
+    q = (double*) malloc( n * sizeof(double) );
+    qq = (double*) malloc( n * sizeof(double) );
+    p = (double*) malloc( n * sizeof(double) );
+    pp = (double*) malloc( n * sizeof(double) );
+    r = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
+    t = (double*) malloc( n * sizeof(double) );
+    w = (double*) malloc( n * sizeof(double) );
+    u = (double*) malloc( n * sizeof(double) );
+    v = (double*) malloc( n * sizeof(double) );
 
-	/* Generate an initially orthogonal pair of vectors in p, q */
-	zerov( n, q );
-	zerov( n, p );
-	if( r0 != NULL )
-		copy( n, r0, r );
-	else
-		nrandv( n, r );
-	if( s0 != NULL )
-		copy( n, s0, s );
-	else
-		nrandv( n, s );
+    /* Generate an initially orthogonal pair of vectors in p, q */
+    zerov( n, q );
+    zerov( n, p );
+    if( r0 != NULL )
+        copy( n, r0, r );
+    else
+        nrandv( n, r );
+    if( s0 != NULL )
+        copy( n, s0, s );
+    else
+        nrandv( n, s );
 
-	/* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
-	*res = 0;
-	for(i=0;i<m;)
-	{
-		/* Make sure that r, s do not vanish and are not orthogonal */
-		normchk( n, r, CGRAD_ZERO, &res1 );
-		normchk( n, s, CGRAD_ZERO, &res2 );
-		dotchk( n, r, s, CGRAD_ZERO, &res3 );
+    /* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
+    *res = 0;
+    for(i=0;i<m;)
+    {
+        /* Make sure that r, s do not vanish and are not orthogonal */
+        normchk( n, r, CGRAD_ZERO, &res1 );
+        normchk( n, s, CGRAD_ZERO, &res2 );
+        dotchk( n, r, s, CGRAD_ZERO, &res3 );
 
-		/* Return code which tells which conditions failed */
-		if( res1 == -1 || res2 == -1 || res3 == -1 )
-		{
-			if( res1 == -1 )
-				*res |= ( 1 << 0 );
-			if( res2 == -1 )
-				*res |= ( 1 << 1 );
-			if( res3 == -1 )
-				*res |= ( 1 << 2 );
-			break;
-		}
+        /* Return code which tells which conditions failed */
+        if( res1 == -1 || res2 == -1 || res3 == -1 )
+        {
+            if( res1 == -1 )
+                *res |= ( 1 << 0 );
+            if( res2 == -1 )
+                *res |= ( 1 << 1 );
+            if( res3 == -1 )
+                *res |= ( 1 << 2 );
+            break;
+        }
 
-		/* Build the next vectors and coefficients */
+        /* Build the next vectors and coefficients */
 #ifdef CGRAD_LANCZOS_NORM
-		norm( n, r, &beta[i] );
+        norm( n, r, &beta[i] );
 #else
-		dotp( n, s, r, &beta[i] );
-                beta[i] = sqrt( fabs( beta[i] ) );
+        dotp( n, s, r, &beta[i] );
+        beta[i] = sqrt( fabs( beta[i] ) );
 #endif
-		dotpdiv( n, s, r, beta[i], &gamma[i] );
-		copyvdiv( n, r, beta[i], qq );
-		copyvdiv( n, s, gamma[i], pp );
+        dotpdiv( n, s, r, beta[i], &gamma[i] );
+        copyvdiv( n, r, beta[i], qq );
+        copyvdiv( n, s, gamma[i], pp );
 
-		/* Step forward one */
-		++i;
+        /* Step forward one */
+        ++i;
 
-		/* Everything changes here because we need to multiply by the inverse of B */
-		dgemv( n, 0, A, qq, t );
-		bicgstab( n, 0, B, t, u, max, tol, vb, &res1 ); /* Vector uk is in r0 */
-		bicgstab( n, 1, B, pp, w, max, tol, vb, &res2 ); /* Vector wk is in r0 */
-		dgemv( n, 1, A, w, v );
+        /* Everything changes here because we need to multiply by the inverse of B */
+        dgemv( n, 0, A, qq, t );
+        bicgstab( n, 0, B, t, u, max, tol, vb, &res1 ); /* Vector uk is in r0 */
+        bicgstab( n, 1, B, pp, w, max, tol, vb, &res2 ); /* Vector wk is in r0 */
+        dgemv( n, 1, A, w, v );
 
-		/* Now u, v are formed so calculate alpha[i], r[i], s[i] */
-		dotp( n, pp, u, &alpha[i] );
-		vsum( n, 1.0, u, -1.0 * alpha[i], qq, r );
-		vsum( n, 1.0, r, -1.0 * gamma[i-1], q, r );
-		vsum( n, 1.0, v, -1.0 * alpha[i], pp, s );
-		vsum( n, 1.0, s, -1.0 * beta[i-1], p, s );
-		copy( n, qq, q );
-		copy( n, pp, p );
-	}
+        /* Now u, v are formed so calculate alpha[i], r[i], s[i] */
+        dotp( n, pp, u, &alpha[i] );
+        vsum( n, 1.0, u, -1.0 * alpha[i], qq, r );
+        vsum( n, 1.0, r, -1.0 * gamma[i-1], q, r );
+        vsum( n, 1.0, v, -1.0 * alpha[i], pp, s );
+        vsum( n, 1.0, s, -1.0 * beta[i-1], p, s );
+        copy( n, qq, q );
+        copy( n, pp, p );
+    }
 
-	free( q ); free( qq ); free( p ); free( pp ); free( r ); free( s );
-	free( t ); free( w ); free( u ); free( v );
+    free( q ); free( qq ); free( p ); free( pp ); free( r ); free( s );
+    free( t ); free( w ); free( u ); free( v );
 }
 
 void subdchk( int n, double *l, double *d, double *u, int *ret )
 {
-	int i;
+    int i;
 
-	*ret = 0;
-	for(i=0;i<n-1;i++)
-		if( fabs( l[i] ) > CGRAD_ZERO && fabs( l[i+1] ) > CGRAD_ZERO )
-			*ret = 1;
+    *ret = 0;
+    for(i=0;i<n-1;i++)
+        if( fabs( l[i] ) > CGRAD_ZERO && fabs( l[i+1] ) > CGRAD_ZERO )
+            *ret = 1;
 }
 
 /**
@@ -2086,99 +2086,99 @@ void subdchk( int n, double *l, double *d, double *u, int *ret )
  */
 void sgulanczos( int n, int m, long *ia, long *ja, double *A, long *ib, long* jb, double *B, double *alpha, double *beta, double *gamma, double *r0, double *s0, double tol, int max, int vb, int *res )
 {
-	/* Must apply the inverse of B at each step!!! */
-	int i,j,res1,res2,res3;
-	long *iat,*jat,*ibt,*jbt;
-	double *q,*qq,*p,*pp,*r,*s,*t,*u,*v,*w,*At,*Bt;
+    /* Must apply the inverse of B at each step!!! */
+    int i,j,res1,res2,res3;
+    long *iat,*jat,*ibt,*jbt;
+    double *q,*qq,*p,*pp,*r,*s,*t,*u,*v,*w,*At,*Bt;
 
-	/* Allocate storage for iteration vector */
-	q = (double*) malloc( n * sizeof(double) );
-	qq = (double*) malloc( n * sizeof(double) );
-	p = (double*) malloc( n * sizeof(double) );
-	pp = (double*) malloc( n * sizeof(double) );
-	r = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
-	t = (double*) malloc( n * sizeof(double) );
-	w = (double*) malloc( n * sizeof(double) );
-	u = (double*) malloc( n * sizeof(double) );
-	v = (double*) malloc( n * sizeof(double) );
+    /* Allocate storage for iteration vector */
+    q = (double*) malloc( n * sizeof(double) );
+    qq = (double*) malloc( n * sizeof(double) );
+    p = (double*) malloc( n * sizeof(double) );
+    pp = (double*) malloc( n * sizeof(double) );
+    r = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
+    t = (double*) malloc( n * sizeof(double) );
+    w = (double*) malloc( n * sizeof(double) );
+    u = (double*) malloc( n * sizeof(double) );
+    v = (double*) malloc( n * sizeof(double) );
 
-	/* Generate an initially orthogonal pair of vectors in p, q */
-	zerov( n, q );
-	zerov( n, p );
-	if( r0 != NULL )
-		copy( n, r0, r );
-	else
-		nrandv( n, r );
-	if( s0 != NULL )
-		copy( n, s0, s );
-	else
-		nrandv( n, s );
+    /* Generate an initially orthogonal pair of vectors in p, q */
+    zerov( n, q );
+    zerov( n, p );
+    if( r0 != NULL )
+        copy( n, r0, r );
+    else
+        nrandv( n, r );
+    if( s0 != NULL )
+        copy( n, s0, s );
+    else
+        nrandv( n, s );
 
-	/* Transposes of the A and B matrices */
-	iat = (long*) malloc( ( n + 1 ) * sizeof(long) );
-	jat = (long*) malloc( ia[n] * sizeof(long) );
-	At = (double*) malloc( ia[n] * sizeof(double) );
-	ibt = (long*) malloc( ( n + 1 ) * sizeof(long) );
-	jbt = (long*) malloc( ib[n] * sizeof(long) );
-	Bt = (double*) malloc( ib[n] * sizeof(double) );
-	stransp( 1, (long) n, (long) n, ia, ja, A, iat, jat, At ); /* There must be a way to get rid of this */
-	stransp( 1, (long) n, (long) n, ib, jb, B, ibt, jbt, Bt ); /* At least should not have to store the actual entries */
+    /* Transposes of the A and B matrices */
+    iat = (long*) malloc( ( n + 1 ) * sizeof(long) );
+    jat = (long*) malloc( ia[n] * sizeof(long) );
+    At = (double*) malloc( ia[n] * sizeof(double) );
+    ibt = (long*) malloc( ( n + 1 ) * sizeof(long) );
+    jbt = (long*) malloc( ib[n] * sizeof(long) );
+    Bt = (double*) malloc( ib[n] * sizeof(double) );
+    stransp( 1, (long) n, (long) n, ia, ja, A, iat, jat, At ); /* There must be a way to get rid of this */
+    stransp( 1, (long) n, (long) n, ib, jb, B, ibt, jbt, Bt ); /* At least should not have to store the actual entries */
 
-	/* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
-	*res = 0;
-	for(i=0;i<m;)
-	{
-		/* Make sure that r, s do not vanish and are not orthogonal */
-		normchk( n, r, CGRAD_ZERO, &res1 );
-		normchk( n, s, CGRAD_ZERO, &res2 );
-		dotchk( n, r, s, CGRAD_ZERO, &res3 );
+    /* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
+    *res = 0;
+    for(i=0;i<m;)
+    {
+        /* Make sure that r, s do not vanish and are not orthogonal */
+        normchk( n, r, CGRAD_ZERO, &res1 );
+        normchk( n, s, CGRAD_ZERO, &res2 );
+        dotchk( n, r, s, CGRAD_ZERO, &res3 );
 
-		/* Return code which tells which conditions failed */
-		if( res1 == -1 || res2 == -1 || res3 == -1 )
-		{
-			if( res1 == -1 )
-				*res |= ( 1 << 0 );
-			if( res2 == -1 )
-				*res |= ( 1 << 1 );
-			if( res3 == -1 )
-				*res |= ( 1 << 2 );
-			break;
-		}
+        /* Return code which tells which conditions failed */
+        if( res1 == -1 || res2 == -1 || res3 == -1 )
+        {
+            if( res1 == -1 )
+                *res |= ( 1 << 0 );
+            if( res2 == -1 )
+                *res |= ( 1 << 1 );
+            if( res3 == -1 )
+                *res |= ( 1 << 2 );
+            break;
+        }
 
-		/* Build the next vectors and coefficients */
+        /* Build the next vectors and coefficients */
 #ifdef CGRAD_LANCZOS_NORM
-		norm( n, r, &beta[i] );
+        norm( n, r, &beta[i] );
 #else
-		dotp( n, s, r, &beta[i] );
-                beta[i] = sqrt( fabs( beta[i] ) );
+        dotp( n, s, r, &beta[i] );
+        beta[i] = sqrt( fabs( beta[i] ) );
 #endif
-		dotpdiv( n, s, r, beta[i], &gamma[i] );
-		copyvdiv( n, r, beta[i], qq );
-		copyvdiv( n, s, gamma[i], pp );
+        dotpdiv( n, s, r, beta[i], &gamma[i] );
+        copyvdiv( n, r, beta[i], qq );
+        copyvdiv( n, s, gamma[i], pp );
 
-		/* Step forward one */
-		++i;
+        /* Step forward one */
+        ++i;
 
-		/* Everything changes here because we need to multiply by the inverse of B */
-		sdgemv( n, n, ia, ja, A, 1, qq, 1, t );
-		sbicgstab( n, ib, jb, B, t, u, max, tol, vb, &res1 ); /* Vector uk is in r0 */
-		sbicgstab( n, ibt, jbt, Bt, pp, w, max, tol, vb, &res2 ); /* Vector wk is in r0 */
-		sdgemv( n, n, iat, jat, At, 1, w, 1, v );
+        /* Everything changes here because we need to multiply by the inverse of B */
+        sdgemv( n, n, ia, ja, A, 1, qq, 1, t );
+        sbicgstab( n, ib, jb, B, t, u, max, tol, vb, &res1 ); /* Vector uk is in r0 */
+        sbicgstab( n, ibt, jbt, Bt, pp, w, max, tol, vb, &res2 ); /* Vector wk is in r0 */
+        sdgemv( n, n, iat, jat, At, 1, w, 1, v );
 
-		/* Now u, v are formed so calculate alpha[i], r[i], s[i] */
-		dotp( n, pp, u, &alpha[i] );
-		vsum( n, 1.0, u, -1.0 * alpha[i], qq, r );
-		vsum( n, 1.0, r, -1.0 * gamma[i-1], q, r );
-		vsum( n, 1.0, v, -1.0 * alpha[i], pp, s );
-		vsum( n, 1.0, s, -1.0 * beta[i-1], p, s );
-		copy( n, qq, q );
-		copy( n, pp, p );
-	}
+        /* Now u, v are formed so calculate alpha[i], r[i], s[i] */
+        dotp( n, pp, u, &alpha[i] );
+        vsum( n, 1.0, u, -1.0 * alpha[i], qq, r );
+        vsum( n, 1.0, r, -1.0 * gamma[i-1], q, r );
+        vsum( n, 1.0, v, -1.0 * alpha[i], pp, s );
+        vsum( n, 1.0, s, -1.0 * beta[i-1], p, s );
+        copy( n, qq, q );
+        copy( n, pp, p );
+    }
 
-	free( q ); free( qq ); free( p ); free( pp ); free( r ); free( s );
-	free( t ); free( w ); free( u ); free( v );
-	free( iat ); free( jat ); free( At ); free( ibt ); free( jbt ); free( Bt );
+    free( q ); free( qq ); free( p ); free( pp ); free( r ); free( s );
+    free( t ); free( w ); free( u ); free( v );
+    free( iat ); free( jat ); free( At ); free( ibt ); free( jbt ); free( Bt );
 }
 
 /**
@@ -2186,35 +2186,35 @@ void sgulanczos( int n, int m, long *ia, long *ja, double *A, long *ib, long* jb
  */
 void sslanczos( int n, int m, long *ia, long *ja, double *A, double *alpha, double *beta, double *r0, double tol, int vb, int *res )
 {
-	int i,j,ret;
-	double *v,*vv,*w;
+    int i,j,ret;
+    double *v,*vv,*w;
 
-	/* Allocate everything */
-	v = (double*) malloc( n * sizeof(double) );
-	vv = (double*) malloc( n * sizeof(double) );
-	w = (double*) malloc( n * sizeof(double) );
+    /* Allocate everything */
+    v = (double*) malloc( n * sizeof(double) );
+    vv = (double*) malloc( n * sizeof(double) );
+    w = (double*) malloc( n * sizeof(double) );
 
-	/* Generate an initial vector in v */
-        zerov( n, vv );
-        if( r0 != NULL )
-                copy( n, r0, v );
-        else
-                nrandv( n, v );
-	beta[0] = 0.0;
+    /* Generate an initial vector in v */
+    zerov( n, vv );
+    if( r0 != NULL )
+        copy( n, r0, v );
+    else
+        nrandv( n, v );
+    beta[0] = 0.0;
 
-	/* Start iteration */
-	for(i=0;i<m;i++)
-	{
-		ssdgemv( (long) n, ia, ja, A, 1, v, 1, w );
-		dotp( n, w, v, &alpha[i] );
-		for(j=0;j<n;j++)
-			w[j] = w[j] - alpha[i] * v[j] - beta[i] * vv[j];
-		norm( n, w, &beta[i+1] );
-		copy( n, v, vv );
-		copyvdiv( n, w, beta[i+1], v );
-	}
+    /* Start iteration */
+    for(i=0;i<m;i++)
+    {
+        ssdgemv( (long) n, ia, ja, A, 1, v, 1, w );
+        dotp( n, w, v, &alpha[i] );
+        for(j=0;j<n;j++)
+            w[j] = w[j] - alpha[i] * v[j] - beta[i] * vv[j];
+        norm( n, w, &beta[i+1] );
+        copy( n, v, vv );
+        copyvdiv( n, w, beta[i+1], v );
+    }
 
-	free( v ); free( vv ); free( w );
+    free( v ); free( vv ); free( w );
 }
 
 /**
@@ -2241,57 +2241,57 @@ void sslanczos( int n, int m, long *ia, long *ja, double *A, double *alpha, doub
  */
 void sgsilanczos( int n, int m, long *ia, long *ja, double *A, long *ib, long* jb, double *B, double *alpha, double *beta, double *omega, double *r0, double tol, int max, int vb, int *res )
 {
-	int i,ret;
-	double *w,*q,*s,*qq,tau;
+    int i,ret;
+    double *w,*q,*s,*qq,tau;
 
-	/* Allocate stuff */
-	w = (double*) malloc( n * sizeof(double) );
-	q = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
-	qq = (double*) malloc( n * sizeof(double) );
+    /* Allocate stuff */
+    w = (double*) malloc( n * sizeof(double) );
+    q = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
+    qq = (double*) malloc( n * sizeof(double) );
 
-	/* If input start vector given, use it; otherwise generate random one */
-	if( r0 != NULL )
-		copy( n, r0, q );
-	else
-		nrandv( n, q );
+    /* If input start vector given, use it; otherwise generate random one */
+    if( r0 != NULL )
+        copy( n, r0, q );
+    else
+        nrandv( n, q );
 
-	/* Multiply the initial vector */
-	ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
-	dotp( n, q, w, &omega[0] );
+    /* Multiply the initial vector */
+    ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
+    dotp( n, q, w, &omega[0] );
 
-	/* Start iteration */
-	for(i=0;i<m;i++)
-	{
-		/* Solve Bs = w to get s = inv(B) * w */
-		scg( n, ib, jb, B, w, s, max, tol, vb, &ret );
+    /* Start iteration */
+    for(i=0;i<m;i++)
+    {
+        /* Solve Bs = w to get s = inv(B) * w */
+        scg( n, ib, jb, B, w, s, max, tol, vb, &ret );
 
-		/* Only conditionally calculate the first sum */
-		if( i > 0 )
-			vsum( n, 1.0, s, -beta[i] / omega[i-1], qq, s ); /* qq is the previous step's vector */
-		dotp( n, w, s, &alpha[i] );
-		vsum( n, 1.0, s, -alpha[i] / omega[i], q, s );
-		norm( n, s, &tau );
+        /* Only conditionally calculate the first sum */
+        if( i > 0 )
+            vsum( n, 1.0, s, -beta[i] / omega[i-1], qq, s ); /* qq is the previous step's vector */
+        dotp( n, w, s, &alpha[i] );
+        vsum( n, 1.0, s, -alpha[i] / omega[i], q, s );
+        norm( n, s, &tau );
 
-		/* Stop if tolerance is reached */
-		if( fabs( tau ) < tol )
-			break;
+        /* Stop if tolerance is reached */
+        if( fabs( tau ) < tol )
+            break;
 
-		/* Take the next step before jumping back to beginning of loop */
-		copy( n, q, qq );
-		copyvdiv( n, s, tau, q );
+        /* Take the next step before jumping back to beginning of loop */
+        copy( n, q, qq );
+        copyvdiv( n, s, tau, q );
 
-		/* Multiply again */
-		ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
-		dotp( n, w, q, &omega[i+1] );
+        /* Multiply again */
+        ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
+        dotp( n, w, q, &omega[i+1] );
 
-		/* Stop if omega vanishes */
-		if( fabs( omega[i+1] ) < tol )
-			break;
-		beta[i+1] = tau * omega[i+1];
-	}
+        /* Stop if omega vanishes */
+        if( fabs( omega[i+1] ) < tol )
+            break;
+        beta[i+1] = tau * omega[i+1];
+    }
 
-	free( w ); free( q ); free( s ); free( qq );
+    free( w ); free( q ); free( s ); free( qq );
 }
 
 /**
@@ -2330,85 +2330,85 @@ void treigtridqds( int, double *, double *, double *, int, double *, int *, int 
  */
 void sgsilanczosc( int n, int m, int neig, long *ia, long *ja, double *A, long *ib, long* jb, double *B, double *alpha, double *beta, double *omega, double *r0, double *ev, int *mo, double tol, int max, int vb, int *res )
 {
-	int i,j,ns,ret;
-	double *w,*q,*s,*qq,*fv,tau,r,t;
-	double *talpha,*tbeta,*tgamma;
+    int i,j,ns,ret;
+    double *w,*q,*s,*qq,*fv,tau,r,t;
+    double *talpha,*tbeta,*tgamma;
 
-	/* Allocate stuff */
-	w = (double*) malloc( n * sizeof(double) );
-	q = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
-	qq = (double*) malloc( n * sizeof(double) );
-	fv = (double*) malloc( 2 * ( m + 2 ) * sizeof(double) );
-	talpha = (double*) malloc( ( m + 2 ) * sizeof(double) );
-	tbeta = (double*) malloc( ( m + 2 ) * sizeof(double) );
-	tgamma = (double*) malloc( ( m + 2 ) * sizeof(double) );
+    /* Allocate stuff */
+    w = (double*) malloc( n * sizeof(double) );
+    q = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
+    qq = (double*) malloc( n * sizeof(double) );
+    fv = (double*) malloc( 2 * ( m + 2 ) * sizeof(double) );
+    talpha = (double*) malloc( ( m + 2 ) * sizeof(double) );
+    tbeta = (double*) malloc( ( m + 2 ) * sizeof(double) );
+    tgamma = (double*) malloc( ( m + 2 ) * sizeof(double) );
 
-	/* If input start vector given, use it; otherwise generate random one */
-	if( r0 != NULL )
-		copy( n, r0, q );
-	else
-		nrandv( n, q );
+    /* If input start vector given, use it; otherwise generate random one */
+    if( r0 != NULL )
+        copy( n, r0, q );
+    else
+        nrandv( n, q );
 
-	/* Multiply the initial vector */
-	ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
-	dotp( n, q, w, &omega[0] );
+    /* Multiply the initial vector */
+    ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
+    dotp( n, q, w, &omega[0] );
 
-	/* Start iteration */
-	for(i=0;i<m;i++)
-	{
-		/* Solve Bs = w to get s = inv(B) * w */
-		scg( n, ib, jb, B, w, s, max, tol, vb, &ret );
+    /* Start iteration */
+    for(i=0;i<m;i++)
+    {
+        /* Solve Bs = w to get s = inv(B) * w */
+        scg( n, ib, jb, B, w, s, max, tol, vb, &ret );
 
-		/* Only conditionally calculate the first sum */
-		if( i > 0 )
-			vsum( n, 1.0, s, -beta[i] / omega[i-1], qq, s ); /* qq is the previous step's vector */
-		dotp( n, w, s, &alpha[i] );
-		vsum( n, 1.0, s, -alpha[i] / omega[i], q, s );
-		norm( n, s, &tau );
+        /* Only conditionally calculate the first sum */
+        if( i > 0 )
+            vsum( n, 1.0, s, -beta[i] / omega[i-1], qq, s ); /* qq is the previous step's vector */
+        dotp( n, w, s, &alpha[i] );
+        vsum( n, 1.0, s, -alpha[i] / omega[i], q, s );
+        norm( n, s, &tau );
 
-		/* Stop if tolerance is reached */
-		if( fabs( tau ) < tol )
-			break;
+        /* Stop if tolerance is reached */
+        if( fabs( tau ) < tol )
+            break;
 
-		/* Take the next step before jumping back to beginning of loop */
-		copy( n, q, qq );
-		copyvdiv( n, s, tau, q );
+        /* Take the next step before jumping back to beginning of loop */
+        copy( n, q, qq );
+        copyvdiv( n, s, tau, q );
 
-		/* Multiply again */
-		ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
-		dotp( n, w, q, &omega[i+1] );
+        /* Multiply again */
+        ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
+        dotp( n, w, q, &omega[i+1] );
 
-		/* Stop if omega vanishes */
-		if( fabs( omega[i+1] ) < tol )
-			break;
-		beta[i+1] = tau * omega[i+1];
+        /* Stop if omega vanishes */
+        if( fabs( omega[i+1] ) < tol )
+            break;
+        beta[i+1] = tau * omega[i+1];
 
-		/* Do a convergence test */
-		if( ( i + 1 ) >= neig )
-		{
-			/* Generate the right matrix */
-			copy( ( i + 1 ) + 2, alpha, talpha );
-			copy( ( i + 1 ) + 2, beta, tbeta );
-			copy( ( i + 1 ) + 2, tbeta, tgamma );
-			for(j=0;j<(i+1)-1;j++)
-				talpha[j] /= omega[j], tbeta[j+1] /= omega[j], tgamma[j+1] /= omega[j+1];
-			talpha[(i+1)-1] /= omega[(i+1)-1];
+        /* Do a convergence test */
+        if( ( i + 1 ) >= neig )
+        {
+            /* Generate the right matrix */
+            copy( ( i + 1 ) + 2, alpha, talpha );
+            copy( ( i + 1 ) + 2, beta, tbeta );
+            copy( ( i + 1 ) + 2, tbeta, tgamma );
+            for(j=0;j<(i+1)-1;j++)
+                talpha[j] /= omega[j], tbeta[j+1] /= omega[j], tgamma[j+1] /= omega[j+1];
+            talpha[(i+1)-1] /= omega[(i+1)-1];
 
-			/* Save previous results and update */
-			copy( 2 * ( i + 1 ), ev, fv );
-			treiglr( i + 1, talpha, tbeta + 1, tgamma + 1, 10000, ev, &ret, &ns );
-			inverse_complex_bubble_sort( i + 1, ev );
+            /* Save previous results and update */
+            copy( 2 * ( i + 1 ), ev, fv );
+            treiglr( i + 1, talpha, tbeta + 1, tgamma + 1, 10000, ev, &ret, &ns );
+            inverse_complex_bubble_sort( i + 1, ev );
 
-			/* Compare current to previous eigenvalues of interest */
-			vnormdiff( 2 * neig, ev, fv, &r );
-			t = 0.0; /* FIXME: Left off here; need to calculate change relative to magnitude of the eigenvalues, not absolute */
-		}
-	}
-	*mo = i;
+            /* Compare current to previous eigenvalues of interest */
+            vnormdiff( 2 * neig, ev, fv, &r );
+            t = 0.0; /* FIXME: Left off here; need to calculate change relative to magnitude of the eigenvalues, not absolute */
+        }
+    }
+    *mo = i;
 
-	free( w ); free( q ); free( s ); free( qq ); free( fv );
-	free( talpha ); free( tbeta ); free( tgamma );
+    free( w ); free( q ); free( s ); free( qq ); free( fv );
+    free( talpha ); free( tbeta ); free( tgamma );
 }
 
 /**
@@ -2437,104 +2437,104 @@ void sgsilanczosc( int n, int m, int neig, long *ia, long *ja, double *A, long *
  */
 void sgsilanczoscr( int n, int m, int neig, long *ia, long *ja, double *A, long *ib, long* jb, double *B, double *alpha, double *beta, double *omega, double *r0, double *ev, double *Q, int *mo, double tol, double *fr, int max, int vb, int *res )
 {
-	int i,j,ns,ret;
-	double *w,*q,*s,*qq,*rr,*fv,tau,r,t;
-	double *talpha,*tbeta,*tgamma;
-	double a,b;
+    int i,j,ns,ret;
+    double *w,*q,*s,*qq,*rr,*fv,tau,r,t;
+    double *talpha,*tbeta,*tgamma;
+    double a,b;
 
-	/* Allocate stuff */
-	w = (double*) malloc( n * sizeof(double) );
-	q = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
-	qq = (double*) malloc( n * sizeof(double) );
-	rr = (double*) malloc( n * sizeof(double) );
-	fv = (double*) malloc( 2 * ( m + 2 ) * sizeof(double) );
-	talpha = (double*) malloc( ( m + 2 ) * sizeof(double) );
-	tbeta = (double*) malloc( ( m + 2 ) * sizeof(double) );
-	tgamma = (double*) malloc( ( m + 2 ) * sizeof(double) );
+    /* Allocate stuff */
+    w = (double*) malloc( n * sizeof(double) );
+    q = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
+    qq = (double*) malloc( n * sizeof(double) );
+    rr = (double*) malloc( n * sizeof(double) );
+    fv = (double*) malloc( 2 * ( m + 2 ) * sizeof(double) );
+    talpha = (double*) malloc( ( m + 2 ) * sizeof(double) );
+    tbeta = (double*) malloc( ( m + 2 ) * sizeof(double) );
+    tgamma = (double*) malloc( ( m + 2 ) * sizeof(double) );
 
-	/* If input start vector given, use it; otherwise generate random one */
-	if( r0 != NULL )
-		copy( n, r0, q );
-	else
-		nrandv( n, q );
+    /* If input start vector given, use it; otherwise generate random one */
+    if( r0 != NULL )
+        copy( n, r0, q );
+    else
+        nrandv( n, q );
 
-	/* Multiply the initial vector */
-	copy( n, q, Q );
-	ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
-	dotp( n, q, w, &omega[0] );
+    /* Multiply the initial vector */
+    copy( n, q, Q );
+    ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
+    dotp( n, q, w, &omega[0] );
 
-	/* Start iteration */
-	for(i=0;i<m;i++)
-	{
-		/* Solve Bs = w to get s = inv(B) * w */
-		scg( n, ib, jb, B, w, s, max, tol, vb, &ret );
+    /* Start iteration */
+    for(i=0;i<m;i++)
+    {
+        /* Solve Bs = w to get s = inv(B) * w */
+        scg( n, ib, jb, B, w, s, max, tol, vb, &ret );
 
-		/* Only conditionally calculate the first sum */
-		if( i > 0 )
-			vsum( n, 1.0, s, -beta[i] / omega[i-1], qq, s ); /* qq is the previous step's vector */
-		dotp( n, w, s, &alpha[i] );
-		vsum( n, 1.0, s, -alpha[i] / omega[i], q, s );
-		norm( n, s, &tau );
+        /* Only conditionally calculate the first sum */
+        if( i > 0 )
+            vsum( n, 1.0, s, -beta[i] / omega[i-1], qq, s ); /* qq is the previous step's vector */
+        dotp( n, w, s, &alpha[i] );
+        vsum( n, 1.0, s, -alpha[i] / omega[i], q, s );
+        norm( n, s, &tau );
 
-		/* Stop if tolerance is reached */
-		if( fabs( tau ) < tol )
-			break;
+        /* Stop if tolerance is reached */
+        if( fabs( tau ) < tol )
+            break;
 
-		/* Take the next step before jumping back to beginning of loop */
-		copy( n, q, qq );
-		copyvdiv( n, s, tau, q );
+        /* Take the next step before jumping back to beginning of loop */
+        copy( n, q, qq );
+        copyvdiv( n, s, tau, q );
 
-		/* Do projection to restore orthogonality */
-		for(j=0;j<i+1;j++)
-		{
-			ssdgemv( (long) n, ia, ja, A, 1, &Q[j*n], 1, rr );
-			dotp( n, q, rr, &a );
-			dotp( n, &Q[j*n], rr, &b );
-			vsum( n, 1.0, q, -a / b, &Q[j*n], q );
-		}
-		copy( n, q, &Q[(i+1)*n] );
+        /* Do projection to restore orthogonality */
+        for(j=0;j<i+1;j++)
+        {
+            ssdgemv( (long) n, ia, ja, A, 1, &Q[j*n], 1, rr );
+            dotp( n, q, rr, &a );
+            dotp( n, &Q[j*n], rr, &b );
+            vsum( n, 1.0, q, -a / b, &Q[j*n], q );
+        }
+        copy( n, q, &Q[(i+1)*n] );
 
-		/* Multiply again */
-		ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
-		dotp( n, w, q, &omega[i+1] );
+        /* Multiply again */
+        ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
+        dotp( n, w, q, &omega[i+1] );
 
-		/* Stop if omega vanishes */
-		if( fabs( omega[i+1] ) < tol )
-			break;
-		beta[i+1] = tau * omega[i+1];
+        /* Stop if omega vanishes */
+        if( fabs( omega[i+1] ) < tol )
+            break;
+        beta[i+1] = tau * omega[i+1];
 
-		/* Do a convergence test */
-		if( ( i + 1 ) >= neig )
-		{
-			/* Generate the right matrix */
-			copy( ( i + 1 ) + 2, alpha, talpha );
-			copy( ( i + 1 ) + 2, beta, tbeta );
-			copy( ( i + 1 ) + 2, tbeta, tgamma );
-			for(j=0;j<(i+1)-1;j++)
-				talpha[j] /= omega[j], tbeta[j+1] /= omega[j], tgamma[j+1] /= omega[j+1];
-			talpha[(i+1)-1] /= omega[(i+1)-1];
+        /* Do a convergence test */
+        if( ( i + 1 ) >= neig )
+        {
+            /* Generate the right matrix */
+            copy( ( i + 1 ) + 2, alpha, talpha );
+            copy( ( i + 1 ) + 2, beta, tbeta );
+            copy( ( i + 1 ) + 2, tbeta, tgamma );
+            for(j=0;j<(i+1)-1;j++)
+                talpha[j] /= omega[j], tbeta[j+1] /= omega[j], tgamma[j+1] /= omega[j+1];
+            talpha[(i+1)-1] /= omega[(i+1)-1];
 
-			/* Save previous results and update */
-			copy( 2 * ( i + 1 ), ev, fv );
-			treiglr( i + 1, talpha, tbeta + 1, tgamma + 1, 10000, ev, &ret, &ns );
-			inverse_complex_bubble_sort( i + 1, ev );
+            /* Save previous results and update */
+            copy( 2 * ( i + 1 ), ev, fv );
+            treiglr( i + 1, talpha, tbeta + 1, tgamma + 1, 10000, ev, &ret, &ns );
+            inverse_complex_bubble_sort( i + 1, ev );
 
-			/* Compare current to previous eigenvalues of interest */
-			vnormdiff( 2 * neig, ev, fv, &r );
-			if( vb )
-				fprintf( stderr, "%5d: EV Residual = %10.7e\n", i, r );
-			if( r < tol )
-			{
-				*fr = r;
-				break;
-			}
-		}
-	}
-	*mo = i;
+            /* Compare current to previous eigenvalues of interest */
+            vnormdiff( 2 * neig, ev, fv, &r );
+            if( vb )
+                fprintf( stderr, "%5d: EV Residual = %10.7e\n", i, r );
+            if( r < tol )
+            {
+                *fr = r;
+                break;
+            }
+        }
+    }
+    *mo = i;
 
-	free( w ); free( q ); free( s ); free( qq ); free( fv );
-	free( talpha ); free( tbeta ); free( tgamma );
+    free( w ); free( q ); free( s ); free( qq ); free( fv );
+    free( talpha ); free( tbeta ); free( tgamma );
 }
 
 /**
@@ -2542,59 +2542,59 @@ void sgsilanczoscr( int n, int m, int neig, long *ia, long *ja, double *A, long 
  */
 void csgsilanczos( int n, int m, long *ia, long *ja, double *A, long *ib, long* jb, double *B, double *alpha, double *beta, double *omega, double *r0, int nv, double *V, double tol, int max, int vb, int *res )
 {
-	int i,ret;
-	double *w,*q,*s,*qq,tau;
+    int i,ret;
+    double *w,*q,*s,*qq,tau;
 
-	/* Allocate stuff */
-	w = (double*) malloc( n * sizeof(double) );
-	q = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
-	qq = (double*) malloc( n * sizeof(double) );
+    /* Allocate stuff */
+    w = (double*) malloc( n * sizeof(double) );
+    q = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
+    qq = (double*) malloc( n * sizeof(double) );
 
-	/* If input start vector given, use it; otherwise generate random one */
-	if( r0 != NULL )
-		copy( n, r0, q );
-	else
-		nrandv( n, q );
+    /* If input start vector given, use it; otherwise generate random one */
+    if( r0 != NULL )
+        copy( n, r0, q );
+    else
+        nrandv( n, q );
 
-	/* Multiply the initial vector */
-	ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
-	dotp( n, q, w, &omega[0] );
+    /* Multiply the initial vector */
+    ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
+    dotp( n, q, w, &omega[0] );
 
-	/* Start iteration */
-	for(i=0;i<m;i++)
-	{
-		/* Solve Bs = w to get s = inv(B) * w */
-		scg( n, ib, jb, B, w, s, max, tol, vb, &ret );
+    /* Start iteration */
+    for(i=0;i<m;i++)
+    {
+        /* Solve Bs = w to get s = inv(B) * w */
+        scg( n, ib, jb, B, w, s, max, tol, vb, &ret );
 
-		/* Only conditionally calculate the first sum */
-		if( i > 0 )
-			vsum( n, 1.0, s, -beta[i] / omega[i-1], qq, s ); /* qq is the previous step's vector */
-		dotp( n, w, s, &alpha[i] );
-		vsum( n, 1.0, s, -alpha[i] / omega[i], q, s );
+        /* Only conditionally calculate the first sum */
+        if( i > 0 )
+            vsum( n, 1.0, s, -beta[i] / omega[i-1], qq, s ); /* qq is the previous step's vector */
+        dotp( n, w, s, &alpha[i] );
+        vsum( n, 1.0, s, -alpha[i] / omega[i], q, s );
 
-		/* Calculate the norm to get omega */
-		norm( n, s, &tau );
+        /* Calculate the norm to get omega */
+        norm( n, s, &tau );
 
-		/* Stop if tolerance is reached */
-		if( fabs( tau ) < tol )
-			break;
+        /* Stop if tolerance is reached */
+        if( fabs( tau ) < tol )
+            break;
 
-		/* Take the next step before jumping back to beginning of loop */
-		copy( n, q, qq );
-		copyvdiv( n, s, tau, q );
+        /* Take the next step before jumping back to beginning of loop */
+        copy( n, q, qq );
+        copyvdiv( n, s, tau, q );
 
-		/* Multiply again */
-		ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
-		dotp( n, w, q, &omega[i+1] );
+        /* Multiply again */
+        ssdgemv( (long) n, ia, ja, A, 1, q, 1, w );
+        dotp( n, w, q, &omega[i+1] );
 
-		/* Stop if omega vanishes */
-		if( fabs( omega[i+1] ) < tol )
-			break;
-		beta[i+1] = tau * omega[i+1];
-	}
+        /* Stop if omega vanishes */
+        if( fabs( omega[i+1] ) < tol )
+            break;
+        beta[i+1] = tau * omega[i+1];
+    }
 
-	free( w ); free( q ); free( s ); free( qq );
+    free( w ); free( q ); free( s ); free( qq );
 }
 
 /**
@@ -2625,109 +2625,109 @@ void csgsilanczos( int n, int m, long *ia, long *ja, double *A, long *ib, long* 
  */
 void csgulanczos( int n, int m, long *ia, long *ja, double *A, long *ib, long* jb, double *B, double *alpha, double *beta, double *gamma, double *r0, double *s0, int nv, double *V, double tol, int max, int vb, int *res )
 {
-	/* Must apply the inverse of B at each step!!! */
-	int i,j,res1,res2,res3;
-	long *iat,*jat,*ibt,*jbt;
-	double *q,*qq,*p,*pp,*r,*s,*t,*u,*v,*w,*At,*Bt;
+    /* Must apply the inverse of B at each step!!! */
+    int i,j,res1,res2,res3;
+    long *iat,*jat,*ibt,*jbt;
+    double *q,*qq,*p,*pp,*r,*s,*t,*u,*v,*w,*At,*Bt;
 
-	/* Allocate storage for iteration vector */
-	q = (double*) malloc( n * sizeof(double) );
-	qq = (double*) malloc( n * sizeof(double) );
-	p = (double*) malloc( n * sizeof(double) );
-	pp = (double*) malloc( n * sizeof(double) );
-	r = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
-	t = (double*) malloc( n * sizeof(double) );
-	w = (double*) malloc( n * sizeof(double) );
-	u = (double*) malloc( n * sizeof(double) );
-	v = (double*) malloc( n * sizeof(double) );
+    /* Allocate storage for iteration vector */
+    q = (double*) malloc( n * sizeof(double) );
+    qq = (double*) malloc( n * sizeof(double) );
+    p = (double*) malloc( n * sizeof(double) );
+    pp = (double*) malloc( n * sizeof(double) );
+    r = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
+    t = (double*) malloc( n * sizeof(double) );
+    w = (double*) malloc( n * sizeof(double) );
+    u = (double*) malloc( n * sizeof(double) );
+    v = (double*) malloc( n * sizeof(double) );
 
-	/* Generate an initially orthogonal pair of vectors in p, q */
-	zerov( n, q );
-	zerov( n, p );
-	if( r0 != NULL )
-		copy( n, r0, r );
-	else
-		nrandv( n, r );
-	if( s0 != NULL )
-		copy( n, s0, s );
-	else
-		nrandv( n, s );
-	project( n, r, nv, V );
-	project( n, s, nv, V );
-	normalize( n, r );
-	normalize( n, s );
+    /* Generate an initially orthogonal pair of vectors in p, q */
+    zerov( n, q );
+    zerov( n, p );
+    if( r0 != NULL )
+        copy( n, r0, r );
+    else
+        nrandv( n, r );
+    if( s0 != NULL )
+        copy( n, s0, s );
+    else
+        nrandv( n, s );
+    project( n, r, nv, V );
+    project( n, s, nv, V );
+    normalize( n, r );
+    normalize( n, s );
 
-	/* Transposes of the A and B matrices */
-	iat = (long*) malloc( ( n + 1 ) * sizeof(long) );
-	jat = (long*) malloc( ia[n] * sizeof(long) );
-	At = (double*) malloc( ia[n] * sizeof(double) );
-	ibt = (long*) malloc( ( n + 1 ) * sizeof(long) );
-	jbt = (long*) malloc( ib[n] * sizeof(long) );
-	Bt = (double*) malloc( ib[n] * sizeof(double) );
-	stransp( 1, (long) n, (long) n, ia, ja, A, iat, jat, At ); /* There must be a way to get rid of this */
-	stransp( 1, (long) n, (long) n, ib, jb, B, ibt, jbt, Bt ); /* At least should not have to store the actual entries */
+    /* Transposes of the A and B matrices */
+    iat = (long*) malloc( ( n + 1 ) * sizeof(long) );
+    jat = (long*) malloc( ia[n] * sizeof(long) );
+    At = (double*) malloc( ia[n] * sizeof(double) );
+    ibt = (long*) malloc( ( n + 1 ) * sizeof(long) );
+    jbt = (long*) malloc( ib[n] * sizeof(long) );
+    Bt = (double*) malloc( ib[n] * sizeof(double) );
+    stransp( 1, (long) n, (long) n, ia, ja, A, iat, jat, At ); /* There must be a way to get rid of this */
+    stransp( 1, (long) n, (long) n, ib, jb, B, ibt, jbt, Bt ); /* At least should not have to store the actual entries */
 
-	/* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
-	*res = 0;
-	for(i=0;i<m;)
-	{
-		/* Make sure that r, s do not vanish and are not orthogonal */
-		normchk( n, r, CGRAD_ZERO, &res1 );
-		normchk( n, s, CGRAD_ZERO, &res2 );
-		dotchk( n, r, s, CGRAD_ZERO, &res3 );
+    /* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
+    *res = 0;
+    for(i=0;i<m;)
+    {
+        /* Make sure that r, s do not vanish and are not orthogonal */
+        normchk( n, r, CGRAD_ZERO, &res1 );
+        normchk( n, s, CGRAD_ZERO, &res2 );
+        dotchk( n, r, s, CGRAD_ZERO, &res3 );
 
-		/* Return code which tells which conditions failed */
-		if( res1 == -1 || res2 == -1 || res3 == -1 )
-		{
-			if( res1 == -1 )
-				*res |= ( 1 << 0 );
-			if( res2 == -1 )
-				*res |= ( 1 << 1 );
-			if( res3 == -1 )
-				*res |= ( 1 << 2 );
-			break;
-		}
+        /* Return code which tells which conditions failed */
+        if( res1 == -1 || res2 == -1 || res3 == -1 )
+        {
+            if( res1 == -1 )
+                *res |= ( 1 << 0 );
+            if( res2 == -1 )
+                *res |= ( 1 << 1 );
+            if( res3 == -1 )
+                *res |= ( 1 << 2 );
+            break;
+        }
 
-		/* Build the next vectors and coefficients */
+        /* Build the next vectors and coefficients */
 #ifdef CGRAD_LANCZOS_NORM
-		norm( n, r, &beta[i] );
+        norm( n, r, &beta[i] );
 #else
-		dotp( n, s, r, &beta[i] );
-                beta[i] = sqrt( fabs( beta[i] ) );
+        dotp( n, s, r, &beta[i] );
+        beta[i] = sqrt( fabs( beta[i] ) );
 #endif
-		dotpdiv( n, s, r, beta[i], &gamma[i] );
-		copyvdiv( n, r, beta[i], qq );
-		copyvdiv( n, s, gamma[i], pp );
+        dotpdiv( n, s, r, beta[i], &gamma[i] );
+        copyvdiv( n, r, beta[i], qq );
+        copyvdiv( n, s, gamma[i], pp );
 
-		/* Step forward one */
-		++i;
+        /* Step forward one */
+        ++i;
 
-		/* Everything changes here because we need to multiply by the inverse of B */
-		sdgemv( n, n, ia, ja, A, 1, qq, 1, t );
-		sbicgstab( n, ib, jb, B, t, u, max, tol, vb, &res1 ); /* Vector uk is in r0 */
-		sbicgstab( n, ibt, jbt, Bt, pp, w, max, tol, vb, &res2 ); /* Vector wk is in r0 */
-		sdgemv( n, n, iat, jat, At, 1, w, 1, v );
+        /* Everything changes here because we need to multiply by the inverse of B */
+        sdgemv( n, n, ia, ja, A, 1, qq, 1, t );
+        sbicgstab( n, ib, jb, B, t, u, max, tol, vb, &res1 ); /* Vector uk is in r0 */
+        sbicgstab( n, ibt, jbt, Bt, pp, w, max, tol, vb, &res2 ); /* Vector wk is in r0 */
+        sdgemv( n, n, iat, jat, At, 1, w, 1, v );
 
-		/* Now u, v are formed so calculate alpha[i], r[i], s[i] */
-		dotp( n, pp, u, &alpha[i] );
-		vsum( n, 1.0, u, -1.0 * alpha[i], qq, r );
-		vsum( n, 1.0, r, -1.0 * gamma[i-1], q, r );
-		vsum( n, 1.0, v, -1.0 * alpha[i], pp, s );
-		vsum( n, 1.0, s, -1.0 * beta[i-1], p, s );
+        /* Now u, v are formed so calculate alpha[i], r[i], s[i] */
+        dotp( n, pp, u, &alpha[i] );
+        vsum( n, 1.0, u, -1.0 * alpha[i], qq, r );
+        vsum( n, 1.0, r, -1.0 * gamma[i-1], q, r );
+        vsum( n, 1.0, v, -1.0 * alpha[i], pp, s );
+        vsum( n, 1.0, s, -1.0 * beta[i-1], p, s );
 
-		/* Final projection */
-		project( n, r, nv, V ); /* Find a better way to do this */
-		project( n, s, nv, V );
+        /* Final projection */
+        project( n, r, nv, V ); /* Find a better way to do this */
+        project( n, s, nv, V );
 
-		/* Final copy */
-		copy( n, qq, q );
-		copy( n, pp, p );
-	}
+        /* Final copy */
+        copy( n, qq, q );
+        copy( n, pp, p );
+    }
 
-	free( q ); free( qq ); free( p ); free( pp ); free( r ); free( s );
-	free( t ); free( w ); free( u ); free( v );
-	free( iat ); free( jat ); free( At ); free( ibt ); free( jbt ); free( Bt );
+    free( q ); free( qq ); free( p ); free( pp ); free( r ); free( s );
+    free( t ); free( w ); free( u ); free( v );
+    free( iat ); free( jat ); free( At ); free( ibt ); free( jbt ); free( Bt );
 }
 
 /**
@@ -2758,109 +2758,109 @@ void csgulanczos( int n, int m, long *ia, long *ja, double *A, long *ib, long* j
  */
 void csgulanczoslp( int n, int m, long *ia, long *ja, double *A, long *ib, long* jb, double *B, double *alpha, double *beta, double *gamma, double *r0, double *s0, int nv, double *V, double tol, int max, int vb, int *res )
 {
-	/* Must apply the inverse of B at each step!!! */
-	int i,j,res1,res2,res3;
-	long *iat,*jat,*ibt,*jbt;
-	double *q,*qq,*p,*pp,*r,*s,*t,*u,*v,*w,*At,*Bt;
+    /* Must apply the inverse of B at each step!!! */
+    int i,j,res1,res2,res3;
+    long *iat,*jat,*ibt,*jbt;
+    double *q,*qq,*p,*pp,*r,*s,*t,*u,*v,*w,*At,*Bt;
 
-	/* Allocate storage for iteration vector */
-	q = (double*) malloc( n * sizeof(double) );
-	qq = (double*) malloc( n * sizeof(double) );
-	p = (double*) malloc( n * sizeof(double) );
-	pp = (double*) malloc( n * sizeof(double) );
-	r = (double*) malloc( n * sizeof(double) );
-	s = (double*) malloc( n * sizeof(double) );
-	t = (double*) malloc( n * sizeof(double) );
-	w = (double*) malloc( n * sizeof(double) );
-	u = (double*) malloc( n * sizeof(double) );
-	v = (double*) malloc( n * sizeof(double) );
+    /* Allocate storage for iteration vector */
+    q = (double*) malloc( n * sizeof(double) );
+    qq = (double*) malloc( n * sizeof(double) );
+    p = (double*) malloc( n * sizeof(double) );
+    pp = (double*) malloc( n * sizeof(double) );
+    r = (double*) malloc( n * sizeof(double) );
+    s = (double*) malloc( n * sizeof(double) );
+    t = (double*) malloc( n * sizeof(double) );
+    w = (double*) malloc( n * sizeof(double) );
+    u = (double*) malloc( n * sizeof(double) );
+    v = (double*) malloc( n * sizeof(double) );
 
-	/* Generate an initially orthogonal pair of vectors in p, q */
-	zerov( n, q );
-	zerov( n, p );
-	if( r0 != NULL )
-		copy( n, r0, r );
-	else
-		nrandv( n, r );
-	if( s0 != NULL )
-		copy( n, s0, s );
-	else
-		nrandv( n, s );
-	project( n, r, nv, V );
-	project( n, s, nv, V );
-	normalize( n, r );
-	normalize( n, s );
+    /* Generate an initially orthogonal pair of vectors in p, q */
+    zerov( n, q );
+    zerov( n, p );
+    if( r0 != NULL )
+        copy( n, r0, r );
+    else
+        nrandv( n, r );
+    if( s0 != NULL )
+        copy( n, s0, s );
+    else
+        nrandv( n, s );
+    project( n, r, nv, V );
+    project( n, s, nv, V );
+    normalize( n, r );
+    normalize( n, s );
 
-	/* Transposes of the A and B matrices */
-	iat = (long*) malloc( ( n + 1 ) * sizeof(long) );
-	jat = (long*) malloc( ia[n] * sizeof(long) );
-	At = (double*) malloc( ia[n] * sizeof(double) );
-	ibt = (long*) malloc( ( n + 1 ) * sizeof(long) );
-	jbt = (long*) malloc( ib[n] * sizeof(long) );
-	Bt = (double*) malloc( ib[n] * sizeof(double) );
-	stransp( 1, (long) n, (long) n, ia, ja, A, iat, jat, At ); /* There must be a way to get rid of this */
-	stransp( 1, (long) n, (long) n, ib, jb, B, ibt, jbt, Bt ); /* At least should not have to store the actual entries */
+    /* Transposes of the A and B matrices */
+    iat = (long*) malloc( ( n + 1 ) * sizeof(long) );
+    jat = (long*) malloc( ia[n] * sizeof(long) );
+    At = (double*) malloc( ia[n] * sizeof(double) );
+    ibt = (long*) malloc( ( n + 1 ) * sizeof(long) );
+    jbt = (long*) malloc( ib[n] * sizeof(long) );
+    Bt = (double*) malloc( ib[n] * sizeof(double) );
+    stransp( 1, (long) n, (long) n, ia, ja, A, iat, jat, At ); /* There must be a way to get rid of this */
+    stransp( 1, (long) n, (long) n, ib, jb, B, ibt, jbt, Bt ); /* At least should not have to store the actual entries */
 
-	/* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
-	*res = 0;
-	for(i=0;i<m;)
-	{
-		/* Make sure that r, s do not vanish and are not orthogonal */
-		normchk( n, r, CGRAD_ZERO, &res1 );
-		normchk( n, s, CGRAD_ZERO, &res2 );
-		dotchk( n, r, s, CGRAD_ZERO, &res3 );
+    /* Loop until residual vector r, s vanish or maximum basis size, m, is reached */
+    *res = 0;
+    for(i=0;i<m;)
+    {
+        /* Make sure that r, s do not vanish and are not orthogonal */
+        normchk( n, r, CGRAD_ZERO, &res1 );
+        normchk( n, s, CGRAD_ZERO, &res2 );
+        dotchk( n, r, s, CGRAD_ZERO, &res3 );
 
-		/* Return code which tells which conditions failed */
-		if( res1 == -1 || res2 == -1 || res3 == -1 )
-		{
-			if( res1 == -1 )
-				*res |= ( 1 << 0 );
-			if( res2 == -1 )
-				*res |= ( 1 << 1 );
-			if( res3 == -1 )
-				*res |= ( 1 << 2 );
-			break;
-		}
+        /* Return code which tells which conditions failed */
+        if( res1 == -1 || res2 == -1 || res3 == -1 )
+        {
+            if( res1 == -1 )
+                *res |= ( 1 << 0 );
+            if( res2 == -1 )
+                *res |= ( 1 << 1 );
+            if( res3 == -1 )
+                *res |= ( 1 << 2 );
+            break;
+        }
 
-		/* Build the next vectors and coefficients */
+        /* Build the next vectors and coefficients */
 #ifdef CGRAD_LANCZOS_NORM
-		norm( n, r, &beta[i] );
+        norm( n, r, &beta[i] );
 #else
-		dotp( n, s, r, &beta[i] );
-                beta[i] = sqrt( fabs( beta[i] ) );
+        dotp( n, s, r, &beta[i] );
+        beta[i] = sqrt( fabs( beta[i] ) );
 #endif
-		dotpdiv( n, s, r, beta[i], &gamma[i] );
-		copyvdiv( n, r, beta[i], qq );
-		copyvdiv( n, s, gamma[i], pp );
+        dotpdiv( n, s, r, beta[i], &gamma[i] );
+        copyvdiv( n, r, beta[i], qq );
+        copyvdiv( n, s, gamma[i], pp );
 
-		/* Step forward one */
-		++i;
+        /* Step forward one */
+        ++i;
 
-		/* Everything changes here because we need to multiply by the inverse of B */
-		sdgemv( n, n, ia, ja, A, 1, qq, 1, t );
-		lpsbicgstab( n, ib, jb, B, t, u, max, tol, vb, &res1 ); /* Vector uk is in r0 */
-		lpsbicgstab( n, ibt, jbt, Bt, pp, w, max, tol, vb, &res2 ); /* Vector wk is in r0 */
-		sdgemv( n, n, iat, jat, At, 1, w, 1, v );
+        /* Everything changes here because we need to multiply by the inverse of B */
+        sdgemv( n, n, ia, ja, A, 1, qq, 1, t );
+        lpsbicgstab( n, ib, jb, B, t, u, max, tol, vb, &res1 ); /* Vector uk is in r0 */
+        lpsbicgstab( n, ibt, jbt, Bt, pp, w, max, tol, vb, &res2 ); /* Vector wk is in r0 */
+        sdgemv( n, n, iat, jat, At, 1, w, 1, v );
 
-		/* Now u, v are formed so calculate alpha[i], r[i], s[i] */
-		dotp( n, pp, u, &alpha[i] );
-		vsum( n, 1.0, u, -1.0 * alpha[i], qq, r );
-		vsum( n, 1.0, r, -1.0 * gamma[i-1], q, r );
-		vsum( n, 1.0, v, -1.0 * alpha[i], pp, s );
-		vsum( n, 1.0, s, -1.0 * beta[i-1], p, s );
+        /* Now u, v are formed so calculate alpha[i], r[i], s[i] */
+        dotp( n, pp, u, &alpha[i] );
+        vsum( n, 1.0, u, -1.0 * alpha[i], qq, r );
+        vsum( n, 1.0, r, -1.0 * gamma[i-1], q, r );
+        vsum( n, 1.0, v, -1.0 * alpha[i], pp, s );
+        vsum( n, 1.0, s, -1.0 * beta[i-1], p, s );
 
-		/* Final projection */
-		project( n, r, nv, V ); /* Find a better way to do this */
-		project( n, s, nv, V );
+        /* Final projection */
+        project( n, r, nv, V ); /* Find a better way to do this */
+        project( n, s, nv, V );
 
-		/* Final copy */
-		copy( n, qq, q );
-		copy( n, pp, p );
-	}
+        /* Final copy */
+        copy( n, qq, q );
+        copy( n, pp, p );
+    }
 
-	free( q ); free( qq ); free( p ); free( pp ); free( r ); free( s );
-	free( t ); free( w ); free( u ); free( v );
-	free( iat ); free( jat ); free( At ); free( ibt ); free( jbt ); free( Bt );
+    free( q ); free( qq ); free( p ); free( pp ); free( r ); free( s );
+    free( t ); free( w ); free( u ); free( v );
+    free( iat ); free( jat ); free( At ); free( ibt ); free( jbt ); free( Bt );
 }
 
 /**
@@ -2875,24 +2875,24 @@ void csgulanczoslp( int n, int m, long *ia, long *ja, double *A, long *ib, long*
  */
 void trofrm( int n, double *alpha, double *beta, double *gamma, double *l, double *u )
 {
-	int i;
-	double *p;
+    int i;
+    double *p;
 
-	/* Allocate storage for diagonal similarity transformation */
-	p = (double*) malloc( n * sizeof(double) );
+    /* Allocate storage for diagonal similarity transformation */
+    p = (double*) malloc( n * sizeof(double) );
 
-	/* Form the entries of p */
-	p[0] = 1.0;
-	for(i=1;i<n;i++)
-		p[i] = p[i-1] * gamma[i-1];
+    /* Form the entries of p */
+    p[0] = 1.0;
+    for(i=1;i<n;i++)
+        p[i] = p[i-1] * gamma[i-1];
 
-	/* Form the entries of DAD**-1 */
-	for(i=0;i<n-1;i++)
-	{
-		l[i] = p[i+1] / p[i] * beta[i]; /* l[i] is entry DAD**-1(i+1,i) */
-		u[i] = alpha[i];
-	}
-	u[n-1] = alpha[n-1];
+    /* Form the entries of DAD**-1 */
+    for(i=0;i<n-1;i++)
+    {
+        l[i] = p[i+1] / p[i] * beta[i]; /* l[i] is entry DAD**-1(i+1,i) */
+        u[i] = alpha[i];
+    }
+    u[n-1] = alpha[n-1];
 }
 
 /**
@@ -2908,17 +2908,17 @@ void trofrm( int n, double *alpha, double *beta, double *gamma, double *l, doubl
  */
 void trlu( int n, double s, double *dd, double *ll, double *uu, double *d, double *l, double *u )
 {
-	int i;
+    int i;
 
-	/* Start LU factorization */
-	d[0] = dd[0] - s;
-	u[0] = uu[0];
-	for(i=1;i<n;i++)
-	{
-		l[i-1] = ll[i-1] / d[i-1];
-		d[i] = dd[i] - l[i-1] * uu[i-1] - s;
-		u[i] = uu[i]; /* This is redundant, of course */
-	}
+    /* Start LU factorization */
+    d[0] = dd[0] - s;
+    u[0] = uu[0];
+    for(i=1;i<n;i++)
+    {
+        l[i-1] = ll[i-1] / d[i-1];
+        d[i] = dd[i] - l[i-1] * uu[i-1] - s;
+        u[i] = uu[i]; /* This is redundant, of course */
+    }
 }
 
 /**
@@ -2934,15 +2934,15 @@ void trlu( int n, double s, double *dd, double *ll, double *uu, double *d, doubl
  */
 void trluof( int n, double s, double *dd, double *ll, double *d, double *l )
 {
-	int i;
+    int i;
 
-	/* Start LU factorization */
-        d[0] = dd[0] - s;
-        for(i=1;i<n;i++)
-        {
-                l[i-1] = ll[i-1] / d[i-1];
-                d[i] = dd[i] - l[i-1] - s;
-        }
+    /* Start LU factorization */
+    d[0] = dd[0] - s;
+    for(i=1;i<n;i++)
+    {
+        l[i-1] = ll[i-1] / d[i-1];
+        d[i] = dd[i] - l[i-1] - s;
+    }
 }
 
 /**
@@ -2958,16 +2958,16 @@ void trluof( int n, double s, double *dd, double *ll, double *d, double *l )
  */
 void trrm( int n, double s, double *d, double *l, double *u, double *dd, double *ll, double *uu )
 {
-	int i;
+    int i;
 
-	/* Now have the LU decomposition in l, d, u; do reverse multiply */
-	for(i=0;i<n-1;i++)
-	{
-		ll[i] = d[i+1] * l[i];
-		dd[i] = d[i] + u[i] * l[i] + s;
-		uu[i] = u[i]; /* This is redundant as well */
-	}
-	dd[n-1] = d[n-1] + s; /* Don't forget to do the last entry */
+    /* Now have the LU decomposition in l, d, u; do reverse multiply */
+    for(i=0;i<n-1;i++)
+    {
+        ll[i] = d[i+1] * l[i];
+        dd[i] = d[i] + u[i] * l[i] + s;
+        uu[i] = u[i]; /* This is redundant as well */
+    }
+    dd[n-1] = d[n-1] + s; /* Don't forget to do the last entry */
 }
 
 /**
@@ -2983,18 +2983,18 @@ void trrm( int n, double s, double *d, double *l, double *u, double *dd, double 
  */
 void tteig( double a, double b, double c, double d, double *re1, double *im1, double *re2, double *im2 )
 {
-	double tr,dt,ds;
+    double tr,dt,ds;
 
-	/* If subdiagonal entry i is non-zero then submatrix i on diagonal is conjugate pair */
-	tr = a + d;
-	dt = a * d - b * c;
-	ds = tr * tr - 4.0 * dt;
-	*re1 = tr / 2.0;
-	*re2 = *re1;
-	*im1 = sqrt( fabs( ds ) ) / 2.0;
-	*im2 = -(*im1);
-	if( ds > 0.0 )
-		*re1 = *re1 + *im1, *re2 = *re2 - *im1, *im1 = 0.0, *im2 = 0.0;
+    /* If subdiagonal entry i is non-zero then submatrix i on diagonal is conjugate pair */
+    tr = a + d;
+    dt = a * d - b * c;
+    ds = tr * tr - 4.0 * dt;
+    *re1 = tr / 2.0;
+    *re2 = *re1;
+    *im1 = sqrt( fabs( ds ) ) / 2.0;
+    *im2 = -(*im1);
+    if( ds > 0.0 )
+        *re1 = *re1 + *im1, *re2 = *re2 - *im1, *im1 = 0.0, *im2 = 0.0;
 }
 
 /**
@@ -3010,59 +3010,59 @@ void tteig( double a, double b, double c, double d, double *re1, double *im1, do
  */
 void treiglr( int n, double *alpha, double *beta, double *gamma, int max, double *ev, int *res, int *ns )
 {
-	int k,m,nn,ret;
-        double s,*d,*l,*u,*dd,*ll,*uu,tr,dt,ds,re1,re2,im1,im2;
+    int k,m,nn,ret;
+    double s,*d,*l,*u,*dd,*ll,*uu,tr,dt,ds,re1,re2,im1,im2;
 
-        /* Allocate temp storage for LU factorzation vectors; try to eliminate this by overwriting alpha, beta, gamma */
-        d = (double*) malloc( n * sizeof(double) );
-        l = (double*) malloc( n * sizeof(double) );
-        u = (double*) malloc( n * sizeof(double) );
-	dd = (double*) malloc( n * sizeof(double) );
-        ll = (double*) malloc( n * sizeof(double) );
-        uu = (double*) malloc( n * sizeof(double) );
+    /* Allocate temp storage for LU factorzation vectors; try to eliminate this by overwriting alpha, beta, gamma */
+    d = (double*) malloc( n * sizeof(double) );
+    l = (double*) malloc( n * sizeof(double) );
+    u = (double*) malloc( n * sizeof(double) );
+    dd = (double*) malloc( n * sizeof(double) );
+    ll = (double*) malloc( n * sizeof(double) );
+    uu = (double*) malloc( n * sizeof(double) );
 
-	copy( n, beta, ll );
-	copy( n, alpha, dd );
-	copy( n, gamma, uu );
-	ll[n-1] = 0.0;
-	uu[n-1] = 0.0;
+    copy( n, beta, ll );
+    copy( n, alpha, dd );
+    copy( n, gamma, uu );
+    ll[n-1] = 0.0;
+    uu[n-1] = 0.0;
 
-        /* Calculate the LU decomposition of the tridiagonal system in alpha, beta, gamma and form UL */
-	nn = n, k = 0;
-	for(m=0;m<max;m++)
-	{
-		/* Shift strategy of some sort */
-		s = dd[nn-1];
+    /* Calculate the LU decomposition of the tridiagonal system in alpha, beta, gamma and form UL */
+    nn = n, k = 0;
+    for(m=0;m<max;m++)
+    {
+        /* Shift strategy of some sort */
+        s = dd[nn-1];
 
-		/* Do LU factorization into l, d, u */
-		trlu( nn, s, dd, ll, uu, d, l, u );
+        /* Do LU factorization into l, d, u */
+        trlu( nn, s, dd, ll, uu, d, l, u );
 
-		/* Now have the LU decomposition in l, d, u; do reverse multiply into ll, dd, uu */
-		trrm( nn, s, d, l, u, dd, ll, uu );
+        /* Now have the LU decomposition in l, d, u; do reverse multiply into ll, dd, uu */
+        trrm( nn, s, d, l, u, dd, ll, uu );
 
-		/* Now check the lower righthand corner 2x2 block */
-                if( ( nn > 1 && iszero( ll[nn-2] ) ) || nn == 1 ) /* Check in this order */
-                {
-                        /* Then dd[nn-1] is an eigenvalue, so deflate by one */
-			ev[2*k+0] = dd[nn-1], ev[2*k+1] = 0.0, ++k;
-                        nn -= 1;
-                }
-                else if( ( nn > 2 && iszero( ll[nn-3] ) ) || nn == 2 ) /* Check in this order */
-                {
-                        tteig( dd[nn-2], uu[nn-2], ll[nn-2], dd[nn-1], &re1, &im1, &re2, &im2 );
-			ev[2*k+0] = re1, ev[2*k+1] = im1, ++k;
-			ev[2*k+0] = re2; ev[2*k+1] = im2, ++k;
-                        nn -= 2;
-                }
-                if( nn < 1 )
-                        break;
-	}
+        /* Now check the lower righthand corner 2x2 block */
+        if( ( nn > 1 && iszero( ll[nn-2] ) ) || nn == 1 ) /* Check in this order */
+        {
+            /* Then dd[nn-1] is an eigenvalue, so deflate by one */
+            ev[2*k+0] = dd[nn-1], ev[2*k+1] = 0.0, ++k;
+            nn -= 1;
+        }
+        else if( ( nn > 2 && iszero( ll[nn-3] ) ) || nn == 2 ) /* Check in this order */
+        {
+            tteig( dd[nn-2], uu[nn-2], ll[nn-2], dd[nn-1], &re1, &im1, &re2, &im2 );
+            ev[2*k+0] = re1, ev[2*k+1] = im1, ++k;
+            ev[2*k+0] = re2; ev[2*k+1] = im2, ++k;
+            nn -= 2;
+        }
+        if( nn < 1 )
+            break;
+    }
 
-	/* Output the reduction */
-	*res = nn, *ns = m; /* Zero means all eigenvalues found */
+    /* Output the reduction */
+    *res = nn, *ns = m; /* Zero means all eigenvalues found */
 
-        /* Clean up */
-        free( d ); free( l ) ; free( u ); free( dd ); free( ll ); free( uu );
+    /* Clean up */
+    free( d ); free( l ) ; free( u ); free( dd ); free( ll ); free( uu );
 }
 
 /**
@@ -3070,83 +3070,83 @@ void treiglr( int n, double *alpha, double *beta, double *gamma, int max, double
  */
 void treigqds( int n, double *alpha, double *beta, double *gamma, int max, double *ev, int *res, int *ns )
 {
-	int i,k,m,nn,ret;
-        double s,t,*uu,*ll,tr,dt,ds,re1,re2,im1,im2,avg;
+    int i,k,m,nn,ret;
+    double s,t,*uu,*ll,tr,dt,ds,re1,re2,im1,im2,avg;
 
-        /* Allocate temp storage for LU factorzation vectors; try to eliminate this by overwriting alpha, beta, gamma */
-        uu = (double*) malloc( n * sizeof(double) );
-        ll = (double*) malloc( n * sizeof(double) );
+    /* Allocate temp storage for LU factorzation vectors; try to eliminate this by overwriting alpha, beta, gamma */
+    uu = (double*) malloc( n * sizeof(double) );
+    ll = (double*) malloc( n * sizeof(double) );
 
 #ifdef CGRAD_TREIG_PREPROCESS
-        /* Preprocess here by normalizing to the average value of all matrix elements */
-        avg = 0.0;
-        for(i=0;i<n-1;i++)
-                avg += alpha[i] + beta[i] + gamma[i];
-        avg += alpha[n-1];
-        avg /= (double) ( 3 * n - 2 ); /* The number of elements */
-        for(i=0;i<n-1;i++)
-                alpha[i] /= avg, beta[i] /= avg, gamma[i] /= avg;
-        alpha[n-1] /= avg;
+    /* Preprocess here by normalizing to the average value of all matrix elements */
+    avg = 0.0;
+    for(i=0;i<n-1;i++)
+        avg += alpha[i] + beta[i] + gamma[i];
+    avg += alpha[n-1];
+    avg /= (double) ( 3 * n - 2 ); /* The number of elements */
+    for(i=0;i<n-1;i++)
+        alpha[i] /= avg, beta[i] /= avg, gamma[i] /= avg;
+    alpha[n-1] /= avg;
 #endif
 
-	/* Reduce alpha, beta, gamma to have a unit upper diagonal for the dqds algorithm */
-	trofrm( n, alpha, beta, gamma, ll, uu );
+    /* Reduce alpha, beta, gamma to have a unit upper diagonal for the dqds algorithm */
+    trofrm( n, alpha, beta, gamma, ll, uu );
 
-	/* Do the initial LU factorization */
-	trluof( n, 0.0, uu, ll, uu, ll );
+    /* Do the initial LU factorization */
+    trluof( n, 0.0, uu, ll, uu, ll );
 
-	/* Start qds iteration */
-	nn = n, t = 0.0, k = 0;
-	for(m=0;m<max;m++)
-	{
-		/* Choose a shift */
-		s = ll[nn-1] + uu[nn-1];
-		t += s;
+    /* Start qds iteration */
+    nn = n, t = 0.0, k = 0;
+    for(m=0;m<max;m++)
+    {
+        /* Choose a shift */
+        s = ll[nn-1] + uu[nn-1];
+        t += s;
 
-		/* Update to next qds vectors */
-		ll[nn-1] = 0.0; /* This is important */
-		uu[0] = uu[0] + ll[0] - s;
-		for(i=0;i<nn-1;i++)
-		{
-			ll[i] = ll[i] * ( uu[i+1] / uu[i] );
-			uu[i+1] = uu[i+1] + ll[i+1] - s - ll[i];
-		}
-
-		/* Now check the lower righthand corner 2x2 block */
-                if( ( nn > 1 && iszero( ll[nn-2] * uu[n-2] ) ) || nn == 1 ) /* Check in this order */
-                {
-                        /* Then dd[nn-1] is an eigenvalue, so deflate by one */
-			ev[2*k+0] = uu[nn-1] + ll[nn-2] + t, ev[2*k+1] = 0.0, ++k;
-                        nn -= 1;
-                }
-                else if( ( nn > 2 && iszero( ll[nn-3] * uu[nn-2] ) ) || nn == 2 ) /* Check in this order */
-                {
-			if( nn - 2 == 0 )
-				tteig( uu[nn-2], 1.0, ll[nn-2] * uu[nn-2], ll[nn-2] + uu[nn-1], &re1, &im1, &re2, &im2 );
-			else
-                        	tteig( ll[nn-3] + uu[nn-2], 1.0, ll[nn-2] * uu[nn-2], ll[nn-2] + uu[nn-1], &re1, &im1, &re2, &im2 );
-			ev[2*k+0] = re1 + t, ev[2*k+1] = im1, ++k;
-                        ev[2*k+0] = re2 + t; ev[2*k+1] = im2, ++k;
-                        nn -= 2;
-                }
-		if( nn < 1 )
-			break;
-	}
-
-#ifdef CGRAD_TREIG_PREPROCESS
-        /* Postprocess eigenvalues */
-        for(i=0;i<n;i++)
+        /* Update to next qds vectors */
+        ll[nn-1] = 0.0; /* This is important */
+        uu[0] = uu[0] + ll[0] - s;
+        for(i=0;i<nn-1;i++)
         {
-                ev[2*i+0] *= avg;
-                ev[2*i+1] *= avg;
+            ll[i] = ll[i] * ( uu[i+1] / uu[i] );
+            uu[i+1] = uu[i+1] + ll[i+1] - s - ll[i];
         }
+
+        /* Now check the lower righthand corner 2x2 block */
+        if( ( nn > 1 && iszero( ll[nn-2] * uu[n-2] ) ) || nn == 1 ) /* Check in this order */
+        {
+            /* Then dd[nn-1] is an eigenvalue, so deflate by one */
+            ev[2*k+0] = uu[nn-1] + ll[nn-2] + t, ev[2*k+1] = 0.0, ++k;
+            nn -= 1;
+        }
+        else if( ( nn > 2 && iszero( ll[nn-3] * uu[nn-2] ) ) || nn == 2 ) /* Check in this order */
+        {
+            if( nn - 2 == 0 )
+                tteig( uu[nn-2], 1.0, ll[nn-2] * uu[nn-2], ll[nn-2] + uu[nn-1], &re1, &im1, &re2, &im2 );
+            else
+                tteig( ll[nn-3] + uu[nn-2], 1.0, ll[nn-2] * uu[nn-2], ll[nn-2] + uu[nn-1], &re1, &im1, &re2, &im2 );
+            ev[2*k+0] = re1 + t, ev[2*k+1] = im1, ++k;
+            ev[2*k+0] = re2 + t; ev[2*k+1] = im2, ++k;
+            nn -= 2;
+        }
+        if( nn < 1 )
+            break;
+    }
+
+#ifdef CGRAD_TREIG_PREPROCESS
+    /* Postprocess eigenvalues */
+    for(i=0;i<n;i++)
+    {
+        ev[2*i+0] *= avg;
+        ev[2*i+1] *= avg;
+    }
 #endif
 
-	/* Output the reduction */
-        *res = nn, *ns = m; /* Zero means all eigenvalues found */
+    /* Output the reduction */
+    *res = nn, *ns = m; /* Zero means all eigenvalues found */
 
-	/* Free everything */
-        free( uu ); free( ll );
+    /* Free everything */
+    free( uu ); free( ll );
 }
 
 /**
@@ -3154,85 +3154,85 @@ void treigqds( int n, double *alpha, double *beta, double *gamma, int max, doubl
  */
 void treigdqds( int n, double *alpha, double *beta, double *gamma, int max, double *ev, int *res, int *ns )
 {
-        int i,k,m,nn,ret;
-        double s,t,*uu,*ll,*d,re1,re2,im1,im2,avg;
+    int i,k,m,nn,ret;
+    double s,t,*uu,*ll,*d,re1,re2,im1,im2,avg;
 
-        /* Allocate temp storage for LU factorzation vectors; try to eliminate this by overwriting alpha, beta, gamma */
-        uu = (double*) malloc( n * sizeof(double) );
-        ll = (double*) malloc( n * sizeof(double) );
-	d = (double*) malloc( n * sizeof(double) );
-
-#ifdef CGRAD_TREIG_PREPROCESS
-        /* Preprocess here by normalizing to the average value of all matrix elements */
-        avg = 0.0;
-        for(i=0;i<n-1;i++)
-                avg += alpha[i] + beta[i] + gamma[i];
-        avg += alpha[n-1];
-        avg /= (double) ( 3 * n - 2 ); /* The number of elements */
-        for(i=0;i<n-1;i++)
-                alpha[i] /= avg, beta[i] /= avg, gamma[i] /= avg;
-        alpha[n-1] /= avg;
-#endif
-
-        /* Reduce alpha, beta, gamma to have a unit upper diagonal for the dqds algorithm */
-        trofrm( n, alpha, beta, gamma, ll, uu );
-
-        /* Do the initial LU factorization */
-        trluof( n, 0.0, uu, ll, uu, ll );
-
-        /* Start qds iteration */
-        nn = n, t = 0.0, k = 0;
-        for(m=0;m<max;m++)
-        {
-                /* Choose a shift */
-                s = ll[nn-2] + uu[nn-1];
-                t += s;
-
-                /* Update to next qds vectors */
-                d[0] = uu[0] - s;
-                for(i=0;i<nn-1;i++)
-                {
-			uu[i] = d[i] + ll[i];
-                        ll[i] = ll[i] * ( uu[i+1] / uu[i] );
-			d[i+1] = d[i] * ( uu[i+1] / uu[i] ) - s;
-                }
-		uu[nn-1] = d[nn-1];
-
-		/* Now check the lower righthand corner 2x2 block */
-                if( ( nn > 1 && iszero( ll[nn-2] * uu[n-2] ) ) || nn == 1 ) /* Check in this order */
-                {
-                        /* Then dd[nn-1] is an eigenvalue, so deflate by one */
-			ev[2*k+0] = uu[nn-1] + ll[nn-2] + t, ev[2*k+1] = 0.0, ++k;
-                        nn -= 1;
-                }
-                else if( ( nn > 2 && iszero( ll[nn-3] * uu[n-3] ) ) || nn == 2 ) /* Check in this order */
-                {
-                        if( nn - 2 == 0 )
-                                tteig( uu[nn-2], 1.0, ll[nn-2] * uu[nn-2], ll[nn-2] + uu[nn-1], &re1, &im1, &re2, &im2 );
-                        else
-                                tteig( ll[nn-3] + uu[nn-2], 1.0, ll[nn-2] * uu[nn-2], ll[nn-2] + uu[nn-1], &re1, &im1, &re2, &im2 );
-			ev[2*k+0] = re1 + t, ev[2*k+1] = im1, ++k;
-                        ev[2*k+0] = re2 + t; ev[2*k+1] = im2, ++k;
-                        nn -= 2;
-                }
-                if( nn < 1 )
-                        break;
-        }
+    /* Allocate temp storage for LU factorzation vectors; try to eliminate this by overwriting alpha, beta, gamma */
+    uu = (double*) malloc( n * sizeof(double) );
+    ll = (double*) malloc( n * sizeof(double) );
+    d = (double*) malloc( n * sizeof(double) );
 
 #ifdef CGRAD_TREIG_PREPROCESS
-        /* Postprocess eigenvalues */
-        for(i=0;i<n;i++)
-        {
-                ev[2*i+0] *= avg;
-                ev[2*i+1] *= avg;
-        }
+    /* Preprocess here by normalizing to the average value of all matrix elements */
+    avg = 0.0;
+    for(i=0;i<n-1;i++)
+        avg += alpha[i] + beta[i] + gamma[i];
+    avg += alpha[n-1];
+    avg /= (double) ( 3 * n - 2 ); /* The number of elements */
+    for(i=0;i<n-1;i++)
+        alpha[i] /= avg, beta[i] /= avg, gamma[i] /= avg;
+    alpha[n-1] /= avg;
 #endif
 
-	/* Output the reduction */
-        *res = nn, *ns = m; /* Zero means all eigenvalues found */
+    /* Reduce alpha, beta, gamma to have a unit upper diagonal for the dqds algorithm */
+    trofrm( n, alpha, beta, gamma, ll, uu );
 
-	/* Free everything */
-	free( uu ); free( ll ); free( d );
+    /* Do the initial LU factorization */
+    trluof( n, 0.0, uu, ll, uu, ll );
+
+    /* Start qds iteration */
+    nn = n, t = 0.0, k = 0;
+    for(m=0;m<max;m++)
+    {
+        /* Choose a shift */
+        s = ll[nn-2] + uu[nn-1];
+        t += s;
+
+        /* Update to next qds vectors */
+        d[0] = uu[0] - s;
+        for(i=0;i<nn-1;i++)
+        {
+            uu[i] = d[i] + ll[i];
+            ll[i] = ll[i] * ( uu[i+1] / uu[i] );
+            d[i+1] = d[i] * ( uu[i+1] / uu[i] ) - s;
+        }
+        uu[nn-1] = d[nn-1];
+
+        /* Now check the lower righthand corner 2x2 block */
+        if( ( nn > 1 && iszero( ll[nn-2] * uu[n-2] ) ) || nn == 1 ) /* Check in this order */
+        {
+            /* Then dd[nn-1] is an eigenvalue, so deflate by one */
+            ev[2*k+0] = uu[nn-1] + ll[nn-2] + t, ev[2*k+1] = 0.0, ++k;
+            nn -= 1;
+        }
+        else if( ( nn > 2 && iszero( ll[nn-3] * uu[n-3] ) ) || nn == 2 ) /* Check in this order */
+        {
+            if( nn - 2 == 0 )
+                tteig( uu[nn-2], 1.0, ll[nn-2] * uu[nn-2], ll[nn-2] + uu[nn-1], &re1, &im1, &re2, &im2 );
+            else
+                tteig( ll[nn-3] + uu[nn-2], 1.0, ll[nn-2] * uu[nn-2], ll[nn-2] + uu[nn-1], &re1, &im1, &re2, &im2 );
+            ev[2*k+0] = re1 + t, ev[2*k+1] = im1, ++k;
+            ev[2*k+0] = re2 + t; ev[2*k+1] = im2, ++k;
+            nn -= 2;
+        }
+        if( nn < 1 )
+            break;
+    }
+
+#ifdef CGRAD_TREIG_PREPROCESS
+    /* Postprocess eigenvalues */
+    for(i=0;i<n;i++)
+    {
+        ev[2*i+0] *= avg;
+        ev[2*i+1] *= avg;
+    }
+#endif
+
+    /* Output the reduction */
+    *res = nn, *ns = m; /* Zero means all eigenvalues found */
+
+    /* Free everything */
+    free( uu ); free( ll ); free( d );
 }
 
 
@@ -3241,147 +3241,147 @@ void treigdqds( int n, double *alpha, double *beta, double *gamma, int max, doub
  */
 void treigtridqds( int n, double *alpha, double *beta, double *gamma, int max, double *ev, int *res, int *ns )
 {
-	int i,k,m,nn,ret;
-        double sr,si,s,t,*uu,*ll,*d,re1,re2,im1,im2,avg;
-	double xl,yl,xr,yr,zr; /* Bulge variables */
+    int i,k,m,nn,ret;
+    double sr,si,s,t,*uu,*ll,*d,re1,re2,im1,im2,avg;
+    double xl,yl,xr,yr,zr; /* Bulge variables */
 
-        /* Allocate temp storage for LU factorzation vectors; try to eliminate this by overwriting alpha, beta, gamma */
-        uu = (double*) malloc( n * sizeof(double) );
-        ll = (double*) malloc( n * sizeof(double) );
-        d = (double*) malloc( n * sizeof(double) );
+    /* Allocate temp storage for LU factorzation vectors; try to eliminate this by overwriting alpha, beta, gamma */
+    uu = (double*) malloc( n * sizeof(double) );
+    ll = (double*) malloc( n * sizeof(double) );
+    d = (double*) malloc( n * sizeof(double) );
 
 #ifdef CGRAD_TREIG_PREPROCESS
-	/* Preprocess here by normalizing to the average value of all matrix elements */
-        avg = 0.0;
-        for(i=0;i<n-1;i++)
-                avg += alpha[i] + beta[i] + gamma[i];
-        avg += alpha[n-1];
-        avg /= (double) ( 3 * n - 2 ); /* The number of elements */
-        for(i=0;i<n-1;i++)
-                alpha[i] /= avg, beta[i] /= avg, gamma[i] /= avg;
-        alpha[n-1] /= avg;
+    /* Preprocess here by normalizing to the average value of all matrix elements */
+    avg = 0.0;
+    for(i=0;i<n-1;i++)
+        avg += alpha[i] + beta[i] + gamma[i];
+    avg += alpha[n-1];
+    avg /= (double) ( 3 * n - 2 ); /* The number of elements */
+    for(i=0;i<n-1;i++)
+        alpha[i] /= avg, beta[i] /= avg, gamma[i] /= avg;
+    alpha[n-1] /= avg;
 #endif
 
-        /* Reduce alpha, beta, gamma to have a unit upper diagonal for the dqds algorithm */
-        trofrm( n, alpha, beta, gamma, ll, uu );
+    /* Reduce alpha, beta, gamma to have a unit upper diagonal for the dqds algorithm */
+    trofrm( n, alpha, beta, gamma, ll, uu );
 
-        /* Do the initial LU factorization */
-        trluof( n, 0.0, uu, ll, uu, ll );
+    /* Do the initial LU factorization */
+    trluof( n, 0.0, uu, ll, uu, ll );
 
-        /* Start qds iteration */
-        nn = n, t = 0.0, k = 0;
-        for(m=0;m<max;m++)
+    /* Start qds iteration */
+    nn = n, t = 0.0, k = 0;
+    for(m=0;m<max;m++)
+    {
+        /* Calculate the shift and decide what to do */
+        tteig( ll[nn-2] + uu[nn-2], 1.0, uu[nn-1] * ll[nn-2], uu[nn-1], &re1, &im1, &re2, &im2 );
+
+        /* Set the shift */
+        sr = re1; si = im1; /* Shift is not accumulated in tridqds */
+
+        /* Choose which path to take */
+        if( iszero( si ) || nn < 4 ) /* If nn < 4 then we can't do tridqds so default to dqds */
         {
-		/* Calculate the shift and decide what to do */
-                tteig( ll[nn-2] + uu[nn-2], 1.0, uu[nn-1] * ll[nn-2], uu[nn-1], &re1, &im1, &re2, &im2 );
+            /* Choose a shift */
+            s = re1;
+            t += s;
 
-		/* Set the shift */
-		sr = re1; si = im1; /* Shift is not accumulated in tridqds */
+            /* Update to next qds vectors */
+            d[0] = uu[0] - s;
+            for(i=0;i<nn-1;i++)
+            {
+                uu[i] = d[i] + ll[i];
+                ll[i] = ll[i] * ( uu[i+1] / uu[i] );
+                d[i+1] = d[i] * ( uu[i+1] / uu[i] ) - s;
+            }
+            uu[nn-1] = d[nn-1];
+        }
+        else
+        {
+            /* First step */
+            xr = 1.0; yr = ll[0]; zr = 0.0;
+            xr = xr * uu[0] + yr;
+            xl = pow( uu[0] + ll[0], 2.0 ) + uu[1] * ll[0] - 2.0 * sr * ( uu[0] + ll[0] ) + sr * sr + si * si;
+            yl = - ( uu[1] * ll[0] * uu[2] * ll[1] / xl );
+            xl = - uu[1] * ll[0] * ( uu[0] + ll[0] + uu[1] + ll[1] - 2 * sr ) / xl;
+            uu[0] = xr - xl;
+            xr = yr - xl; yr = zr - yl - xl * ll[1]; zr = - yl * ll[2];
+            xr = xr / uu[0]; yr = yr / uu[0]; zr = zr / uu[0];
+            ll[0] = xl + yr + xr * uu[1];
+            xl = yl + zr + yr * uu[2]; yl = zr * uu[3];
+            xr = 1.0 - xr; yr = ll[1] - yr; zr = - zr;
 
-		/* Choose which path to take */
-		if( iszero( si ) || nn < 4 ) /* If nn < 4 then we can't do tridqds so default to dqds */
-		{
-			/* Choose a shift */
-			s = re1;
-	                t += s;
+            /* Do central loop */
+            for(i=1;i<nn-3;i++)
+            {
+                xr = xr * uu[i] + yr;
+                xl = - xl / ll[i-1]; yl = - yl / ll[i-1];
+                uu[i] = xr - xl;
+                xr = yr - xl; yr = zr - yl - xl * ll[i+1]; zr = - yl * ll[i+2];
+                xr = xr / uu[i]; yr = yr / uu[i]; zr = zr / uu[i];
+                ll[i] = xl + yr + xr * uu[i+1];
+                xl = yl + zr + yr * uu[i+2]; yl = zr * uu[i+3];
+                xr = 1.0 - xr; yr = ll[i+1] - yr; zr = - zr;
+            }
 
-	                /* Update to next qds vectors */
-	                d[0] = uu[0] - s;
-	                for(i=0;i<nn-1;i++)
-	                {
-				uu[i] = d[i] + ll[i];
-	                        ll[i] = ll[i] * ( uu[i+1] / uu[i] );
-				d[i+1] = d[i] * ( uu[i+1] / uu[i] ) - s;
-	                }
-			uu[nn-1] = d[nn-1];
-		}
-		else
-		{
-			/* First step */
-			xr = 1.0; yr = ll[0]; zr = 0.0;
-			xr = xr * uu[0] + yr;
-			xl = pow( uu[0] + ll[0], 2.0 ) + uu[1] * ll[0] - 2.0 * sr * ( uu[0] + ll[0] ) + sr * sr + si * si;
-			yl = - ( uu[1] * ll[0] * uu[2] * ll[1] / xl );
-			xl = - uu[1] * ll[0] * ( uu[0] + ll[0] + uu[1] + ll[1] - 2 * sr ) / xl;
-			uu[0] = xr - xl;
-			xr = yr - xl; yr = zr - yl - xl * ll[1]; zr = - yl * ll[2];
-			xr = xr / uu[0]; yr = yr / uu[0]; zr = zr / uu[0];
-			ll[0] = xl + yr + xr * uu[1];
-			xl = yl + zr + yr * uu[2]; yl = zr * uu[3];
-			xr = 1.0 - xr; yr = ll[1] - yr; zr = - zr;
+            /* Step n - 3 */
+            xr = xr * uu[nn-3] + yr;
+            xl = - xl / ll[nn-4]; yl = - yl / ll[nn-4];
+            uu[nn-3] = xr - xl;
+            xr = yr - xl; yr = zr - yl - xl * ll[nn-2];
+            xr = xr / uu[nn-3]; yr = yr / uu[nn-3];
+            ll[nn-3] = xl + yr + xr * uu[nn-2];
+            xl = yl + yr * uu[nn-1];
+            xr = 1.0 - xr; yr = ll[nn-2] - yr;
 
-			/* Do central loop */
-			for(i=1;i<nn-3;i++)
-			{
-				xr = xr * uu[i] + yr;
-				xl = - xl / ll[i-1]; yl = - yl / ll[i-1];
-				uu[i] = xr - xl;
-				xr = yr - xl; yr = zr - yl - xl * ll[i+1]; zr = - yl * ll[i+2];
-				xr = xr / uu[i]; yr = yr / uu[i]; zr = zr / uu[i];
-				ll[i] = xl + yr + xr * uu[i+1];
-				xl = yl + zr + yr * uu[i+2]; yl = zr * uu[i+3];
-				xr = 1.0 - xr; yr = ll[i+1] - yr; zr = - zr;
-			}
+            /* Step n - 2 */
+            xr = xr * uu[nn-2] + yr;
+            xl = - xl / ll[nn-3];
+            uu[nn-2] = xr - xl;
+            xr = yr - xl;
+            xr = xr / uu[nn-2];
+            ll[nn-2] = xl + xr * uu[nn-1];
+            xr = 1.0 - xr;
 
-			/* Step n - 3 */
-			xr = xr * uu[nn-3] + yr;
-			xl = - xl / ll[nn-4]; yl = - yl / ll[nn-4];
-			uu[nn-3] = xr - xl;
-			xr = yr - xl; yr = zr - yl - xl * ll[nn-2];
-			xr = xr / uu[nn-3]; yr = yr / uu[nn-3];
-			ll[nn-3] = xl + yr + xr * uu[nn-2];
-			xl = yl + yr * uu[nn-1];
-			xr = 1.0 - xr; yr = ll[nn-2] - yr;
+            /* Step n - 1 */
+            xr = xr * uu[nn-1];
+            uu[nn-1] = xr;
+        }
 
-			/* Step n - 2 */
-			xr = xr * uu[nn-2] + yr;
-			xl = - xl / ll[nn-3];
-			uu[nn-2] = xr - xl;
-			xr = yr - xl;
-			xr = xr / uu[nn-2];
-			ll[nn-2] = xl + xr * uu[nn-1];
-			xr = 1.0 - xr;
-
-			/* Step n - 1 */
-			xr = xr * uu[nn-1];
-			uu[nn-1] = xr;
-		}
-
-		/* Now check the lower righthand corner 2x2 block of L(i)*U(i) */
-                if( ( nn > 1 && iszero( ll[nn-2] * uu[nn-2] ) ) || nn == 1 ) /* Check in this order */
-                {
-                        /* Then dd[nn-1] is an eigenvalue, so deflate by one */
-                        ev[2*k+0] = uu[nn-1] + ll[nn-2] + t, ev[2*k+1] = 0.0, ++k;
-                        nn -= 1;
-                }
-                else if( ( nn > 2 && iszero( ll[nn-3] * uu[nn-3] ) ) || nn == 2 ) /* Check in this order */
-                {
-                        if( nn - 2 == 0 )
-                                tteig( uu[nn-2], 1.0, ll[nn-2] * uu[nn-2], ll[nn-2] + uu[nn-1], &re1, &im1, &re2, &im2 );
-                        else
-                                tteig( ll[nn-3] + uu[nn-2], 1.0, ll[nn-2] * uu[nn-2], ll[nn-2] + uu[nn-1], &re1, &im1, &re2, &im2 );
-                        ev[2*k+0] = re1 + t, ev[2*k+1] = im1, ++k;
-                        ev[2*k+0] = re2 + t, ev[2*k+1] = im2, ++k;
-                        nn -= 2;
-                }
-                if( nn < 1 )
-                        break;
-	}
+        /* Now check the lower righthand corner 2x2 block of L(i)*U(i) */
+        if( ( nn > 1 && iszero( ll[nn-2] * uu[nn-2] ) ) || nn == 1 ) /* Check in this order */
+        {
+            /* Then dd[nn-1] is an eigenvalue, so deflate by one */
+            ev[2*k+0] = uu[nn-1] + ll[nn-2] + t, ev[2*k+1] = 0.0, ++k;
+            nn -= 1;
+        }
+        else if( ( nn > 2 && iszero( ll[nn-3] * uu[nn-3] ) ) || nn == 2 ) /* Check in this order */
+        {
+            if( nn - 2 == 0 )
+                tteig( uu[nn-2], 1.0, ll[nn-2] * uu[nn-2], ll[nn-2] + uu[nn-1], &re1, &im1, &re2, &im2 );
+            else
+                tteig( ll[nn-3] + uu[nn-2], 1.0, ll[nn-2] * uu[nn-2], ll[nn-2] + uu[nn-1], &re1, &im1, &re2, &im2 );
+            ev[2*k+0] = re1 + t, ev[2*k+1] = im1, ++k;
+            ev[2*k+0] = re2 + t, ev[2*k+1] = im2, ++k;
+            nn -= 2;
+        }
+        if( nn < 1 )
+            break;
+    }
 
 #ifdef CGRAD_TREIG_PREPROCESS
-	/* Postprocess eigenvalues */
-	for(i=0;i<n;i++)
-	{
-		ev[2*i+0] *= avg;
-		ev[2*i+1] *= avg;
-	}
+    /* Postprocess eigenvalues */
+    for(i=0;i<n;i++)
+    {
+        ev[2*i+0] *= avg;
+        ev[2*i+1] *= avg;
+    }
 #endif
 
-	/* Output the reduction */
-        *res = nn, *ns = m; /* Zero means all eigenvalues found */
+    /* Output the reduction */
+    *res = nn, *ns = m; /* Zero means all eigenvalues found */
 
-        /* Free everything */
-        free( uu ); free( ll ); free( d );
+    /* Free everything */
+    free( uu ); free( ll ); free( d );
 }
 
 /**
@@ -3390,48 +3390,48 @@ void treigtridqds( int n, double *alpha, double *beta, double *gamma, int max, d
  */
 void sgsinvi( int n, long *ia, long *ja, double *A, long *ib, long *jb, double *B, double *x, double mu, double tol, int max, int vb )
 {
-	int i,j,ret;
-	long *ic,*jc;
-	double r,*y,*xx,*C;
+    int i,j,ret;
+    long *ic,*jc;
+    double r,*y,*xx,*C;
 
-	/* Allocate stuff */
-	y = (double*) malloc( n * sizeof(double) );
-	xx = (double*) malloc( n * sizeof(double) );
+    /* Allocate stuff */
+    y = (double*) malloc( n * sizeof(double) );
+    xx = (double*) malloc( n * sizeof(double) );
 
-	/* Build the sparse structure of the matrix to inverse, (A-mu*B) */
-	ic = (long*) malloc( ( n + 1 ) * sizeof(long) );
-	jc = (long*) malloc( ia[n] * sizeof(long) );
-	C = (double*) malloc( ia[n] * sizeof(double) );
+    /* Build the sparse structure of the matrix to inverse, (A-mu*B) */
+    ic = (long*) malloc( ( n + 1 ) * sizeof(long) );
+    jc = (long*) malloc( ia[n] * sizeof(long) );
+    C = (double*) malloc( ia[n] * sizeof(double) );
 
-	/* Copy */
-	for(i=0;i<=n;i++)
-		ic[i] = ia[i];
-	for(i=0;i<ia[n];i++)
-		jc[i] = ja[i], C[i] = A[i] - mu * B[i];
+    /* Copy */
+    for(i=0;i<=n;i++)
+        ic[i] = ia[i];
+    for(i=0;i<ia[n];i++)
+        jc[i] = ja[i], C[i] = A[i] - mu * B[i];
 
-	/* Repeatedly apply inverse transformed matrix to get eigenvector of interest */
-	normalize( n, x );
-	for(i=0;i<max;i++)
-	{
-		copy( n, x, xx );
-		ssdgemv( n, ib, jb, B, 1, x, 1, y );
-		scg( n, ic, jc, C, y, x, max, tol, vb, &ret );
-		normalize( n, x );
-		r = 0.0;
-		for(j=0;j<n;j++)
-			r += x[j] * xx[j];
-		if( vb )
-			fprintf( stderr, "%d: r = %15.7f\n", i, r );
-		if( fabs( fabs( r ) - 1.0 ) < tol )
-			break;
-	}
+    /* Repeatedly apply inverse transformed matrix to get eigenvector of interest */
+    normalize( n, x );
+    for(i=0;i<max;i++)
+    {
+        copy( n, x, xx );
+        ssdgemv( n, ib, jb, B, 1, x, 1, y );
+        scg( n, ic, jc, C, y, x, max, tol, vb, &ret );
+        normalize( n, x );
+        r = 0.0;
+        for(j=0;j<n;j++)
+            r += x[j] * xx[j];
+        if( vb )
+            fprintf( stderr, "%d: r = %15.7f\n", i, r );
+        if( fabs( fabs( r ) - 1.0 ) < tol )
+            break;
+    }
 
-	/* Clean up */
-	free( y );
-	free( xx );
-	free( ic );
-	free( jc );
-	free( C );
+    /* Clean up */
+    free( y );
+    free( xx );
+    free( ic );
+    free( jc );
+    free( C );
 }
 
 /**
@@ -3439,54 +3439,54 @@ void sgsinvi( int n, long *ia, long *ja, double *A, long *ib, long *jb, double *
  */
 void gmres( int n, double *A, double *b, double *x, double *H, double *V, int max, double tol, int vb, int *ret )
 {
-	int i,j,k,m;
-	double f,g,beta;
-	double *v,*w;
+    int i,j,k,m;
+    double f,g,beta;
+    double *v,*w;
 
-	v = (double*) malloc( n * sizeof(double) );
-	w = (double*) malloc( n * sizeof(double) );
+    v = (double*) malloc( n * sizeof(double) );
+    w = (double*) malloc( n * sizeof(double) );
 
-	for(i=0;i<n;i++)
-	{
-		v[i] = b[i];
-		for(j=0;j<n;j++)
-			v[i] -= A[i*n+j] * x[j];
-		f += v[i] * v[i];
-	}
-	f = sqrt( f );
-	for(i=0;i<n;i++)
-		v[i] /= f;
+    for(i=0;i<n;i++)
+    {
+        v[i] = b[i];
+        for(j=0;j<n;j++)
+            v[i] -= A[i*n+j] * x[j];
+        f += v[i] * v[i];
+    }
+    f = sqrt( f );
+    for(i=0;i<n;i++)
+        v[i] /= f;
 
-	for(i=0;i<max;i++)
-	{
-		for(j=0;j<n;j++)
-		{
-			w[j] = 0.0;
-			for(k=0;k<n;k++)
-				w[j] += A[j*n+k] * v[i*n+k];
-		}
-		for(j=0;j<=i;j++)
-		{
-			H[j*n+i] = 0.0;
-			for(k=0;k<n;k++)
-				H[j*n+i] += w[k] * v[j*n+k];
-			for(k=0;k<n;k++)
-				w[k] -= H[j*n+i] * v[j*n+k];
-		}
-		H[(i+1)*n+i] = 0.0;
-		for(j=0;j<n;j++)
-			H[(i+1)*n+i] += w[j] * w[j];
-		H[(i+1)*n+i] = sqrt( H[(i+1)*n+i] );
-		if( fabs( H[(i+1)*n+i] ) < tol )
-		{
-			m = i;
-			break;
-		}
-		for(j=0;j<n;j++)
-			v[(i+1)*n+j] = w[j] / H[(i+1)*n+i];
-	}
+    for(i=0;i<max;i++)
+    {
+        for(j=0;j<n;j++)
+        {
+            w[j] = 0.0;
+            for(k=0;k<n;k++)
+                w[j] += A[j*n+k] * v[i*n+k];
+        }
+        for(j=0;j<=i;j++)
+        {
+            H[j*n+i] = 0.0;
+            for(k=0;k<n;k++)
+                H[j*n+i] += w[k] * v[j*n+k];
+            for(k=0;k<n;k++)
+                w[k] -= H[j*n+i] * v[j*n+k];
+        }
+        H[(i+1)*n+i] = 0.0;
+        for(j=0;j<n;j++)
+            H[(i+1)*n+i] += w[j] * w[j];
+        H[(i+1)*n+i] = sqrt( H[(i+1)*n+i] );
+        if( fabs( H[(i+1)*n+i] ) < tol )
+        {
+            m = i;
+            break;
+        }
+        for(j=0;j<n;j++)
+            v[(i+1)*n+j] = w[j] / H[(i+1)*n+i];
+    }
 
-	free( v );
-	free( w );
+    free( v );
+    free( w );
 }
 
