@@ -27,6 +27,7 @@ int stmsave( char *fn, int n, double *alpha, double *beta, double *gamma )
         fprintf( fp, "\n" );
     }
     fclose( fp );
+    return 0;
 }
 
 /**
