@@ -5,6 +5,7 @@
 #include "combinadic.h"
 #include "trees.h"
 #include "points.h"
+#include "geom.h"
 #include "config.h"
 
 #define PUNITY_NEIGHBOR_INC 512

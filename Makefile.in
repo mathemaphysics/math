@@ -349,6 +349,10 @@ infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+libgmx_CFLAGS = @libgmx_CFLAGS@
+libgmx_LIBS = @libgmx_LIBS@
+libgmx_d_CFLAGS = @libgmx_d_CFLAGS@
+libgmx_d_LIBS = @libgmx_d_LIBS@
 localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
@@ -372,9 +376,9 @@ util_CFLAGS = @util_CFLAGS@
 util_LIBS = @util_LIBS@
 SUBDIRS = test
 lib_LIBRARIES = libmath.a
-include_HEADERS = include/lagrange.h include/linalg.h include/quadrature.h include/nurbs.h include/runge.h include/legendre.h include/mls.h include/mqrbf.h include/points.h include/nuclei.h include/sparse.h include/punity.h include/cgrad.h include/wavelet.h
+include_HEADERS = include/lagrange.h include/linalg.h include/quadrature.h include/nurbs.h include/runge.h include/legendre.h include/mls.h include/mqrbf.h include/points.h include/nuclei.h include/sparse.h include/punity.h include/cgrad.h include/wavelet.h include/geom.h
 libmath_a_SOURCES = lagrange.c quadrature.c linalg.f90 runge.f90 nurbs.c legendre.c mls.c cgrad.c mqrbf.c points.c nuclei.c sparse.c punity.c wavelet.c pbc.c anint.f90
-libmath_a_CFLAGS = -I./include $(util_CFLAGS)
+libmath_a_CFLAGS = -I./include $(util_CFLAGS) $(libgmx_d_CFLAGS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
