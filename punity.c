@@ -339,14 +339,11 @@ int punity_use_pbc( punity_t *obj_in, double *rpb_in )
     if( obj_in->rpb != NULL )
         return -1; /* Something funny is going on */
     else
-        obj_in->rpb = (double*) malloc( 2 * obj_in->dim * sizeof(double) );
+        obj_in->rpb = (double*) malloc( obj_in->dim * sizeof(double) );
 
     /* Set the actual boundaries for ea. dimension */
     for(i=0;i<obj_in->dim;i++)
-    {
-        obj_in->rpb[2*i+0] = rpb_in[2*i+0];
-        obj_in->rpb[2*i+1] = rpb_in[2*i+1];
-    }
+        obj_in->rpb[i] = rpb_in[i];
 
     return 0;
 }
