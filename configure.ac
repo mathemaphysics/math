@@ -9,6 +9,7 @@ AC_CONFIG_HEADER([config.h])
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_FC
 AC_PROG_RANLIB
 AM_PROG_CC_C_O
 
@@ -27,6 +28,9 @@ AC_CHECK_FUNCS([memmove pow sqrt])
 
 PKG_CHECK_MODULES( util, util )
 PKG_CHECK_MODULES( neural, neural )
+
+# For pbc.c and anint.f90 need to tell it HAVE_DOUBLE always
+AC_DEFINE( [HAVE_DOUBLE], [1], [Enable use of double precision] )
 
 AC_CONFIG_FILES([Makefile] [test/Makefile] [test/puksham/Makefile] [math.pc])
 AC_OUTPUT

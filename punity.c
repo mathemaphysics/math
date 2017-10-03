@@ -69,13 +69,21 @@ typedef struct
 	 */
 	char *bdry;
 
-    /**
-     * Adding in rectangular periodic boundary
-     * mode; when pbc == 1, assume the domain
-     * is periodic in each of its orthogonal
-     * dimensions
-     */
-    int pbc;
+	/**
+	 * Adding in rectangular periodic boundary
+	 * mode; when pbc == 1, assume the domain
+	 * is periodic in each of its orthogonal
+	 * dimensions; default is pbc = 0 (off)
+	 */
+	int pbc;
+
+	/**
+	 * Following variables define a rectangular
+	 * set of boundaries in order to make interpolant
+	 * periodic over the given rectangular domain;
+	 * "rpb" = "rectangular periodic boundaries"
+	 */
+	double *rpb;
 } punity_t;
 
 typedef struct
@@ -303,6 +311,10 @@ int punity_init( punity_t *obj_in, int dim_in, int npts_in, double *pts_in, doub
 	for(i=0;i<npts_in;i++)
 		obj_in->bdry[i] = 0;
 
+    /* Set pbc options to off by default and put NULL in rpb */
+    obj_in->pbc = 0;
+    obj_in->rpb = NULL;
+
 #ifdef PUNITY_USE_KDTREES
 	/* Use kdtrees for storage of points for fast access if faster this way */
 	obj_in->kdt = (kdnode_t*) malloc( sizeof(kdnode_t) );
@@ -312,9 +324,30 @@ int punity_init( punity_t *obj_in, int dim_in, int npts_in, double *pts_in, doub
 	return 0;
 }
 
-int punity_use_pbc( punity_t *obj_in )
+/**
+ * Turn on periodic boundaries and read the bounds
+ * as input arguments given in rpb_in
+ */
+int punity_use_pbc( punity_t *obj_in, double *rpb_in )
 {
+    int i;
+
+    /* Set pbc to 1 (on) */
     obj_in->pbc = 1;
+
+    /* Make sure obj_in->rpb not already allocated */
+    if( obj_in->rpb != NULL )
+        return -1; /* Something funny is going on */
+    else
+        obj_in->rpb = (double*) malloc( 2 * obj_in->dim * sizeof(double) );
+
+    /* Set the actual boundaries for ea. dimension */
+    for(i=0;i<obj_in->dim;i++)
+    {
+        obj_in->rpb[2*i+0] = rpb_in[2*i+0];
+        obj_in->rpb[2*i+1] = rpb_in[2*i+1];
+    }
+
     return 0;
 }
 
@@ -324,9 +357,18 @@ int punity_use_pbc( punity_t *obj_in )
  */
 int punity_free( punity_t *obj_in )
 {
-	free( obj_in->pts );
-	free( obj_in->dlt );
-	free( obj_in->bdry );
+    if( obj_in->pts != NULL )
+	    free( obj_in->pts );
+    if( obj_in->dlt != NULL )
+	    free( obj_in->dlt );
+    if( obj_in->dlt != NULL )
+	    free( obj_in->bdry );
+    if( obj_in->pbc != 0 && obj_in->rpb != NULL )
+    {
+        free( obj_in->rpb );
+        obj_in->pbc = 0;
+    }
+    return 0;
 }
 
 /**
@@ -346,24 +388,55 @@ double punity_evaluate( punity_t *obj_in, int idx_in, double *x_in )
 		return 0.0;
 
 	/* Don't bother with the denominator if the numerator is zero */
-	sum = 0.0;
-	for(i=0;i<obj_in->dim;i++)
-		sum += pow( obj_in->pts[idx_in*obj_in->dim+i] - x_in[i], 2.0 );
-	if( sum > obj_in->dlt[idx_in] * obj_in->dlt[idx_in] )
-		return 0.0;
+    if( obj_in->pbc == 0 )  /* Case 1: No periodic boundaries   */
+    {
+        sum = 0.0;
+        for(i=0;i<obj_in->dim;i++)
+            sum += pow( obj_in->pts[idx_in*obj_in->dim+i] - x_in[i], 2.0 );
+    }
+    else                    /* Case 2: Periodic boundaries      */
+    {
+        assert( obj_in->dim == 3 );
+        sum = pbc_dist_real3( x_in, &(obj_in->pts[idx_in*obj_in->dim]), obj_in->rpb );
+        sum = sum * sum; /* FIXME: This is NOT ideal; calculate sqr version of dist */
+    }
+    if( sum > obj_in->dlt[idx_in] * obj_in->dlt[idx_in] )
+        return 0.0;
 
 	/* NOTE: Change this to punity_neighbors_fast() */
-	sum = 0.0;
-	for(i=0;i<obj_in->npts;i++)
-	{
-		res = 0.0;
-		for(j=0;j<obj_in->dim;j++)
-			vec[j] = x_in[j] - obj_in->pts[i*obj_in->dim+j], res += vec[j] * vec[j];
-		if( res < obj_in->dlt[i] * obj_in->dlt[i] )
-			sum += obj_in->wfs( obj_in->dim, obj_in->dlt[i], vec );
-	}
-	for(i=0;i<obj_in->dim;i++)
-		vec[i] = x_in[i] - obj_in->pts[idx_in*(obj_in->dim)+i];
+    if( obj_in->pbc == 0 )  /* Case 1: No periodic boundaries   */
+    {
+        sum = 0.0;
+        for(i=0;i<obj_in->npts;i++)
+        {
+            res = 0.0;
+            for(j=0;j<obj_in->dim;j++)
+                vec[j] = x_in[j] - obj_in->pts[i*obj_in->dim+j], res += vec[j] * vec[j];
+            if( res < obj_in->dlt[i] * obj_in->dlt[i] )
+                sum += obj_in->wfs( obj_in->dim, obj_in->dlt[i], vec );
+        }
+        for(i=0;i<obj_in->dim;i++)
+            vec[i] = x_in[i] - obj_in->pts[idx_in*(obj_in->dim)+i];
+    }
+    else
+    {
+        /**
+         * Prototypes from pbc.c used here:
+         * void pbc_vec_real3( t_real *x_in, t_real *y_in, t_real *bx_in, t_real *z_out )
+         * t_real pbc_dist_real3( t_real *x_in, t_real *y_in, t_real *bx_in );
+         */
+        assert( obj_in->dim == 3 );
+        sum = 0.0;
+        for(i=0;i<obj_in->npts;i++)
+        {
+            res = pbc_dist_real3( x_in, &(obj_in->pts[i*obj_in->dim]), obj_in->rpb );
+            res = res * res; /* FIXME: As above fix this to take no sqrt() at all!!! */
+            pbc_vec_real3( x_in, &(obj_in->pts[i*obj_in->dim]), obj_in->rpb, vec );
+            if( res < obj_in->dlt[i] * obj_in->dlt[i] )
+                sum += obj_in->wfs( obj_in->dim, obj_in->dlt[i], vec );
+        }
+        pbc_vec_real3( x_in, &(obj_in->pts[idx_in*obj_in->dim]), obj_in->rpb, vec );
+    }
 	return obj_in->wfs( obj_in->dim, obj_in->dlt[idx_in], vec ) / sum;
 }
 
@@ -1759,3 +1832,4 @@ int pubasis_free( pubasis_t *obj_in )
 	
 }
 
+// vim: tabstop=4:softtabstop=4:shiftwidth=4:expandtab:smarttab
