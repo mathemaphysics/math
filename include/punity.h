@@ -28,6 +28,8 @@ double rational_radial_deriv_evaluate( int, int *, double *, double, int );
 
 int punity_init( punity_t *, int, int, double *, double *, double (*)(int,double,double*), double (*)(int,int,double,double*) );
 
+int punity_use_pbc( punity_t *, double * );
+
 int punity_free( punity_t * );
 
 int punity_neighbors( punity_t *, double *, int ** );
