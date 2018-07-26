@@ -1,9 +1,9 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.63)
 AC_INIT(libmath, 0.1, ryan-p-daly@uiowa.edu)
-AM_INIT_AUTOMAKE(libmath, 0.1)
+AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([lagrange.c])
 AC_CONFIG_HEADER([config.h])
 
