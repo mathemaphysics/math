@@ -149,6 +149,17 @@ double cubic_window( int dim_in, double a_in, double *x_in )
                 return ( 4.0 - 6.0 * z * z + 3.0 * z * z * z ) / 6.0 / vol;
 }
 
+/**
+ * The analytical or symbolic calculation of derivatives in generic function
+ * spaces would greatly benefti from algorithmic differentiation. One example
+ * is symbolic python, the packages `sympy`.
+ *
+ * @param dim_in The dimension of the cubic window
+ * @param drv_in Order of derivative in the radius
+ * @param a_in Scaling factor
+ * @param x_in The position at which to evaluate the derivative
+ * @return The scalar value of the derivative
+ */
 double cubic_window_deriv( int dim_in, int drv_in, double a_in, double *x_in )
 {
 	int i,j;
@@ -1830,4 +1841,4 @@ int pubasis_free( pubasis_t *obj_in )
 	
 }
 
-// vim: tabstop=4:softtabstop=4:shiftwidth=4:expandtab:smarttab
+// vim: ts=4:sts=4:sw=4:et:sta

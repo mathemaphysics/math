@@ -429,69 +429,69 @@ int rkp_matrix_evaluate( rkp_t *obj_in, double *x_in )
  */
 int rkp_matrix_evaluate_scaled( rkp_t *obj_in, double *x_in )
 {
-	int i,j,k,m,n,p,nq,ret,pdim,*cmb,*occ,*ord;
-	double prd,*x,*vec;
+    int i,j,k,m,n,p,nq,ret,pdim,*cmb,*occ,*ord;
+    double prd,*x,*vec;
 
-	/* Set up iteration through monomials */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) ); /* Only really need obj_in->dim - 1 but padding won't hurt */
-        occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    /* Set up iteration through monomials */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) ); /* Only really need obj_in->dim - 1 but padding won't hurt */
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
 
-	/* Allocate the right size of vector for output from mls_basis_evaluate */
-        pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Allocate the right size of vector for output from mls_basis_evaluate */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Allocate a temporary dim-vector */
-        x = (double*) malloc( obj_in->dim * sizeof(double) );
-	vec = (double*) malloc( pdim * sizeof(double) );
+    /* Allocate a temporary dim-vector */
+    x = (double*) malloc( obj_in->dim * sizeof(double) );
+    vec = (double*) malloc( pdim * sizeof(double) );
 
-	/* Zero the matrix before forming the sum of outer products */
-        for(i=0;i<pdim*pdim;i++)
-                obj_in->grm[i] = 0.0;
+    /* Zero the matrix before forming the sum of outer products */
+    for(i=0;i<pdim*pdim;i++)
+        obj_in->grm[i] = 0.0;
 
-	/* Just iterate through all nodes */
-	for(i=0;i<obj_in->np;i++)
-	{
-		/* Generate the point */
-		for(j=0;j<obj_in->dim;j++)
-			x[j] = obj_in->pts[i*obj_in->dim+j] - x_in[j];
+    /* Just iterate through all nodes */
+    for(i=0;i<obj_in->np;i++)
+    {
+        /* Generate the point */
+        for(j=0;j<obj_in->dim;j++)
+            x[j] = obj_in->pts[i*obj_in->dim+j] - x_in[j];
 
-		/* Generate the polynomial vector */
-		for(p=0,j=0;j<=obj_in->deg;j++)
-		{
-			rcombinadic_init( j, obj_in->dim, cmb );
-			n = binomial( j + obj_in->dim - 1, obj_in->dim - 1 );
-			for(k=0;k<n;k++)
-			{
-				rcombinadic_occupancy( j, obj_in->dim, cmb, occ );
-				prd = 1.0;
-				for(m=0;m<obj_in->dim;m++)
-					prd *= pow( x[m] / obj_in->dlts[i], (double) occ[m] );
-				vec[p++] = prd;
-				rcombinadic_next( j, obj_in->dim, cmb );
-			}
-		}
+        /* Generate the polynomial vector */
+        for(p=0,j=0;j<=obj_in->deg;j++)
+        {
+            rcombinadic_init( j, obj_in->dim, cmb );
+            n = binomial( j + obj_in->dim - 1, obj_in->dim - 1 );
+            for(k=0;k<n;k++)
+            {
+                rcombinadic_occupancy( j, obj_in->dim, cmb, occ );
+                prd = 1.0;
+                for(m=0;m<obj_in->dim;m++)
+                    prd *= pow( x[m] / obj_in->dlts[i], (double) occ[m] );
+                vec[p++] = prd;
+                rcombinadic_next( j, obj_in->dim, cmb );
+            }
+        }
 
-		/* Now form the outer product */
-		for(j=0;j<pdim;j++)
-		{
-			for(k=j;k<pdim;k++)
-			{
-				prd = vec[j] * vec[k] * obj_in->wfs( obj_in->dim, obj_in->dlts[i], x );
-				obj_in->grm[j*pdim+k] += obj_in->gqw[i] * prd;
-			}
-		}
-	}
+        /* Now form the outer product */
+        for(j=0;j<pdim;j++)
+        {
+            for(k=j;k<pdim;k++)
+            {
+                prd = vec[j] * vec[k] * obj_in->wfs( obj_in->dim, obj_in->dlts[i], x );
+                obj_in->grm[j*pdim+k] += obj_in->gqw[i] * prd;
+            }
+        }
+    }
 
-	/* Copy into lower triangular area */
-	for(i=0;i<pdim;i++)
-		for(j=0;j<i;j++)
-			obj_in->grm[i*pdim+j] = obj_in->grm[j*pdim+i];
+    /* Copy into lower triangular area */
+    for(i=0;i<pdim;i++)
+        for(j=0;j<i;j++)
+            obj_in->grm[i*pdim+j] = obj_in->grm[j*pdim+i];
 
-	free( cmb );
-	free( occ );
-	free( x );
-	free( vec );
+    free( cmb );
+    free( occ );
+    free( x );
+    free( vec );
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -504,70 +504,70 @@ int rkp_matrix_evaluate_scaled( rkp_t *obj_in, double *x_in )
  */
 int rkp_matrix_evaluate_scaled_const( rkp_t *obj_in, double *x_in, double rho_in )
 {
-	int i,j,k,m,n,p,nq,ret,pdim,*cmb,*occ,*ord;
-	double prd,*x,*vec;
+    int i,j,k,m,n,p,nq,ret,pdim,*cmb,*occ,*ord;
+    double prd,*x,*vec;
 
-	/* Set up iteration through monomials */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) ); /* Only really need obj_in->dim - 1 but padding won't hurt */
-        occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    /* Set up iteration through monomials */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) ); /* Only really need obj_in->dim - 1 but padding won't hurt */
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
 
-	/* Allocate the right size of vector for output from mls_basis_evaluate */
-        pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Allocate the right size of vector for output from mls_basis_evaluate */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Allocate a temporary dim-vector */
-        x = (double*) malloc( obj_in->dim * sizeof(double) );
-	vec = (double*) malloc( pdim * sizeof(double) );
+    /* Allocate a temporary dim-vector */
+    x = (double*) malloc( obj_in->dim * sizeof(double) );
+    vec = (double*) malloc( pdim * sizeof(double) );
 
-	/* Zero the matrix before forming the sum of outer products */
-        for(i=0;i<pdim*pdim;i++)
-                obj_in->grm[i] = 0.0;
+    /* Zero the matrix before forming the sum of outer products */
+    for(i=0;i<pdim*pdim;i++)
+        obj_in->grm[i] = 0.0;
 
-	/* Just iterate through all nodes */
-	for(i=0;i<obj_in->np;i++)
-	{
-		/* Generate the point */
-		for(j=0;j<obj_in->dim;j++)
-			x[j] = obj_in->pts[i*obj_in->dim+j] - x_in[j];
+    /* Just iterate through all nodes */
+    for(i=0;i<obj_in->np;i++)
+    {
+        /* Generate the point */
+        for(j=0;j<obj_in->dim;j++)
+            x[j] = obj_in->pts[i*obj_in->dim+j] - x_in[j];
 
-		/* Generate the polynomial vector */
-		for(p=0,j=0;j<=obj_in->deg;j++)
-		{
-			rcombinadic_init( j, obj_in->dim, cmb );
-			n = binomial( j + obj_in->dim - 1, obj_in->dim - 1 );
-			for(k=0;k<n;k++)
-			{
-				rcombinadic_occupancy( j, obj_in->dim, cmb, occ );
-				prd = 1.0;
-				for(m=0;m<obj_in->dim;m++)
-					prd *= pow( x[m] / rho_in, (double) occ[m] );
-				vec[p++] = prd;
-				rcombinadic_next( j, obj_in->dim, cmb );
-			}
-		}
+        /* Generate the polynomial vector */
+        for(p=0,j=0;j<=obj_in->deg;j++)
+        {
+            rcombinadic_init( j, obj_in->dim, cmb );
+            n = binomial( j + obj_in->dim - 1, obj_in->dim - 1 );
+            for(k=0;k<n;k++)
+            {
+                rcombinadic_occupancy( j, obj_in->dim, cmb, occ );
+                prd = 1.0;
+                for(m=0;m<obj_in->dim;m++)
+                    prd *= pow( x[m] / rho_in, (double) occ[m] );
+                vec[p++] = prd;
+                rcombinadic_next( j, obj_in->dim, cmb );
+            }
+        }
 
-		/* Now form the outer product */
-		for(j=0;j<pdim;j++)
-		{
-			for(k=j;k<pdim;k++)
-			{
-				/* Need to scale the input to the window function here */
-				prd = vec[j] * vec[k] * obj_in->wfs( obj_in->dim, obj_in->dlts[i], x );
-				obj_in->grm[j*pdim+k] += obj_in->gqw[i] * prd;
-			}
-		}
-	}
+        /* Now form the outer product */
+        for(j=0;j<pdim;j++)
+        {
+            for(k=j;k<pdim;k++)
+            {
+                /* Need to scale the input to the window function here */
+                prd = vec[j] * vec[k] * obj_in->wfs( obj_in->dim, obj_in->dlts[i], x );
+                obj_in->grm[j*pdim+k] += obj_in->gqw[i] * prd;
+            }
+        }
+    }
 
-	/* Copy into lower triangular area */
-	for(i=0;i<pdim;i++)
-		for(j=0;j<i;j++)
-			obj_in->grm[i*pdim+j] = obj_in->grm[j*pdim+i];
+    /* Copy into lower triangular area */
+    for(i=0;i<pdim;i++)
+        for(j=0;j<i;j++)
+            obj_in->grm[i*pdim+j] = obj_in->grm[j*pdim+i];
 
-	free( cmb );
-	free( occ );
-	free( x );
-	free( vec );
+    free( cmb );
+    free( occ );
+    free( x );
+    free( vec );
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -582,29 +582,29 @@ int rkp_matrix_evaluate_scaled_const( rkp_t *obj_in, double *x_in, double rho_in
  */
 int rkp_matrix_generate( rkp_t *obj_in, double *x_in, double *coeffs_out )
 {
-	int i,j,ret,pdim,*ipiv;
+    int i,j,ret,pdim,*ipiv;
 
-	/* Build the matrix */
-	rkp_matrix_evaluate( obj_in, x_in );
+    /* Build the matrix */
+    rkp_matrix_evaluate( obj_in, x_in );
 
-	/* Set the dimension and allocate pivot space */
-	pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-	ipiv = (int*) malloc( pdim * sizeof(int) );
+    /* Set the dimension and allocate pivot space */
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    ipiv = (int*) malloc( pdim * sizeof(int) );
 
-	/* Copy into grmlu */
-        for(i=0;i<pdim*pdim;i++)
-                obj_in->grmlu[i] = obj_in->grm[i];
+    /* Copy into grmlu */
+    for(i=0;i<pdim*pdim;i++)
+        obj_in->grmlu[i] = obj_in->grm[i];
 
-	/* Invert the matrix and put the LU-decomposed matrix in grmlu */
-        j = 1;
-        coeffs_out[0] = 1.0;
-        for(i=1;i<pdim;i++)
-                coeffs_out[i] = 0.0;
-        dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out, &pdim, &ret );
+    /* Invert the matrix and put the LU-decomposed matrix in grmlu */
+    j = 1;
+    coeffs_out[0] = 1.0;
+    for(i=1;i<pdim;i++)
+        coeffs_out[i] = 0.0;
+    dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out, &pdim, &ret );
 
-	free( ipiv );
+    free( ipiv );
 
-	return ret;
+    return ret;
 }
 
 /**
@@ -619,29 +619,29 @@ int rkp_matrix_generate( rkp_t *obj_in, double *x_in, double *coeffs_out )
  */
 int rkp_matrix_generate_scaled( rkp_t *obj_in, double *x_in, double *coeffs_out )
 {
-        int i,j,ret,pdim,*ipiv;
+    int i,j,ret,pdim,*ipiv;
 
-        /* Build the matrix */
-        rkp_matrix_evaluate_scaled( obj_in, x_in );
+    /* Build the matrix */
+    rkp_matrix_evaluate_scaled( obj_in, x_in );
 
-        /* Set the dimension and allocate pivot space */
-        pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-        ipiv = (int*) malloc( pdim * sizeof(int) );
+    /* Set the dimension and allocate pivot space */
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    ipiv = (int*) malloc( pdim * sizeof(int) );
 
-        /* Copy into grmlu */
-        for(i=0;i<pdim*pdim;i++)
-                obj_in->grmlu[i] = obj_in->grm[i];
+    /* Copy into grmlu */
+    for(i=0;i<pdim*pdim;i++)
+        obj_in->grmlu[i] = obj_in->grm[i];
 
-        /* Invert the matrix and put the LU-decomposed matrix in grmlu */
-        j = 1;
-        coeffs_out[0] = 1.0;
-        for(i=1;i<pdim;i++)
-                coeffs_out[i] = 0.0;
-        dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out, &pdim, &ret );
+    /* Invert the matrix and put the LU-decomposed matrix in grmlu */
+    j = 1;
+    coeffs_out[0] = 1.0;
+    for(i=1;i<pdim;i++)
+        coeffs_out[i] = 0.0;
+    dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out, &pdim, &ret );
 
-	free( ipiv );
+    free( ipiv );
 
-        return ret;
+    return ret;
 }
 
 /**
@@ -658,29 +658,29 @@ int rkp_matrix_generate_scaled( rkp_t *obj_in, double *x_in, double *coeffs_out 
  */
 int rkp_matrix_generate_scaled_const( rkp_t *obj_in, double *x_in, double *coeffs_out, double rho_in )
 {
-        int i,j,ret,pdim,*ipiv;
+    int i,j,ret,pdim,*ipiv;
 
-        /* Build the matrix */
-        rkp_matrix_evaluate_scaled_const( obj_in, x_in, rho_in );
+    /* Build the matrix */
+    rkp_matrix_evaluate_scaled_const( obj_in, x_in, rho_in );
 
-        /* Set the dimension and allocate pivot space */
-        pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-        ipiv = (int*) malloc( pdim * sizeof(int) );
+    /* Set the dimension and allocate pivot space */
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    ipiv = (int*) malloc( pdim * sizeof(int) );
 
-        /* Copy into grmlu */
-        for(i=0;i<pdim*pdim;i++)
-                obj_in->grmlu[i] = obj_in->grm[i];
+    /* Copy into grmlu */
+    for(i=0;i<pdim*pdim;i++)
+        obj_in->grmlu[i] = obj_in->grm[i];
 
-        /* Invert the matrix and put the LU-decomposed matrix in grmlu */
-        j = 1;
-        coeffs_out[0] = 1.0;
-        for(i=1;i<pdim;i++)
-                coeffs_out[i] = 0.0;
-        dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out, &pdim, &ret );
+    /* Invert the matrix and put the LU-decomposed matrix in grmlu */
+    j = 1;
+    coeffs_out[0] = 1.0;
+    for(i=1;i<pdim;i++)
+        coeffs_out[i] = 0.0;
+    dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out, &pdim, &ret );
 
-	free( ipiv );
+    free( ipiv );
 
-        return ret;
+    return ret;
 }
 
 /**
@@ -690,41 +690,41 @@ int rkp_matrix_generate_scaled_const( rkp_t *obj_in, double *x_in, double *coeff
  */
 int rkp_wavelet_generate_order( rkp_t *obj_in, int wdx_in, double *x_in, double *coeffs_out )
 {
-	int i,j,k,m,ret,pdim,*ipiv,*exp;
+    int i,j,k,m,ret,pdim,*ipiv,*exp;
 
-	/* Build the matrix centered at x_in */
-	rkp_matrix_evaluate( obj_in, x_in );
+    /* Build the matrix centered at x_in */
+    rkp_matrix_evaluate( obj_in, x_in );
 
-	/* Set the dimensionality */
-	pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-	ipiv = (int*) malloc( pdim * sizeof(int) );
-	exp = (int*) malloc( obj_in->dim * sizeof(int) );
+    /* Set the dimensionality */
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    ipiv = (int*) malloc( pdim * sizeof(int) );
+    exp = (int*) malloc( obj_in->dim * sizeof(int) );
 
-	/* Copy into obj_in->grmlu for calculation */
-	for(i=0;i<pdim*pdim;i++)
-		obj_in->grmlu[i] = obj_in->grm[i];
+    /* Copy into obj_in->grmlu for calculation */
+    for(i=0;i<pdim*pdim;i++)
+        obj_in->grmlu[i] = obj_in->grm[i];
 
-	global_polynomial_vector( wdx_in, obj_in->dim, exp );
+    global_polynomial_vector( wdx_in, obj_in->dim, exp );
 
-	/* Solve the right system */
-	j = 1;
-	for(i=0;i<pdim;i++)
-		if( i == wdx_in )
-		{
-			coeffs_out[i] = 1.0;
-			m = 1;
-			for(k=0;k<obj_in->dim;k++)
-				m *= factorial( exp[k] );
-			coeffs_out[i] /= (double) m;
-		}
-		else
-			coeffs_out[i] = 0.0;
-	dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out, &pdim, &ret );
+    /* Solve the right system */
+    j = 1;
+    for(i=0;i<pdim;i++)
+        if( i == wdx_in )
+        {
+            coeffs_out[i] = 1.0;
+            m = 1;
+            for(k=0;k<obj_in->dim;k++)
+                m *= factorial( exp[k] );
+            coeffs_out[i] /= (double) m;
+        }
+        else
+            coeffs_out[i] = 0.0;
+    dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out, &pdim, &ret );
 
-	free( ipiv );
-	free( exp );
+    free( ipiv );
+    free( exp );
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -735,41 +735,41 @@ int rkp_wavelet_generate_order( rkp_t *obj_in, int wdx_in, double *x_in, double 
  */
 int rkp_wavelet_generate_order_scaled( rkp_t *obj_in, int wdx_in, double *x_in, double *coeffs_out )
 {
-        int i,j,k,m,ret,pdim,*ipiv,*exp;
+    int i,j,k,m,ret,pdim,*ipiv,*exp;
 
-        /* Build the matrix centered at x_in */
-        rkp_matrix_evaluate_scaled( obj_in, x_in );
+    /* Build the matrix centered at x_in */
+    rkp_matrix_evaluate_scaled( obj_in, x_in );
 
-        /* Set the dimensionality */
-        pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-        ipiv = (int*) malloc( pdim * sizeof(int) );
-        exp = (int*) malloc( obj_in->dim * sizeof(int) );
+    /* Set the dimensionality */
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    ipiv = (int*) malloc( pdim * sizeof(int) );
+    exp = (int*) malloc( obj_in->dim * sizeof(int) );
 
-        /* Copy into obj_in->grmlu for calculation */
-        for(i=0;i<pdim*pdim;i++)
-                obj_in->grmlu[i] = obj_in->grm[i];
+    /* Copy into obj_in->grmlu for calculation */
+    for(i=0;i<pdim*pdim;i++)
+        obj_in->grmlu[i] = obj_in->grm[i];
 
-        global_polynomial_vector( wdx_in, obj_in->dim, exp );
+    global_polynomial_vector( wdx_in, obj_in->dim, exp );
 
-        /* Solve the right system */
-        j = 1;
-        for(i=0;i<pdim;i++)
-                if( i == wdx_in )
-                {
-                        coeffs_out[i] = 1.0;
-                        m = 1;
-                        for(k=0;k<obj_in->dim;k++)
-                                m *= factorial( exp[k] );
-                        coeffs_out[i] /= (double) m;
-                }
-                else
-                        coeffs_out[i] = 0.0;
-        dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out, &pdim, &ret );
+    /* Solve the right system */
+    j = 1;
+    for(i=0;i<pdim;i++)
+        if( i == wdx_in )
+        {
+            coeffs_out[i] = 1.0;
+            m = 1;
+            for(k=0;k<obj_in->dim;k++)
+                m *= factorial( exp[k] );
+            coeffs_out[i] /= (double) m;
+        }
+        else
+            coeffs_out[i] = 0.0;
+    dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out, &pdim, &ret );
 
-        free( ipiv );
-        free( exp );
+    free( ipiv );
+    free( exp );
 
-        return 0;
+    return 0;
 }
 
 /**
@@ -777,41 +777,41 @@ int rkp_wavelet_generate_order_scaled( rkp_t *obj_in, int wdx_in, double *x_in, 
  */
 int rkp_wavelet_generate_order_scaled_const( rkp_t *obj_in, int wdx_in, double *x_in, double rho_in, double *coeffs_out )
 {
-        int i,j,k,m,ret,pdim,*ipiv,*exp;
+    int i,j,k,m,ret,pdim,*ipiv,*exp;
 
-        /* Build the matrix centered at x_in */
-        rkp_matrix_evaluate_scaled_const( obj_in, x_in, rho_in );
+    /* Build the matrix centered at x_in */
+    rkp_matrix_evaluate_scaled_const( obj_in, x_in, rho_in );
 
-        /* Set the dimensionality */
-        pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-        ipiv = (int*) malloc( pdim * sizeof(int) );
-        exp = (int*) malloc( obj_in->dim * sizeof(int) );
+    /* Set the dimensionality */
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    ipiv = (int*) malloc( pdim * sizeof(int) );
+    exp = (int*) malloc( obj_in->dim * sizeof(int) );
 
-        /* Copy into obj_in->grmlu for calculation */
-        for(i=0;i<pdim*pdim;i++)
-                obj_in->grmlu[i] = obj_in->grm[i];
+    /* Copy into obj_in->grmlu for calculation */
+    for(i=0;i<pdim*pdim;i++)
+        obj_in->grmlu[i] = obj_in->grm[i];
 
-        global_polynomial_vector( wdx_in, obj_in->dim, exp );
+    global_polynomial_vector( wdx_in, obj_in->dim, exp );
 
-        /* Solve the right system */
-        j = 1;
-        for(i=0;i<pdim;i++)
-                if( i == wdx_in )
-                {
-                        coeffs_out[i] = 1.0;
-                        m = 1;
-                        for(k=0;k<obj_in->dim;k++)
-                                m *= factorial( exp[k] );
-                        coeffs_out[i] /= (double) m;
-                }
-                else
-                        coeffs_out[i] = 0.0;
-        dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out, &pdim, &ret );
+    /* Solve the right system */
+    j = 1;
+    for(i=0;i<pdim;i++)
+        if( i == wdx_in )
+        {
+            coeffs_out[i] = 1.0;
+            m = 1;
+            for(k=0;k<obj_in->dim;k++)
+                m *= factorial( exp[k] );
+            coeffs_out[i] /= (double) m;
+        }
+        else
+            coeffs_out[i] = 0.0;
+    dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out, &pdim, &ret );
 
-        free( ipiv );
-        free( exp );
+    free( ipiv );
+    free( exp );
 
-        return 0;
+    return 0;
 }
 
 /**
@@ -875,49 +875,49 @@ int rkp_wavelet_generate( rkp_t *obj_in, double *x_in, double *coeffs_out )
  */
 int rkp_wavelet_generate_scaled( rkp_t *obj_in, double *x_in, double *coeffs_out )
 {
-        int i,j,k,ret,pdim,*ipiv;
-        double *tmp;
+    int i,j,k,ret,pdim,*ipiv;
+    double *tmp;
 
-        /* Build the matrix */
-        rkp_matrix_evaluate_scaled( obj_in, x_in );
+    /* Build the matrix */
+    rkp_matrix_evaluate_scaled( obj_in, x_in );
 
-        /* Set the dimension and allocate pivot space */
-        pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-        ipiv = (int*) malloc( pdim * sizeof(int) );
+    /* Set the dimension and allocate pivot space */
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    ipiv = (int*) malloc( pdim * sizeof(int) );
 
-        /* Copy into grmlu */
+    /* Copy into grmlu */
+    for(i=0;i<pdim*pdim;i++)
+        obj_in->grmlu[i] = obj_in->grm[i];
+
+    /* Allocate quick storage then release it */
+    tmp = (double*) malloc( pdim * pdim * sizeof(double) );
+
+    /* Save the system matrix in tmp temporarily */
+    for(i=0;i<pdim*pdim;i++)
+        tmp[i] = obj_in->grmlu[i];
+
+    /* Solve the system and apply it to the correct righthand side pdim - 1 times */
+    for(k=1;k<pdim;k++)
+    {
+        /* Copy the system into grmlu */
         for(i=0;i<pdim*pdim;i++)
-                obj_in->grmlu[i] = obj_in->grm[i];
+            obj_in->grmlu[i] = tmp[i];
 
-        /* Allocate quick storage then release it */
-        tmp = (double*) malloc( pdim * pdim * sizeof(double) );
+        /* Invert the matrix and put the LU-decomposed matrix in grmlu */
+        j = 1;
+        for(i=0;i<pdim;i++)
+            if( i == k )
+                coeffs_out[(k-1)*pdim+i] = 1.0;
+            else
+                coeffs_out[(k-1)*pdim+i] = 0.0;
+        dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out + ( k - 1 ) * pdim, &pdim, &ret );
+    }
 
-        /* Save the system matrix in tmp temporarily */
-        for(i=0;i<pdim*pdim;i++)
-                tmp[i] = obj_in->grmlu[i];
+    /* Clean everything up */
+    free( ipiv );
+    free( tmp );
 
-        /* Solve the system and apply it to the correct righthand side pdim - 1 times */
-        for(k=1;k<pdim;k++)
-        {
-                /* Copy the system into grmlu */
-                for(i=0;i<pdim*pdim;i++)
-                        obj_in->grmlu[i] = tmp[i];
-
-                /* Invert the matrix and put the LU-decomposed matrix in grmlu */
-                j = 1;
-                for(i=0;i<pdim;i++)
-                        if( i == k )
-                                coeffs_out[(k-1)*pdim+i] = 1.0;
-                        else
-                                coeffs_out[(k-1)*pdim+i] = 0.0;
-                dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out + ( k - 1 ) * pdim, &pdim, &ret );
-        }
-
-        /* Clean everything up */
-        free( ipiv );
-        free( tmp );
-
-        return 0;
+    return 0;
 }
 
 /**
@@ -925,49 +925,49 @@ int rkp_wavelet_generate_scaled( rkp_t *obj_in, double *x_in, double *coeffs_out
  */
 int rkp_wavelet_generate_scaled_const( rkp_t *obj_in, double *x_in, double rho_in, double *coeffs_out )
 {
-        int i,j,k,ret,pdim,*ipiv;
-        double *tmp;
+    int i,j,k,ret,pdim,*ipiv;
+    double *tmp;
 
-        /* Build the matrix */
-        rkp_matrix_evaluate_scaled_const( obj_in, x_in, rho_in );
+    /* Build the matrix */
+    rkp_matrix_evaluate_scaled_const( obj_in, x_in, rho_in );
 
-        /* Set the dimension and allocate pivot space */
-        pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-        ipiv = (int*) malloc( pdim * sizeof(int) );
+    /* Set the dimension and allocate pivot space */
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    ipiv = (int*) malloc( pdim * sizeof(int) );
 
-        /* Copy into grmlu */
+    /* Copy into grmlu */
+    for(i=0;i<pdim*pdim;i++)
+        obj_in->grmlu[i] = obj_in->grm[i];
+
+    /* Allocate quick storage then release it */
+    tmp = (double*) malloc( pdim * pdim * sizeof(double) );
+
+    /* Save the system matrix in tmp temporarily */
+    for(i=0;i<pdim*pdim;i++)
+        tmp[i] = obj_in->grmlu[i];
+
+    /* Solve the system and apply it to the correct righthand side pdim - 1 times */
+    for(k=1;k<pdim;k++)
+    {
+        /* Copy the system into grmlu */
         for(i=0;i<pdim*pdim;i++)
-                obj_in->grmlu[i] = obj_in->grm[i];
+            obj_in->grmlu[i] = tmp[i];
 
-        /* Allocate quick storage then release it */
-        tmp = (double*) malloc( pdim * pdim * sizeof(double) );
+        /* Invert the matrix and put the LU-decomposed matrix in grmlu */
+        j = 1;
+        for(i=0;i<pdim;i++)
+            if( i == k )
+                coeffs_out[(k-1)*pdim+i] = 1.0;
+            else
+                coeffs_out[(k-1)*pdim+i] = 0.0;
+        dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out + ( k - 1 ) * pdim, &pdim, &ret );
+    }
 
-        /* Save the system matrix in tmp temporarily */
-        for(i=0;i<pdim*pdim;i++)
-                tmp[i] = obj_in->grmlu[i];
+    /* Clean everything up */
+    free( ipiv );
+    free( tmp );
 
-        /* Solve the system and apply it to the correct righthand side pdim - 1 times */
-        for(k=1;k<pdim;k++)
-        {
-                /* Copy the system into grmlu */
-                for(i=0;i<pdim*pdim;i++)
-                        obj_in->grmlu[i] = tmp[i];
-
-                /* Invert the matrix and put the LU-decomposed matrix in grmlu */
-                j = 1;
-                for(i=0;i<pdim;i++)
-                        if( i == k )
-                                coeffs_out[(k-1)*pdim+i] = 1.0;
-                        else
-                                coeffs_out[(k-1)*pdim+i] = 0.0;
-                dgesv_( &pdim, &j, obj_in->grmlu, &pdim, ipiv, coeffs_out + ( k - 1 ) * pdim, &pdim, &ret );
-        }
-
-        /* Clean everything up */
-        free( ipiv );
-        free( tmp );
-
-        return 0;
+    return 0;
 }
 
 /**
@@ -986,13 +986,13 @@ int rkp_wavelet_generate_scaled_const( rkp_t *obj_in, double *x_in, double rho_i
  */
 int rkp_basis_generate( rkp_t *obj_in )
 {
-	int i,pdim;
+    int i,pdim;
 
-	pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-	for(i=0;i<obj_in->np;i++)
-		rkp_matrix_generate( obj_in, obj_in->pts + i * obj_in->dim, obj_in->coeffs + i * pdim );
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    for(i=0;i<obj_in->np;i++)
+        rkp_matrix_generate( obj_in, obj_in->pts + i * obj_in->dim, obj_in->coeffs + i * pdim );
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -1000,13 +1000,13 @@ int rkp_basis_generate( rkp_t *obj_in )
  */
 int rkp_basis_generate_scaled( rkp_t *obj_in )
 {
-        int i,pdim;
+    int i,pdim;
 
-        pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-        for(i=0;i<obj_in->np;i++)
-                rkp_matrix_generate_scaled( obj_in, obj_in->pts + i * obj_in->dim, obj_in->coeffs + i * pdim );
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    for(i=0;i<obj_in->np;i++)
+        rkp_matrix_generate_scaled( obj_in, obj_in->pts + i * obj_in->dim, obj_in->coeffs + i * pdim );
 
-        return 0;
+    return 0;
 }
 
 /**
@@ -1014,13 +1014,13 @@ int rkp_basis_generate_scaled( rkp_t *obj_in )
  */
 int rkp_basis_generate_scaled_const( rkp_t *obj_in )
 {
-        int i,pdim;
+    int i,pdim;
 
-        pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-        for(i=0;i<obj_in->np;i++)
-                rkp_matrix_generate_scaled_const( obj_in, obj_in->pts + i * obj_in->dim, obj_in->coeffs + i * pdim, obj_in->dlts[i] );
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    for(i=0;i<obj_in->np;i++)
+        rkp_matrix_generate_scaled_const( obj_in, obj_in->pts + i * obj_in->dim, obj_in->coeffs + i * pdim, obj_in->dlts[i] );
 
-        return 0;
+    return 0;
 }
 
 /**
@@ -1036,13 +1036,13 @@ int rkp_basis_generate_scaled_const( rkp_t *obj_in )
  */
 int rkp_wavelet_basis_generate( rkp_t *obj_in )
 {
-	int i,pdim;
+    int i,pdim;
 
-	pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-	for(i=0;i<obj_in->np;i++)
-		rkp_wavelet_generate( obj_in, obj_in->pts + i * obj_in->dim, obj_in->wcoeffs + i * pdim * ( pdim - 1 ) );
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    for(i=0;i<obj_in->np;i++)
+        rkp_wavelet_generate( obj_in, obj_in->pts + i * obj_in->dim, obj_in->wcoeffs + i * pdim * ( pdim - 1 ) );
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -1050,13 +1050,13 @@ int rkp_wavelet_basis_generate( rkp_t *obj_in )
  */
 int rkp_wavelet_basis_generate_scaled( rkp_t *obj_in )
 {
-        int i,pdim;
+    int i,pdim;
 
-        pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-        for(i=0;i<obj_in->np;i++)
-                rkp_wavelet_generate_scaled( obj_in, obj_in->pts + i * obj_in->dim, obj_in->wcoeffs + i * pdim * ( pdim - 1 ) );
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    for(i=0;i<obj_in->np;i++)
+        rkp_wavelet_generate_scaled( obj_in, obj_in->pts + i * obj_in->dim, obj_in->wcoeffs + i * pdim * ( pdim - 1 ) );
 
-        return 0;
+    return 0;
 }
 
 /**
@@ -1064,13 +1064,13 @@ int rkp_wavelet_basis_generate_scaled( rkp_t *obj_in )
  */
 int rkp_wavelet_basis_generate_scaled_const( rkp_t *obj_in )
 {
-        int i,pdim;
+    int i,pdim;
 
-        pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
-        for(i=0;i<obj_in->np;i++)
-                rkp_wavelet_generate_scaled_const( obj_in, obj_in->pts + i * obj_in->dim, obj_in->dlts[i], obj_in->wcoeffs + i * pdim * ( pdim - 1 ) );
+    pdim = binomial( obj_in->dim + obj_in->deg, obj_in->dim );
+    for(i=0;i<obj_in->np;i++)
+        rkp_wavelet_generate_scaled_const( obj_in, obj_in->pts + i * obj_in->dim, obj_in->dlts[i], obj_in->wcoeffs + i * pdim * ( pdim - 1 ) );
 
-        return 0;
+    return 0;
 }
 
 /**
@@ -1084,47 +1084,47 @@ int rkp_wavelet_basis_generate_scaled_const( rkp_t *obj_in )
  */
 double mls_term_evaluate( mls_t *obj_in, int idx_in, double *x_in )
 {
-	double val,*tmp,*x,*px,*pxi,*mat;
-	int i,j,pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    double val,*tmp,*x,*px,*pxi,*mat;
+    int i,j,pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	tmp = (double*) malloc( pdim * sizeof(double) );
-	x = (double*) malloc( obj_in->dim * sizeof(double) );
-	px = (double*) malloc( pdim * sizeof(double) );
-	pxi = (double*) malloc( pdim * sizeof(double) );
-	mat = (double*) malloc( pdim * pdim * sizeof(double) );
+    tmp = (double*) malloc( pdim * sizeof(double) );
+    x = (double*) malloc( obj_in->dim * sizeof(double) );
+    px = (double*) malloc( pdim * sizeof(double) );
+    pxi = (double*) malloc( pdim * sizeof(double) );
+    mat = (double*) malloc( pdim * pdim * sizeof(double) );
 
-	/* Calculate the x-dependent vectors and matrix */
-	mls_basis_evaluate( obj_in, x_in, px );
-	mls_matrix_evaluate( obj_in, obj_in->dlts[idx_in], x_in, mat );
-	mls_basis_evaluate( obj_in, obj_in->pts + idx_in * obj_in->dim, pxi );
+    /* Calculate the x-dependent vectors and matrix */
+    mls_basis_evaluate( obj_in, x_in, px );
+    mls_matrix_evaluate( obj_in, obj_in->dlts[idx_in], x_in, mat );
+    mls_basis_evaluate( obj_in, obj_in->pts + idx_in * obj_in->dim, pxi );
 
-	/* Now invert A(x) */
-	int ret;
-	int nrhs = 1;
-	int *ipiv = (int*) malloc( pdim * sizeof(int) );
+    /* Now invert A(x) */
+    int ret;
+    int nrhs = 1;
+    int *ipiv = (int*) malloc( pdim * sizeof(int) );
 
-	/* Invert the matrix and put it in apply it to p(x_idx_in) */
-	dgesv_( &pdim, &nrhs, mat, &pdim, ipiv, pxi, &pdim, &ret );
+    /* Invert the matrix and put it in apply it to p(x_idx_in) */
+    dgesv_( &pdim, &nrhs, mat, &pdim, ipiv, pxi, &pdim, &ret );
 
-	/* Now take the inner product with p(x) */
-	val = 0.0;
-	for(i=0;i<pdim;i++)
-		val += px[i] * pxi[i];
+    /* Now take the inner product with p(x) */
+    val = 0.0;
+    for(i=0;i<pdim;i++)
+        val += px[i] * pxi[i];
 
-	/* Localize the x variable around index idx_in in obj_in->pts */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] = x_in[i] - obj_in->pts[idx_in*obj_in->dim+i];
+    /* Localize the x variable around index idx_in in obj_in->pts */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] = x_in[i] - obj_in->pts[idx_in*obj_in->dim+i];
 
-	val = val * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
+    val = val * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
 
-	free( x );
-	free( tmp );
-	free( px );
-	free( pxi );
-	free( mat );
-	free( ipiv );
+    free( x );
+    free( tmp );
+    free( px );
+    free( pxi );
+    free( mat );
+    free( ipiv );
 
-	return val;
+    return val;
 }
 
 /**
@@ -1144,69 +1144,69 @@ double mls_term_evaluate( mls_t *obj_in, int idx_in, double *x_in )
  */
 double rkp_term_evaluate( rkp_t *obj_in, int idx_in, double *x_in )
 {
-	int i,j,k,n,p,pdim,*cmb,*occ;
-	double sum,prd,*cf,x[obj_in->dim];
+    int i,j,k,n,p,pdim,*cmb,*occ;
+    double sum,prd,*cf,x[obj_in->dim];
 
-	if( idx_in < 0 || idx_in > obj_in->np - 1 )
-		return 0.0;
+    if( idx_in < 0 || idx_in > obj_in->np - 1 )
+        return 0.0;
 
-	/* If x_in is more than obj_in->dlts[idx_in] away from obj_in->pts[idx_in], then don't calculate this */
-	sum = 0.0;
-	for(i=0;i<obj_in->dim;i++)
-		sum += pow( x_in[i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
-	if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
-		return 0.0;
+    /* If x_in is more than obj_in->dlts[idx_in] away from obj_in->pts[idx_in], then don't calculate this */
+    sum = 0.0;
+    for(i=0;i<obj_in->dim;i++)
+        sum += pow( x_in[i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
+    if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
+        return 0.0;
 
-	/* Space dimension */
-	pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Space dimension */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Allocate space for polynomial counting */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) );
-	occ = (int*) malloc( obj_in->dim * sizeof(int) );
-	cf = (double*) malloc( pdim * sizeof(double) );
+    /* Allocate space for polynomial counting */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) );
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    cf = (double*) malloc( pdim * sizeof(double) );
 
-	/* Generate the coefficients for the correction function */
-	rkp_matrix_generate( obj_in, x_in, cf );
+    /* Generate the coefficients for the correction function */
+    rkp_matrix_generate( obj_in, x_in, cf );
 
-	/* Generate the x value taken as input relative to the particle position in pts */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] = obj_in->pts[idx_in*obj_in->dim+i] - x_in[i];
+    /* Generate the x value taken as input relative to the particle position in pts */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] = obj_in->pts[idx_in*obj_in->dim+i] - x_in[i];
 
-	/* Now evaluate the particle function */
-	sum = 0.0;
-	for(p=0,i=0;i<=obj_in->deg;i++)
-	{
-		/* Initialize the polynomial iterator */
-		rcombinadic_init( i, obj_in->dim, cmb );
-		n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
-		for(j=0;j<n;j++)
-		{
-			/* Evaluate the vector of exponents for each dimension */
-			rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
+    /* Now evaluate the particle function */
+    sum = 0.0;
+    for(p=0,i=0;i<=obj_in->deg;i++)
+    {
+        /* Initialize the polynomial iterator */
+        rcombinadic_init( i, obj_in->dim, cmb );
+        n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
+        for(j=0;j<n;j++)
+        {
+            /* Evaluate the vector of exponents for each dimension */
+            rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
 
-			/* Calculate the monomial value at x */
-			prd = 1.0;
-			for(k=0;k<obj_in->dim;k++)
-				prd *= pow( x[k], (double) occ[k] );
+            /* Calculate the monomial value at x */
+            prd = 1.0;
+            for(k=0;k<obj_in->dim;k++)
+                prd *= pow( x[k], (double) occ[k] );
 
-			/* Multiply by the coefficient on this term from the matrix inverse */
-			prd *= cf[p++];
+            /* Multiply by the coefficient on this term from the matrix inverse */
+            prd *= cf[p++];
 
-			/* Make sure you call rkp_matrix_generate with the right dilation parameter */
-			sum += prd;
+            /* Make sure you call rkp_matrix_generate with the right dilation parameter */
+            sum += prd;
 
-			/* Step next */
-			rcombinadic_next( i, obj_in->dim, cmb );
-		}
-	}
+            /* Step next */
+            rcombinadic_next( i, obj_in->dim, cmb );
+        }
+    }
 
-	/* Clean up */
-	free( cmb );
-	free( occ );
-	free( cf );
+    /* Clean up */
+    free( cmb );
+    free( occ );
+    free( cf );
 
-	/* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
-	return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x ); /* This is 1.0 because already divided by dilation parameter!!! */
+    /* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
+    return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x ); /* This is 1.0 because already divided by dilation parameter!!! */
 }
 
 /**
@@ -1214,71 +1214,71 @@ double rkp_term_evaluate( rkp_t *obj_in, int idx_in, double *x_in )
  */
 double rkp_term_evaluate_scaled( rkp_t *obj_in, int idx_in, double *x_in )
 {
-	int i,j,k,n,p,pdim,*cmb,*occ;
-	double sum,prd,*cf,x[obj_in->dim];
+    int i,j,k,n,p,pdim,*cmb,*occ;
+    double sum,prd,*cf,x[obj_in->dim];
 
-	if( idx_in < 0 || idx_in > obj_in->np - 1 )
-		return 0.0;
+    if( idx_in < 0 || idx_in > obj_in->np - 1 )
+        return 0.0;
 
-	/* If x_in is more than obj_in->dlts[idx_in] away from obj_in->pts[idx_in], then don't calculate this */
-	sum = 0.0;
-	for(i=0;i<obj_in->dim;i++)
-		sum += pow( x_in[i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
-	if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
-		return 0.0;
+    /* If x_in is more than obj_in->dlts[idx_in] away from obj_in->pts[idx_in], then don't calculate this */
+    sum = 0.0;
+    for(i=0;i<obj_in->dim;i++)
+        sum += pow( x_in[i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
+    if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
+        return 0.0;
 
-	/* Space dimension */
-	pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Space dimension */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Allocate space for polynomial counting */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) );
-	occ = (int*) malloc( obj_in->dim * sizeof(int) );
-	cf = (double*) malloc( pdim * sizeof(double) );
+    /* Allocate space for polynomial counting */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) );
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    cf = (double*) malloc( pdim * sizeof(double) );
 
-	/* Generate the coefficients for the correction function */
-	rkp_matrix_generate_scaled( obj_in, x_in, cf );
+    /* Generate the coefficients for the correction function */
+    rkp_matrix_generate_scaled( obj_in, x_in, cf );
 
-	/* Generate the x value taken as input relative to the particle position in pts */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - x_in[i] ) / obj_in->dlts[idx_in]; /* Important: Scale the input */
+    /* Generate the x value taken as input relative to the particle position in pts */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - x_in[i] ) / obj_in->dlts[idx_in]; /* Important: Scale the input */
 
-	/* Now evaluate the particle function */
-	sum = 0.0;
-	for(p=0,i=0;i<=obj_in->deg;i++)
-	{
-		/* Initialize the polynomial iterator */
-		rcombinadic_init( i, obj_in->dim, cmb );
-		n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
-		for(j=0;j<n;j++)
-		{
-			/* Evaluate the vector of exponents for each dimension */
-			rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
+    /* Now evaluate the particle function */
+    sum = 0.0;
+    for(p=0,i=0;i<=obj_in->deg;i++)
+    {
+        /* Initialize the polynomial iterator */
+        rcombinadic_init( i, obj_in->dim, cmb );
+        n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
+        for(j=0;j<n;j++)
+        {
+            /* Evaluate the vector of exponents for each dimension */
+            rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
 
-			/* Calculate the monomial value at x */
-			prd = 1.0;
-			for(k=0;k<obj_in->dim;k++)
-				prd *= pow( x[k], (double) occ[k] );
+            /* Calculate the monomial value at x */
+            prd = 1.0;
+            for(k=0;k<obj_in->dim;k++)
+                prd *= pow( x[k], (double) occ[k] );
 
-			/* Multiply by the coefficient on this term from the matrix inverse */
-			prd *= cf[p++];
+            /* Multiply by the coefficient on this term from the matrix inverse */
+            prd *= cf[p++];
 
-			/* Make sure you call rkp_matrix_generate with the right dilation parameter */
-			sum += prd;
+            /* Make sure you call rkp_matrix_generate with the right dilation parameter */
+            sum += prd;
 
-			/* Step next */
-			rcombinadic_next( i, obj_in->dim, cmb );
-		}
-	}
+            /* Step next */
+            rcombinadic_next( i, obj_in->dim, cmb );
+        }
+    }
 
-	/* Clean up */
-	free( cmb );
-	free( occ );
-	free( cf );
+    /* Clean up */
+    free( cmb );
+    free( occ );
+    free( cf );
 
-	/* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] *= obj_in->dlts[idx_in]; /* Must undo dilation to give input to obj_in->wfs */
-	return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x ); /* This is 1.0 because already divided by dilation parameter!!! */
+    /* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] *= obj_in->dlts[idx_in]; /* Must undo dilation to give input to obj_in->wfs */
+    return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x ); /* This is 1.0 because already divided by dilation parameter!!! */
 }
 
 /**
@@ -1286,71 +1286,71 @@ double rkp_term_evaluate_scaled( rkp_t *obj_in, int idx_in, double *x_in )
  */
 double rkp_term_evaluate_scaled_const( rkp_t *obj_in, int idx_in, double *x_in, double rho_in )
 {
-	int i,j,k,n,p,pdim,*cmb,*occ;
-	double sum,prd,*cf,x[obj_in->dim];
+    int i,j,k,n,p,pdim,*cmb,*occ;
+    double sum,prd,*cf,x[obj_in->dim];
 
-	if( idx_in < 0 || idx_in > obj_in->np - 1 )
-		return 0.0;
+    if( idx_in < 0 || idx_in > obj_in->np - 1 )
+        return 0.0;
 
-	/* If x_in is more than obj_in->dlts[idx_in] away from obj_in->pts[idx_in], then don't calculate this */
-	sum = 0.0;
-	for(i=0;i<obj_in->dim;i++)
-		sum += pow( x_in[i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
-	if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
-		return 0.0;
+    /* If x_in is more than obj_in->dlts[idx_in] away from obj_in->pts[idx_in], then don't calculate this */
+    sum = 0.0;
+    for(i=0;i<obj_in->dim;i++)
+        sum += pow( x_in[i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
+    if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
+        return 0.0;
 
-	/* Space dimension */
-	pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Space dimension */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Allocate space for polynomial counting */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) );
-	occ = (int*) malloc( obj_in->dim * sizeof(int) );
-	cf = (double*) malloc( pdim * sizeof(double) );
+    /* Allocate space for polynomial counting */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) );
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    cf = (double*) malloc( pdim * sizeof(double) );
 
-	/* Generate the coefficients for the correction function */
-	rkp_matrix_generate_scaled_const( obj_in, x_in, cf, rho_in );
+    /* Generate the coefficients for the correction function */
+    rkp_matrix_generate_scaled_const( obj_in, x_in, cf, rho_in );
 
-	/* Generate the x value taken as input relative to the particle position in pts */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - x_in[i] ) / rho_in; /* Important: Scale the input */
+    /* Generate the x value taken as input relative to the particle position in pts */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - x_in[i] ) / rho_in; /* Important: Scale the input */
 
-	/* Now evaluate the particle function */
-	sum = 0.0;
-	for(p=0,i=0;i<=obj_in->deg;i++)
-	{
-		/* Initialize the polynomial iterator */
-		rcombinadic_init( i, obj_in->dim, cmb );
-		n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
-		for(j=0;j<n;j++)
-		{
-			/* Evaluate the vector of exponents for each dimension */
-			rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
+    /* Now evaluate the particle function */
+    sum = 0.0;
+    for(p=0,i=0;i<=obj_in->deg;i++)
+    {
+        /* Initialize the polynomial iterator */
+        rcombinadic_init( i, obj_in->dim, cmb );
+        n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
+        for(j=0;j<n;j++)
+        {
+            /* Evaluate the vector of exponents for each dimension */
+            rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
 
-			/* Calculate the monomial value at x */
-			prd = 1.0;
-			for(k=0;k<obj_in->dim;k++)
-				prd *= pow( x[k], (double) occ[k] );
+            /* Calculate the monomial value at x */
+            prd = 1.0;
+            for(k=0;k<obj_in->dim;k++)
+                prd *= pow( x[k], (double) occ[k] );
 
-			/* Multiply by the coefficient on this term from the matrix inverse */
-			prd *= cf[p++];
+            /* Multiply by the coefficient on this term from the matrix inverse */
+            prd *= cf[p++];
 
-			/* Make sure you call rkp_matrix_generate with the right dilation parameter */
-			sum += prd;
+            /* Make sure you call rkp_matrix_generate with the right dilation parameter */
+            sum += prd;
 
-			/* Step next */
-			rcombinadic_next( i, obj_in->dim, cmb );
-		}
-	}
+            /* Step next */
+            rcombinadic_next( i, obj_in->dim, cmb );
+        }
+    }
 
-	/* Clean up */
-	free( cmb );
-	free( occ );
-	free( cf );
+    /* Clean up */
+    free( cmb );
+    free( occ );
+    free( cf );
 
-	/* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] *= rho_in; /* Must undo dilation to give input to obj_in->wfs */
-	return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x ); /* This is 1.0 because already divided by dilation parameter!!! */
+    /* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] *= rho_in; /* Must undo dilation to give input to obj_in->wfs */
+    return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x ); /* This is 1.0 because already divided by dilation parameter!!! */
 }
 
 /**
@@ -1370,64 +1370,64 @@ double rkp_term_evaluate_scaled_const( rkp_t *obj_in, int idx_in, double *x_in, 
  */
 double rkp_term_evaluate_node( rkp_t *obj_in, int idx_in, int jdx_in )
 {
-	int i,j,k,n,p,pdim,*cmb,*occ;
-	double sum,prd,x[obj_in->dim];
+    int i,j,k,n,p,pdim,*cmb,*occ;
+    double sum,prd,x[obj_in->dim];
 
-	if( idx_in < 0 || idx_in > obj_in->np - 1 )
-		return 0.0;
+    if( idx_in < 0 || idx_in > obj_in->np - 1 )
+        return 0.0;
 
-	/* Space dimension */
-	pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Space dimension */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Check quickly */
-	sum = 0.0;
-        for(i=0;i<obj_in->dim;i++)
-                sum += pow( obj_in->pts[jdx_in*obj_in->dim+i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
-        if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
-                return 0.0;
+    /* Check quickly */
+    sum = 0.0;
+    for(i=0;i<obj_in->dim;i++)
+        sum += pow( obj_in->pts[jdx_in*obj_in->dim+i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
+    if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
+        return 0.0;
 
-	/* Allocate space for polynomial counting */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) );
-	occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    /* Allocate space for polynomial counting */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) );
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
 
-	/* Generate the x value taken as input relative to the particle position in pts */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] = obj_in->pts[idx_in*obj_in->dim+i] - obj_in->pts[jdx_in*obj_in->dim+i];
+    /* Generate the x value taken as input relative to the particle position in pts */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] = obj_in->pts[idx_in*obj_in->dim+i] - obj_in->pts[jdx_in*obj_in->dim+i];
 
-	/* Now evaluate the particle function */
-	sum = 0.0;
-	for(p=0,i=0;i<=obj_in->deg;i++)
-	{
-		/* Initialize the polynomial iterator */
-		rcombinadic_init( i, obj_in->dim, cmb );
-		n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
-		for(j=0;j<n;j++)
-		{
-			/* Evaluate the vector of exponents for each dimension */
-			rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
+    /* Now evaluate the particle function */
+    sum = 0.0;
+    for(p=0,i=0;i<=obj_in->deg;i++)
+    {
+        /* Initialize the polynomial iterator */
+        rcombinadic_init( i, obj_in->dim, cmb );
+        n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
+        for(j=0;j<n;j++)
+        {
+            /* Evaluate the vector of exponents for each dimension */
+            rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
 
-			/* Calculate the monomial value at x */
-			prd = 1.0;
-			for(k=0;k<obj_in->dim;k++)
-				prd *= pow( x[k], (double) occ[k] );
+            /* Calculate the monomial value at x */
+            prd = 1.0;
+            for(k=0;k<obj_in->dim;k++)
+                prd *= pow( x[k], (double) occ[k] );
 
-			/* Multiply by the coefficient on this term from the matrix inverse */
-			prd *= obj_in->coeffs[jdx_in*pdim+p++];
+            /* Multiply by the coefficient on this term from the matrix inverse */
+            prd *= obj_in->coeffs[jdx_in*pdim+p++];
 
-			/* Make sure you call rkp_matrix_generate with the right dilation parameter */
-			sum += prd;
+            /* Make sure you call rkp_matrix_generate with the right dilation parameter */
+            sum += prd;
 
-			/* Step next */
-			rcombinadic_next( i, obj_in->dim, cmb );
-		}
-	}
+            /* Step next */
+            rcombinadic_next( i, obj_in->dim, cmb );
+        }
+    }
 
-	/* Clean up */
-	free( cmb );
-	free( occ );
+    /* Clean up */
+    free( cmb );
+    free( occ );
 
-	/* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
-	return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x ); /* This is 1.0 because already divided by dilation parameter!!! */
+    /* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
+    return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x ); /* This is 1.0 because already divided by dilation parameter!!! */
 }
 
 /**
@@ -1435,130 +1435,130 @@ double rkp_term_evaluate_node( rkp_t *obj_in, int idx_in, int jdx_in )
  */
 double rkp_term_evaluate_node_scaled( rkp_t *obj_in, int idx_in, int jdx_in )
 {
-	int i,j,k,n,p,pdim,*cmb,*occ;
-	double sum,prd,x[obj_in->dim];
+    int i,j,k,n,p,pdim,*cmb,*occ;
+    double sum,prd,x[obj_in->dim];
 
-	if( idx_in < 0 || idx_in > obj_in->np - 1 )
-		return 0.0;
+    if( idx_in < 0 || idx_in > obj_in->np - 1 )
+        return 0.0;
 
-	/* Space dimension */
-	pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Space dimension */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Check quickly */
-	sum = 0.0;
-        for(i=0;i<obj_in->dim;i++)
-                sum += pow( obj_in->pts[jdx_in*obj_in->dim+i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
-        if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
-                return 0.0;
+    /* Check quickly */
+    sum = 0.0;
+    for(i=0;i<obj_in->dim;i++)
+        sum += pow( obj_in->pts[jdx_in*obj_in->dim+i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
+    if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
+        return 0.0;
 
-	/* Allocate space for polynomial counting */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) );
-	occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    /* Allocate space for polynomial counting */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) );
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
 
-	/* Generate the x value taken as input relative to the particle position in pts */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - obj_in->pts[jdx_in*obj_in->dim+i] ) / obj_in->dlts[idx_in];
+    /* Generate the x value taken as input relative to the particle position in pts */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - obj_in->pts[jdx_in*obj_in->dim+i] ) / obj_in->dlts[idx_in];
 
-	/* Now evaluate the particle function */
-	sum = 0.0;
-	for(p=0,i=0;i<=obj_in->deg;i++)
-	{
-		/* Initialize the polynomial iterator */
-		rcombinadic_init( i, obj_in->dim, cmb );
-		n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
-		for(j=0;j<n;j++)
-		{
-			/* Evaluate the vector of exponents for each dimension */
-			rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
+    /* Now evaluate the particle function */
+    sum = 0.0;
+    for(p=0,i=0;i<=obj_in->deg;i++)
+    {
+        /* Initialize the polynomial iterator */
+        rcombinadic_init( i, obj_in->dim, cmb );
+        n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
+        for(j=0;j<n;j++)
+        {
+            /* Evaluate the vector of exponents for each dimension */
+            rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
 
-			/* Calculate the monomial value at x */
-			prd = 1.0;
-			for(k=0;k<obj_in->dim;k++)
-				prd *= pow( x[k], (double) occ[k] );
+            /* Calculate the monomial value at x */
+            prd = 1.0;
+            for(k=0;k<obj_in->dim;k++)
+                prd *= pow( x[k], (double) occ[k] );
 
-			/* Multiply by the coefficient on this term from the matrix inverse */
-			prd *= obj_in->coeffs[jdx_in*pdim+p++];
+            /* Multiply by the coefficient on this term from the matrix inverse */
+            prd *= obj_in->coeffs[jdx_in*pdim+p++];
 
-			/* Make sure you call rkp_matrix_generate with the right dilation parameter */
-			sum += prd;
+            /* Make sure you call rkp_matrix_generate with the right dilation parameter */
+            sum += prd;
 
-			/* Step next */
-			rcombinadic_next( i, obj_in->dim, cmb );
-		}
-	}
+            /* Step next */
+            rcombinadic_next( i, obj_in->dim, cmb );
+        }
+    }
 
-	/* Clean up */
-	free( cmb );
-	free( occ );
+    /* Clean up */
+    free( cmb );
+    free( occ );
 
-	/* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] *= obj_in->dlts[idx_in];
-	return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x ); /* This is 1.0 because already divided by dilation parameter!!! */
+    /* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] *= obj_in->dlts[idx_in];
+    return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x ); /* This is 1.0 because already divided by dilation parameter!!! */
 }
 
 double rkp_term_evaluate_node_scaled_const( rkp_t *obj_in, int idx_in, int jdx_in )
 {
-	int i,j,k,n,p,pdim,*cmb,*occ;
-	double sum,prd,x[obj_in->dim];
+    int i,j,k,n,p,pdim,*cmb,*occ;
+    double sum,prd,x[obj_in->dim];
 
-	if( idx_in < 0 || idx_in > obj_in->np - 1 )
-		return 0.0;
+    if( idx_in < 0 || idx_in > obj_in->np - 1 )
+        return 0.0;
 
-	/* Space dimension */
-	pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Space dimension */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Check quickly */
-	sum = 0.0;
-        for(i=0;i<obj_in->dim;i++)
-                sum += pow( obj_in->pts[jdx_in*obj_in->dim+i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
-        if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
-                return 0.0;
+    /* Check quickly */
+    sum = 0.0;
+    for(i=0;i<obj_in->dim;i++)
+        sum += pow( obj_in->pts[jdx_in*obj_in->dim+i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
+    if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
+        return 0.0;
 
-	/* Allocate space for polynomial counting */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) );
-	occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    /* Allocate space for polynomial counting */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) );
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
 
-	/* Generate the x value taken as input relative to the particle position in pts */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - obj_in->pts[jdx_in*obj_in->dim+i] ) / obj_in->dlts[jdx_in];
+    /* Generate the x value taken as input relative to the particle position in pts */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - obj_in->pts[jdx_in*obj_in->dim+i] ) / obj_in->dlts[jdx_in];
 
-	/* Now evaluate the particle function */
-	sum = 0.0;
-	for(p=0,i=0;i<=obj_in->deg;i++)
-	{
-		/* Initialize the polynomial iterator */
-		rcombinadic_init( i, obj_in->dim, cmb );
-		n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
-		for(j=0;j<n;j++)
-		{
-			/* Evaluate the vector of exponents for each dimension */
-			rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
+    /* Now evaluate the particle function */
+    sum = 0.0;
+    for(p=0,i=0;i<=obj_in->deg;i++)
+    {
+        /* Initialize the polynomial iterator */
+        rcombinadic_init( i, obj_in->dim, cmb );
+        n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
+        for(j=0;j<n;j++)
+        {
+            /* Evaluate the vector of exponents for each dimension */
+            rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
 
-			/* Calculate the monomial value at x */
-			prd = 1.0;
-			for(k=0;k<obj_in->dim;k++)
-				prd *= pow( x[k], (double) occ[k] );
+            /* Calculate the monomial value at x */
+            prd = 1.0;
+            for(k=0;k<obj_in->dim;k++)
+                prd *= pow( x[k], (double) occ[k] );
 
-			/* Multiply by the coefficient on this term from the matrix inverse */
-			prd *= obj_in->coeffs[jdx_in*pdim+p++];
+            /* Multiply by the coefficient on this term from the matrix inverse */
+            prd *= obj_in->coeffs[jdx_in*pdim+p++];
 
-			/* Make sure you call rkp_matrix_generate with the right dilation parameter */
-			sum += prd;
+            /* Make sure you call rkp_matrix_generate with the right dilation parameter */
+            sum += prd;
 
-			/* Step next */
-			rcombinadic_next( i, obj_in->dim, cmb );
-		}
-	}
+            /* Step next */
+            rcombinadic_next( i, obj_in->dim, cmb );
+        }
+    }
 
-	/* Clean up */
-	free( cmb );
-	free( occ );
+    /* Clean up */
+    free( cmb );
+    free( occ );
 
-	/* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] *= obj_in->dlts[jdx_in];
-	return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x ); /* This is 1.0 because already divided by dilation parameter!!! */
+    /* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] *= obj_in->dlts[jdx_in];
+    return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x ); /* This is 1.0 because already divided by dilation parameter!!! */
 }
 
 /**
@@ -1566,69 +1566,69 @@ double rkp_term_evaluate_node_scaled_const( rkp_t *obj_in, int idx_in, int jdx_i
  */
 double rkp_wavelet_term_evaluate( rkp_t *obj_in, int idx_in, int wdx_in, double *x_in, double rho_in )
 {
-	int i,j,k,n,p,pdim,*cmb,*occ;
-	double sum,prd,*cf,x[obj_in->dim];
+    int i,j,k,n,p,pdim,*cmb,*occ;
+    double sum,prd,*cf,x[obj_in->dim];
 
-	if( idx_in < 0 || idx_in > obj_in->np - 1 )
-		return 0.0;
+    if( idx_in < 0 || idx_in > obj_in->np - 1 )
+        return 0.0;
 
-	/* If x_in is more than obj_in->dlts[idx_in] away from obj_in->pts[idx_in], then don't calculate this */
-	sum = 0.0;
-	for(i=0;i<obj_in->dim;i++)
-		sum += pow( x_in[i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
-	if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
-		return 0.0;
+    /* If x_in is more than obj_in->dlts[idx_in] away from obj_in->pts[idx_in], then don't calculate this */
+    sum = 0.0;
+    for(i=0;i<obj_in->dim;i++)
+        sum += pow( x_in[i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
+    if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
+        return 0.0;
 
-	/* Space dimension */
-	pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Space dimension */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Allocate space for polynomial counting */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) );
-	occ = (int*) malloc( obj_in->dim * sizeof(int) );
-	cf = (double*) malloc( pdim * sizeof(double) );
+    /* Allocate space for polynomial counting */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) );
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    cf = (double*) malloc( pdim * sizeof(double) );
 
-	/* Generate the coefficients for wavelet wdx_in at point x_in */
-	rkp_wavelet_generate_order( obj_in, wdx_in, x_in, cf );
+    /* Generate the coefficients for wavelet wdx_in at point x_in */
+    rkp_wavelet_generate_order( obj_in, wdx_in, x_in, cf );
 
-	/* Generate the x value taken as input relative to the particle position in pts */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] = obj_in->pts[idx_in*obj_in->dim+i] - x_in[i];
+    /* Generate the x value taken as input relative to the particle position in pts */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] = obj_in->pts[idx_in*obj_in->dim+i] - x_in[i];
 
-	/* Now evaluate the particle function */
-	sum = 0.0;
-	for(p=0,i=0;i<=obj_in->deg;i++)
-	{
-		/* Initialize the polynomial iterator */
-		rcombinadic_init( i, obj_in->dim, cmb );
-		n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
-		for(j=0;j<n;j++)
-		{
-			/* Evaluate the vector of exponents for each dimension */
-			rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
+    /* Now evaluate the particle function */
+    sum = 0.0;
+    for(p=0,i=0;i<=obj_in->deg;i++)
+    {
+        /* Initialize the polynomial iterator */
+        rcombinadic_init( i, obj_in->dim, cmb );
+        n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
+        for(j=0;j<n;j++)
+        {
+            /* Evaluate the vector of exponents for each dimension */
+            rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
 
-			/* Calculate the monomial value at x */
-			prd = 1.0;
-			for(k=0;k<obj_in->dim;k++)
-				prd *= pow( x[k], (double) occ[k] );
+            /* Calculate the monomial value at x */
+            prd = 1.0;
+            for(k=0;k<obj_in->dim;k++)
+                prd *= pow( x[k], (double) occ[k] );
 
-			/* Multiply by the coefficient on this term from the matrix inverse */
-			prd *= cf[p++];
+            /* Multiply by the coefficient on this term from the matrix inverse */
+            prd *= cf[p++];
 
-			/* Make sure you call rkp_matrix_generate with the right dilation parameter */
-			sum += prd;
+            /* Make sure you call rkp_matrix_generate with the right dilation parameter */
+            sum += prd;
 
-			/* Step next */
-			rcombinadic_next( i, obj_in->dim, cmb );
-		}
-	}
+            /* Step next */
+            rcombinadic_next( i, obj_in->dim, cmb );
+        }
+    }
 
-	/* Clean up */
-	free( cmb );
-	free( occ );
-	free( cf );
+    /* Clean up */
+    free( cmb );
+    free( occ );
+    free( cf );
 
-	/* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
-	return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
+    /* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
+    return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
 }
 
 /**
@@ -1636,71 +1636,71 @@ double rkp_wavelet_term_evaluate( rkp_t *obj_in, int idx_in, int wdx_in, double 
  */
 double rkp_wavelet_term_evaluate_scaled( rkp_t *obj_in, int idx_in, int wdx_in, double *x_in )
 {
-	int i,j,k,n,p,pdim,*cmb,*occ;
-	double sum,prd,*cf,x[obj_in->dim];
+    int i,j,k,n,p,pdim,*cmb,*occ;
+    double sum,prd,*cf,x[obj_in->dim];
 
-	if( idx_in < 0 || idx_in > obj_in->np - 1 )
-		return 0.0;
+    if( idx_in < 0 || idx_in > obj_in->np - 1 )
+        return 0.0;
 
-	/* If x_in is more than obj_in->dlts[idx_in] away from obj_in->pts[idx_in], then don't calculate this */
-	sum = 0.0;
-	for(i=0;i<obj_in->dim;i++)
-		sum += pow( x_in[i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
-	if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
-		return 0.0;
+    /* If x_in is more than obj_in->dlts[idx_in] away from obj_in->pts[idx_in], then don't calculate this */
+    sum = 0.0;
+    for(i=0;i<obj_in->dim;i++)
+        sum += pow( x_in[i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
+    if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] ) /* WARNING: Assumes that wfs has radius 2 * dlts[idx_in], not dlts[idx_in] */
+        return 0.0;
 
-	/* Space dimension */
-	pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Space dimension */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Allocate space for polynomial counting */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) );
-	occ = (int*) malloc( obj_in->dim * sizeof(int) );
-	cf = (double*) malloc( pdim * sizeof(double) );
+    /* Allocate space for polynomial counting */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) );
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    cf = (double*) malloc( pdim * sizeof(double) );
 
-	/* Generate the coefficients for wavelet wdx_in at point x_in */
-	rkp_wavelet_generate_order_scaled( obj_in, wdx_in, x_in, cf );
+    /* Generate the coefficients for wavelet wdx_in at point x_in */
+    rkp_wavelet_generate_order_scaled( obj_in, wdx_in, x_in, cf );
 
-	/* Generate the x value taken as input relative to the particle position in pts */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - x_in[i] ) / obj_in->dlts[idx_in];
+    /* Generate the x value taken as input relative to the particle position in pts */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - x_in[i] ) / obj_in->dlts[idx_in];
 
-	/* Now evaluate the particle function */
-	sum = 0.0;
-	for(p=0,i=0;i<=obj_in->deg;i++)
-	{
-		/* Initialize the polynomial iterator */
-		rcombinadic_init( i, obj_in->dim, cmb );
-		n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
-		for(j=0;j<n;j++)
-		{
-			/* Evaluate the vector of exponents for each dimension */
-			rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
+    /* Now evaluate the particle function */
+    sum = 0.0;
+    for(p=0,i=0;i<=obj_in->deg;i++)
+    {
+        /* Initialize the polynomial iterator */
+        rcombinadic_init( i, obj_in->dim, cmb );
+        n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
+        for(j=0;j<n;j++)
+        {
+            /* Evaluate the vector of exponents for each dimension */
+            rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
 
-			/* Calculate the monomial value at x */
-			prd = 1.0;
-			for(k=0;k<obj_in->dim;k++)
-				prd *= pow( x[k], (double) occ[k] );
+            /* Calculate the monomial value at x */
+            prd = 1.0;
+            for(k=0;k<obj_in->dim;k++)
+                prd *= pow( x[k], (double) occ[k] );
 
-			/* Multiply by the coefficient on this term from the matrix inverse */
-			prd *= cf[p++];
+            /* Multiply by the coefficient on this term from the matrix inverse */
+            prd *= cf[p++];
 
-			/* Make sure you call rkp_matrix_generate with the right dilation parameter */
-			sum += prd;
+            /* Make sure you call rkp_matrix_generate with the right dilation parameter */
+            sum += prd;
 
-			/* Step next */
-			rcombinadic_next( i, obj_in->dim, cmb );
-		}
-	}
+            /* Step next */
+            rcombinadic_next( i, obj_in->dim, cmb );
+        }
+    }
 
-	/* Clean up */
-	free( cmb );
-	free( occ );
-	free( cf );
+    /* Clean up */
+    free( cmb );
+    free( occ );
+    free( cf );
 
-	/* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] *= obj_in->dlts[idx_in];
-	return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
+    /* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] *= obj_in->dlts[idx_in];
+    return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
 }
 
 /**
@@ -1708,71 +1708,71 @@ double rkp_wavelet_term_evaluate_scaled( rkp_t *obj_in, int idx_in, int wdx_in, 
  */
 double rkp_wavelet_term_evaluate_scaled_const( rkp_t *obj_in, int idx_in, int wdx_in, double *x_in, double rho_in )
 {
-	int i,j,k,n,p,pdim,*cmb,*occ;
-	double sum,prd,*cf,x[obj_in->dim];
+    int i,j,k,n,p,pdim,*cmb,*occ;
+    double sum,prd,*cf,x[obj_in->dim];
 
-	if( idx_in < 0 || idx_in > obj_in->np - 1 )
-		return 0.0;
+    if( idx_in < 0 || idx_in > obj_in->np - 1 )
+        return 0.0;
 
-	/* If x_in is more than obj_in->dlts[idx_in] away from obj_in->pts[idx_in], then don't calculate this */
-	sum = 0.0;
-	for(i=0;i<obj_in->dim;i++)
-		sum += pow( x_in[i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
-	if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] )
-		return 0.0;
+    /* If x_in is more than obj_in->dlts[idx_in] away from obj_in->pts[idx_in], then don't calculate this */
+    sum = 0.0;
+    for(i=0;i<obj_in->dim;i++)
+        sum += pow( x_in[i] - obj_in->pts[idx_in*obj_in->dim+i], 2.0 );
+    if( sum > obj_in->wrad * obj_in->dlts[idx_in] * obj_in->wrad * obj_in->dlts[idx_in] )
+        return 0.0;
 
-	/* Space dimension */
-	pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Space dimension */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Allocate space for polynomial counting */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) );
-	occ = (int*) malloc( obj_in->dim * sizeof(int) );
-	cf = (double*) malloc( pdim * sizeof(double) );
+    /* Allocate space for polynomial counting */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) );
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    cf = (double*) malloc( pdim * sizeof(double) );
 
-	/* Generate the coefficients for wavelet wdx_in at point x_in */
-	rkp_wavelet_generate_order_scaled_const( obj_in, wdx_in, x_in, rho_in, cf );
+    /* Generate the coefficients for wavelet wdx_in at point x_in */
+    rkp_wavelet_generate_order_scaled_const( obj_in, wdx_in, x_in, rho_in, cf );
 
-	/* Generate the x value taken as input relative to the particle position in pts */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - x_in[i] ) / rho_in;
+    /* Generate the x value taken as input relative to the particle position in pts */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - x_in[i] ) / rho_in;
 
-	/* Now evaluate the particle function */
-	sum = 0.0;
-	for(p=0,i=0;i<=obj_in->deg;i++)
-	{
-		/* Initialize the polynomial iterator */
-		rcombinadic_init( i, obj_in->dim, cmb );
-		n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
-		for(j=0;j<n;j++)
-		{
-			/* Evaluate the vector of exponents for each dimension */
-			rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
+    /* Now evaluate the particle function */
+    sum = 0.0;
+    for(p=0,i=0;i<=obj_in->deg;i++)
+    {
+        /* Initialize the polynomial iterator */
+        rcombinadic_init( i, obj_in->dim, cmb );
+        n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
+        for(j=0;j<n;j++)
+        {
+            /* Evaluate the vector of exponents for each dimension */
+            rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
 
-			/* Calculate the monomial value at x */
-			prd = 1.0;
-			for(k=0;k<obj_in->dim;k++)
-				prd *= pow( x[k], (double) occ[k] );
+            /* Calculate the monomial value at x */
+            prd = 1.0;
+            for(k=0;k<obj_in->dim;k++)
+                prd *= pow( x[k], (double) occ[k] );
 
-			/* Multiply by the coefficient on this term from the matrix inverse */
-			prd *= cf[p++];
+            /* Multiply by the coefficient on this term from the matrix inverse */
+            prd *= cf[p++];
 
-			/* Make sure you call rkp_matrix_generate with the right dilation parameter */
-			sum += prd;
+            /* Make sure you call rkp_matrix_generate with the right dilation parameter */
+            sum += prd;
 
-			/* Step next */
-			rcombinadic_next( i, obj_in->dim, cmb );
-		}
-	}
+            /* Step next */
+            rcombinadic_next( i, obj_in->dim, cmb );
+        }
+    }
 
-	/* Clean up */
-	free( cmb );
-	free( occ );
-	free( cf );
+    /* Clean up */
+    free( cmb );
+    free( occ );
+    free( cf );
 
-	/* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] *= rho_in;
-	return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
+    /* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] *= rho_in;
+    return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
 }
 
 /**
@@ -1780,57 +1780,57 @@ double rkp_wavelet_term_evaluate_scaled_const( rkp_t *obj_in, int idx_in, int wd
  */
 double rkp_wavelet_term_evaluate_node( rkp_t *obj_in, int idx_in, int wdx_in, int jdx_in )
 {
-	int i,j,k,n,p,pdim,*cmb,*occ;
-	double sum,prd,x[obj_in->dim];
+    int i,j,k,n,p,pdim,*cmb,*occ;
+    double sum,prd,x[obj_in->dim];
 
-	if( idx_in < 0 || idx_in > obj_in->np - 1 )
-		return 0.0;
+    if( idx_in < 0 || idx_in > obj_in->np - 1 )
+        return 0.0;
 
-	/* Space dimension */
-	pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Space dimension */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Allocate space for polynomial counting */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) );
-	occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    /* Allocate space for polynomial counting */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) );
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
 
-	/* Generate the x value taken as input relative to the particle position in pts */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] = obj_in->pts[idx_in*obj_in->dim+i] - obj_in->pts[jdx_in*obj_in->dim+i];
+    /* Generate the x value taken as input relative to the particle position in pts */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] = obj_in->pts[idx_in*obj_in->dim+i] - obj_in->pts[jdx_in*obj_in->dim+i];
 
-	/* Now evaluate the particle function */
-	sum = 0.0;
-	for(p=0,i=0;i<=obj_in->deg;i++)
-	{
-		/* Initialize the polynomial iterator */
-		rcombinadic_init( i, obj_in->dim, cmb );
-		n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
-		for(j=0;j<n;j++)
-		{
-			/* Evaluate the vector of exponents for each dimension */
-			rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
+    /* Now evaluate the particle function */
+    sum = 0.0;
+    for(p=0,i=0;i<=obj_in->deg;i++)
+    {
+        /* Initialize the polynomial iterator */
+        rcombinadic_init( i, obj_in->dim, cmb );
+        n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
+        for(j=0;j<n;j++)
+        {
+            /* Evaluate the vector of exponents for each dimension */
+            rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
 
-			/* Calculate the monomial value at x */
-			prd = 1.0;
-			for(k=0;k<obj_in->dim;k++)
-				prd *= pow( x[k], (double) occ[k] );
+            /* Calculate the monomial value at x */
+            prd = 1.0;
+            for(k=0;k<obj_in->dim;k++)
+                prd *= pow( x[k], (double) occ[k] );
 
-			/* Multiply by the coefficient on this term from the matrix inverse */
-			prd *= obj_in->wcoeffs[jdx_in*pdim*(pdim-1)+wdx_in*pdim+p++];
+            /* Multiply by the coefficient on this term from the matrix inverse */
+            prd *= obj_in->wcoeffs[jdx_in*pdim*(pdim-1)+wdx_in*pdim+p++];
 
-			/* Make sure you call rkp_matrix_generate with the right dilation parameter */
-			sum += prd;
+            /* Make sure you call rkp_matrix_generate with the right dilation parameter */
+            sum += prd;
 
-			/* Step next */
-			rcombinadic_next( i, obj_in->dim, cmb );
-		}
-	}
+            /* Step next */
+            rcombinadic_next( i, obj_in->dim, cmb );
+        }
+    }
 
-	/* Clean up */
-	free( cmb );
-	free( occ );
+    /* Clean up */
+    free( cmb );
+    free( occ );
 
-	/* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
-	return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
+    /* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
+    return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
 }
 
 /**
@@ -1838,59 +1838,59 @@ double rkp_wavelet_term_evaluate_node( rkp_t *obj_in, int idx_in, int wdx_in, in
  */
 double rkp_wavelet_term_evaluate_node_scaled( rkp_t *obj_in, int idx_in, int wdx_in, int jdx_in )
 {
-	int i,j,k,n,p,pdim,*cmb,*occ;
-	double sum,prd,x[obj_in->dim];
+    int i,j,k,n,p,pdim,*cmb,*occ;
+    double sum,prd,x[obj_in->dim];
 
-	if( idx_in < 0 || idx_in > obj_in->np - 1 )
-		return 0.0;
+    if( idx_in < 0 || idx_in > obj_in->np - 1 )
+        return 0.0;
 
-	/* Space dimension */
-	pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Space dimension */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Allocate space for polynomial counting */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) );
-	occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    /* Allocate space for polynomial counting */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) );
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
 
-	/* Generate the x value taken as input relative to the particle position in pts */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - obj_in->pts[jdx_in*obj_in->dim+i] ) / obj_in->dlts[idx_in];
+    /* Generate the x value taken as input relative to the particle position in pts */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - obj_in->pts[jdx_in*obj_in->dim+i] ) / obj_in->dlts[idx_in];
 
-	/* Now evaluate the particle function */
-	sum = 0.0;
-	for(p=0,i=0;i<=obj_in->deg;i++)
-	{
-		/* Initialize the polynomial iterator */
-		rcombinadic_init( i, obj_in->dim, cmb );
-		n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
-		for(j=0;j<n;j++)
-		{
-			/* Evaluate the vector of exponents for each dimension */
-			rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
+    /* Now evaluate the particle function */
+    sum = 0.0;
+    for(p=0,i=0;i<=obj_in->deg;i++)
+    {
+        /* Initialize the polynomial iterator */
+        rcombinadic_init( i, obj_in->dim, cmb );
+        n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
+        for(j=0;j<n;j++)
+        {
+            /* Evaluate the vector of exponents for each dimension */
+            rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
 
-			/* Calculate the monomial value at x */
-			prd = 1.0;
-			for(k=0;k<obj_in->dim;k++)
-				prd *= pow( x[k], (double) occ[k] );
+            /* Calculate the monomial value at x */
+            prd = 1.0;
+            for(k=0;k<obj_in->dim;k++)
+                prd *= pow( x[k], (double) occ[k] );
 
-			/* Multiply by the coefficient on this term from the matrix inverse */
-			prd *= obj_in->wcoeffs[jdx_in*pdim*(pdim-1)+wdx_in*pdim+p++];
+            /* Multiply by the coefficient on this term from the matrix inverse */
+            prd *= obj_in->wcoeffs[jdx_in*pdim*(pdim-1)+wdx_in*pdim+p++];
 
-			/* Make sure you call rkp_matrix_generate with the right dilation parameter */
-			sum += prd;
+            /* Make sure you call rkp_matrix_generate with the right dilation parameter */
+            sum += prd;
 
-			/* Step next */
-			rcombinadic_next( i, obj_in->dim, cmb );
-		}
-	}
+            /* Step next */
+            rcombinadic_next( i, obj_in->dim, cmb );
+        }
+    }
 
-	/* Clean up */
-	free( cmb );
-	free( occ );
+    /* Clean up */
+    free( cmb );
+    free( occ );
 
-	/* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] *= obj_in->dlts[idx_in];
-	return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
+    /* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] *= obj_in->dlts[idx_in];
+    return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
 }
 
 /**
@@ -1898,59 +1898,59 @@ double rkp_wavelet_term_evaluate_node_scaled( rkp_t *obj_in, int idx_in, int wdx
  */
 double rkp_wavelet_term_evaluate_node_scaled_const( rkp_t *obj_in, int idx_in, int wdx_in, int jdx_in )
 {
-	int i,j,k,n,p,pdim,*cmb,*occ;
-	double sum,prd,x[obj_in->dim];
+    int i,j,k,n,p,pdim,*cmb,*occ;
+    double sum,prd,x[obj_in->dim];
 
-	if( idx_in < 0 || idx_in > obj_in->np - 1 )
-		return 0.0;
+    if( idx_in < 0 || idx_in > obj_in->np - 1 )
+        return 0.0;
 
-	/* Space dimension */
-	pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
+    /* Space dimension */
+    pdim = binomial( obj_in->deg + obj_in->dim, obj_in->dim );
 
-	/* Allocate space for polynomial counting */
-	cmb = (int*) malloc( obj_in->dim * sizeof(int) );
-	occ = (int*) malloc( obj_in->dim * sizeof(int) );
+    /* Allocate space for polynomial counting */
+    cmb = (int*) malloc( obj_in->dim * sizeof(int) );
+    occ = (int*) malloc( obj_in->dim * sizeof(int) );
 
-	/* Generate the x value taken as input relative to the particle position in pts */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - obj_in->pts[jdx_in*obj_in->dim+i] ) / obj_in->dlts[jdx_in]; /* NOTE: This is an important change! */
+    /* Generate the x value taken as input relative to the particle position in pts */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] = ( obj_in->pts[idx_in*obj_in->dim+i] - obj_in->pts[jdx_in*obj_in->dim+i] ) / obj_in->dlts[jdx_in]; /* NOTE: This is an important change! */
 
-	/* Now evaluate the particle function */
-	sum = 0.0;
-	for(p=0,i=0;i<=obj_in->deg;i++)
-	{
-		/* Initialize the polynomial iterator */
-		rcombinadic_init( i, obj_in->dim, cmb );
-		n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
-		for(j=0;j<n;j++)
-		{
-			/* Evaluate the vector of exponents for each dimension */
-			rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
+    /* Now evaluate the particle function */
+    sum = 0.0;
+    for(p=0,i=0;i<=obj_in->deg;i++)
+    {
+        /* Initialize the polynomial iterator */
+        rcombinadic_init( i, obj_in->dim, cmb );
+        n = binomial( i + obj_in->dim - 1, obj_in->dim - 1 );
+        for(j=0;j<n;j++)
+        {
+            /* Evaluate the vector of exponents for each dimension */
+            rcombinadic_occupancy( i, obj_in->dim, cmb, occ );
 
-			/* Calculate the monomial value at x */
-			prd = 1.0;
-			for(k=0;k<obj_in->dim;k++)
-				prd *= pow( x[k], (double) occ[k] );
+            /* Calculate the monomial value at x */
+            prd = 1.0;
+            for(k=0;k<obj_in->dim;k++)
+                prd *= pow( x[k], (double) occ[k] );
 
-			/* Multiply by the coefficient on this term from the matrix inverse */
-			prd *= obj_in->wcoeffs[jdx_in*pdim*(pdim-1)+wdx_in*pdim+p++];
+            /* Multiply by the coefficient on this term from the matrix inverse */
+            prd *= obj_in->wcoeffs[jdx_in*pdim*(pdim-1)+wdx_in*pdim+p++];
 
-			/* Make sure you call rkp_matrix_generate with the right dilation parameter */
-			sum += prd;
+            /* Make sure you call rkp_matrix_generate with the right dilation parameter */
+            sum += prd;
 
-			/* Step next */
-			rcombinadic_next( i, obj_in->dim, cmb );
-		}
-	}
+            /* Step next */
+            rcombinadic_next( i, obj_in->dim, cmb );
+        }
+    }
 
-	/* Clean up */
-	free( cmb );
-	free( occ );
+    /* Clean up */
+    free( cmb );
+    free( occ );
 
-	/* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
-	for(i=0;i<obj_in->dim;i++)
-		x[i] *= obj_in->dlts[jdx_in];
-	return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
+    /* Call the window function to multiply the integral using the correct dilation parameter for idx_in */
+    for(i=0;i<obj_in->dim;i++)
+        x[i] *= obj_in->dlts[jdx_in];
+    return obj_in->gqw[idx_in] * sum * obj_in->wfs( obj_in->dim, obj_in->dlts[idx_in], x );
 }
 
 /**
@@ -1960,14 +1960,14 @@ double rkp_wavelet_term_evaluate_node_scaled_const( rkp_t *obj_in, int idx_in, i
  */
 double mls_evaluate( mls_t *obj_in, double *x_in )
 {
-	int i;
-	double val;
+    int i;
+    double val;
 
-	val = 0.0;
-	for(i=0;i<obj_in->np;i++)
-		val += obj_in->vals[i] * mls_term_evaluate( obj_in, i, x_in );
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+        val += obj_in->vals[i] * mls_term_evaluate( obj_in, i, x_in );
 
-	return val;
+    return val;
 }
 
 /**
@@ -1979,14 +1979,14 @@ double mls_evaluate( mls_t *obj_in, double *x_in )
  */
 double rkp_evaluate( rkp_t *obj_in, double *x_in )
 {
-	int i;
-        double val;
+    int i;
+    double val;
 
-        val = 0.0;
-        for(i=0;i<obj_in->np;i++)
-                val += obj_in->vals[i] * rkp_term_evaluate( obj_in, i, x_in );
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+        val += obj_in->vals[i] * rkp_term_evaluate( obj_in, i, x_in );
 
-        return val;	
+    return val;	
 }
 
 /**
@@ -1994,26 +1994,26 @@ double rkp_evaluate( rkp_t *obj_in, double *x_in )
  */
 double rkp_evaluate_scaled( rkp_t *obj_in, double *x_in )
 {
-        int i;
-        double val;
+    int i;
+    double val;
 
-        val = 0.0;
-        for(i=0;i<obj_in->np;i++)
-                val += obj_in->vals[i] * rkp_term_evaluate_scaled( obj_in, i, x_in );
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+        val += obj_in->vals[i] * rkp_term_evaluate_scaled( obj_in, i, x_in );
 
-        return val;
+    return val;
 }
 
 double rkp_evaluate_scaled_const( rkp_t *obj_in, double *x_in, double rho_in )
 {
-        int i;
-        double val;
+    int i;
+    double val;
 
-        val = 0.0;
-        for(i=0;i<obj_in->np;i++)
-                val += obj_in->vals[i] * rkp_term_evaluate_scaled_const( obj_in, i, x_in, rho_in );
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+        val += obj_in->vals[i] * rkp_term_evaluate_scaled_const( obj_in, i, x_in, rho_in );
 
-        return val;
+    return val;
 }
 
 /**
@@ -2026,14 +2026,14 @@ double rkp_evaluate_scaled_const( rkp_t *obj_in, double *x_in, double rho_in )
  */
 double rkp_evaluate_node( rkp_t *obj_in, int jdx_in )
 {
-	int i;
-        double val;
+    int i;
+    double val;
 
-        val = 0.0;
-        for(i=0;i<obj_in->np;i++)
-                val += obj_in->vals[i] * rkp_term_evaluate_node( obj_in, i, jdx_in );
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+        val += obj_in->vals[i] * rkp_term_evaluate_node( obj_in, i, jdx_in );
 
-        return val;	
+    return val;	
 }
 
 /**
@@ -2041,14 +2041,14 @@ double rkp_evaluate_node( rkp_t *obj_in, int jdx_in )
  */
 double rkp_evaluate_node_scaled( rkp_t *obj_in, int jdx_in )
 {
-        int i;
-        double val;
+    int i;
+    double val;
 
-        val = 0.0;
-        for(i=0;i<obj_in->np;i++)
-                val += obj_in->vals[i] * rkp_term_evaluate_node_scaled( obj_in, i, jdx_in );
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+        val += obj_in->vals[i] * rkp_term_evaluate_node_scaled( obj_in, i, jdx_in );
 
-        return val;
+    return val;
 }
 
 /**
@@ -2056,38 +2056,38 @@ double rkp_evaluate_node_scaled( rkp_t *obj_in, int jdx_in )
  */
 double rkp_evaluate_node_scaled_const( rkp_t *obj_in, int jdx_in )
 {
-        int i;
-        double val;
+    int i;
+    double val;
 
-        val = 0.0;
-        for(i=0;i<obj_in->np;i++)
-                val += obj_in->vals[i] * rkp_term_evaluate_node_scaled_const( obj_in, i, jdx_in );
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+        val += obj_in->vals[i] * rkp_term_evaluate_node_scaled_const( obj_in, i, jdx_in );
 
-        return val;
+    return val;
 }
 
 double rkp_wavelet_evaluate( rkp_t *obj_in, int wdx_in, double *x_in, double rho_in )
 {
-        int i;
-        double val;
+    int i;
+    double val;
 
-        val = 0.0;
-        for(i=0;i<obj_in->np;i++)
-                val += obj_in->vals[i] * rkp_wavelet_term_evaluate( obj_in, i, wdx_in, x_in, rho_in );
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+        val += obj_in->vals[i] * rkp_wavelet_term_evaluate( obj_in, i, wdx_in, x_in, rho_in );
 
-        return val;
+    return val;
 }
 
 double rkp_wavelet_evaluate_scaled( rkp_t *obj_in, int wdx_in, double *x_in, double rho_in )
 {
-        int i;
-        double val;
+    int i;
+    double val;
 
-        val = 0.0;
-        for(i=0;i<obj_in->np;i++)
-                val += obj_in->vals[i] * rkp_wavelet_term_evaluate_scaled( obj_in, i, wdx_in, x_in );
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+        val += obj_in->vals[i] * rkp_wavelet_term_evaluate_scaled( obj_in, i, wdx_in, x_in );
 
-        return val;
+    return val;
 }
 
 /**
@@ -2101,14 +2101,14 @@ double rkp_wavelet_evaluate_scaled( rkp_t *obj_in, int wdx_in, double *x_in, dou
  */
 double rkp_wavelet_evaluate_node( rkp_t *obj_in, int wdx_in, int jdx_in )
 {
-	int i;
-        double val;
+    int i;
+    double val;
 
-        val = 0.0;
-        for(i=0;i<obj_in->np;i++)
-                val += obj_in->vals[i] * rkp_wavelet_term_evaluate_node( obj_in, i, wdx_in, jdx_in );
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+        val += obj_in->vals[i] * rkp_wavelet_term_evaluate_node( obj_in, i, wdx_in, jdx_in );
 
-        return val;	
+    return val;	
 }
 
 /**
@@ -2116,14 +2116,14 @@ double rkp_wavelet_evaluate_node( rkp_t *obj_in, int wdx_in, int jdx_in )
  */
 double rkp_wavelet_evaluate_node_scaled( rkp_t *obj_in, int wdx_in, int jdx_in )
 {
-        int i;
-        double val;
+    int i;
+    double val;
 
-        val = 0.0;
-        for(i=0;i<obj_in->np;i++)
-                val += obj_in->vals[i] * rkp_wavelet_term_evaluate_node_scaled( obj_in, i, wdx_in, jdx_in );
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+        val += obj_in->vals[i] * rkp_wavelet_term_evaluate_node_scaled( obj_in, i, wdx_in, jdx_in );
 
-        return val;
+    return val;
 }
 
 /**
@@ -2135,14 +2135,14 @@ double rkp_wavelet_evaluate_node_scaled( rkp_t *obj_in, int wdx_in, int jdx_in )
  */
 double rkp_evaluate_inner_prod( rkp_t *obj_in, int idx_in, int jdx_in )
 {
-	int i;
-	double val,tmp;
+    int i;
+    double val,tmp;
 
-	val = 0.0;
-	for(i=0;i<obj_in->np;i++)
-		tmp = obj_in->gqw[i] * rkp_term_evaluate_node( obj_in, idx_in, i ) * rkp_term_evaluate_node( obj_in, jdx_in, i ), val += tmp;
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+        tmp = obj_in->gqw[i] * rkp_term_evaluate_node( obj_in, idx_in, i ) * rkp_term_evaluate_node( obj_in, jdx_in, i ), val += tmp;
 
-	return val;
+    return val;
 }
 
 /**
@@ -2150,35 +2150,36 @@ double rkp_evaluate_inner_prod( rkp_t *obj_in, int idx_in, int jdx_in )
  */
 double rkp_evaluate_poisson_inner_prod( rkp_t *obj_in, int idx_in, int jdx_in )
 {
-        int i,j;
-        double val,tmp,ttmp;
+    int i,j;
+    double val,tmp,ttmp;
 
-        val = 0.0;
-	for(i=0;i<obj_in->np;i++)
-	{
-		tmp = 0.0;
-		for(j=1;j<=obj_in->dim;j++)
-			ttmp = obj_in->gqw[i] * rkp_wavelet_term_evaluate_node( obj_in, idx_in, j - 1, i ) * rkp_wavelet_term_evaluate_node( obj_in, jdx_in, j - 1, i ), tmp += ttmp;
-		val += tmp;
-	}
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+    {
+        tmp = 0.0;
+        for(j=1;j<=obj_in->dim;j++)
+            ttmp = obj_in->gqw[i] * rkp_wavelet_term_evaluate_node( obj_in, idx_in, j - 1, i ) * rkp_wavelet_term_evaluate_node( obj_in, jdx_in, j - 1, i ), tmp += ttmp;
+        val += tmp;
+    }
 
-        return val;
+    return val;
 }
 
 double rkp_evaluate_functional( rkp_t *obj_in, int idx_in, double (*func_in)(int,double*) )
 {
-	int i;
-        double val,tmp;
+    int i;
+    double val,tmp;
 
-        val = 0.0;
-        for(i=0;i<obj_in->np;i++)
-                tmp = obj_in->gqw[i] * rkp_term_evaluate_node( obj_in, idx_in, i ) * func_in( obj_in->dim, obj_in->pts + i * obj_in->dim ), val += tmp;
+    val = 0.0;
+    for(i=0;i<obj_in->np;i++)
+        tmp = obj_in->gqw[i] * rkp_term_evaluate_node( obj_in, idx_in, i ) * func_in( obj_in->dim, obj_in->pts + i * obj_in->dim ), val += tmp;
 
-        return val;	
+    return val;	
 }
 
 void rkp_evaluate_gradient( rkp_t *obj_in, int idx_in, double *grad_out )
 {
-	
+
 }
 
+// vim: ts=4:sts=4:sw=4:et:sta
