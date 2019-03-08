@@ -2,7 +2,7 @@
 #ifndef VC_CONF_H
 #define VC_CONF_H
 
-#include "../config.h"
+#include "config.h"
 
 #ifndef MIN
 #define MIN(A,B) ( ((A)<(B)) ? (A) : (B) )

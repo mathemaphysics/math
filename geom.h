@@ -1,8 +1,8 @@
 #ifndef VC_GEOM_H
 #define VC_GEOM_H
 
-#include "../config.h"
-#include "../include/conf.h"
+#include "config.h"
+#include "conf.h"
 
 #ifdef USE_GMXLIB_5
 #include "gromacs/legacyheaders/tpxio.h"
