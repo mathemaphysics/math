@@ -1,5 +1,5 @@
-Basis Functions
-===============
+Introduction
+============
 
 This is a library containing a set of basic basis functions
 which show up frequently in finite element methods and meshfree
