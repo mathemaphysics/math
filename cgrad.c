@@ -3491,3 +3491,4 @@ void gmres( int n, double *A, double *b, double *x, double *H, double *V, int ma
     free( w );
 }
 
+// vim: ts=4:sts=4:sw=4:et:sta
