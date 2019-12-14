@@ -4,7 +4,7 @@
 #include <strings.h>
 #include <assert.h>
 #include <math.h>
-#include "config.h"
+#include "math_config.h"
 
 /**
  * This is an implementation of NURBS which which have

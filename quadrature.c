@@ -3,7 +3,7 @@
 #include <string.h>
 #include <strings.h>
 #include <math.h>
-#include "config.h"
+#include "math_config.h"
 
 typedef struct
 {

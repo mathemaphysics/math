@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "combinadic.h"
-#include "config.h"
+#include "math_config.h"
 
 double legendre_evaluate( int deg_in, double x_in )
 {
