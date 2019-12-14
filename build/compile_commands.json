@@ -1,0 +1,62 @@
+[
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/lagrange.c.o   -c /workspaces/math/lagrange.c",
+  "file": "/workspaces/math/lagrange.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/quadrature.c.o   -c /workspaces/math/quadrature.c",
+  "file": "/workspaces/math/quadrature.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/nurbs.c.o   -c /workspaces/math/nurbs.c",
+  "file": "/workspaces/math/nurbs.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/legendre.c.o   -c /workspaces/math/legendre.c",
+  "file": "/workspaces/math/legendre.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/mls.c.o   -c /workspaces/math/mls.c",
+  "file": "/workspaces/math/mls.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/cgrad.c.o   -c /workspaces/math/cgrad.c",
+  "file": "/workspaces/math/cgrad.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/mqrbf.c.o   -c /workspaces/math/mqrbf.c",
+  "file": "/workspaces/math/mqrbf.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/points.c.o   -c /workspaces/math/points.c",
+  "file": "/workspaces/math/points.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/nuclei.c.o   -c /workspaces/math/nuclei.c",
+  "file": "/workspaces/math/nuclei.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/sparse.c.o   -c /workspaces/math/sparse.c",
+  "file": "/workspaces/math/sparse.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/punity.c.o   -c /workspaces/math/punity.c",
+  "file": "/workspaces/math/punity.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/pbc.c.o   -c /workspaces/math/pbc.c",
+  "file": "/workspaces/math/pbc.c"
+}
+]
