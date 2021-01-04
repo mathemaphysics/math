@@ -28,12 +28,12 @@ typedef struct
          */
         double *pts;
 
-	/**
-	 * The dilation parameter for each point in pts
-	 */
-	double *dlts;
+		/**
+		 * The dilation parameter for each point in pts
+		 */
+		double *dlts;
 
-        /**
+		/**
          * The list of function values at their corresponding
          * point in pts
          */

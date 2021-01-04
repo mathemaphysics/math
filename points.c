@@ -4,7 +4,7 @@
 #include <math.h>
 #include <time.h>
 #include "trees.h"
-#include "config.h"
+#include "math_config.h"
 
 #define ZERO_THRESHOLD 1e-6
 

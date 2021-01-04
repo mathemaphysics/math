@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "config.h"
+#include "math_config.h"
 
 #if HAVE_DOUBLE == 1  /* This is set in the configure script with --enable-double=yes */
 	typedef double t_real;

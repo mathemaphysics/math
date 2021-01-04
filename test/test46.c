@@ -15,6 +15,7 @@
 #include <getopt.h>
 
 /* Includes for configuration */
+#include "combinadic.h"
 #include "trees.h"
 #include "parse.h"
 #include "cfgread.h"

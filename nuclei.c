@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-#include "config.h"
+#include "parse.h"
+#include "math_config.h"
 
 typedef struct
 {
@@ -155,9 +156,9 @@ double nucleus_length( nuclei_t *obj_in, double *x_in )
         int i,j,idx;
         double sum = 0.0;
         double min;
-	double scl,ncl;
- 
-        for(i=0;i<obj_in->np;i++)
+		double scl, ncl;
+
+		for(i=0;i<obj_in->np;i++)
         {
                 sum = 0.0;
                 for(j=0;j<obj_in->dim;j++)

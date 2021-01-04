@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "linalg.h"
-#include "config.h"
+#include "math_config.h"
 
 typedef struct
 {

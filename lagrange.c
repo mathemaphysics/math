@@ -3,6 +3,8 @@
 #include <string.h>
 #include <strings.h>
 #include <math.h>
+#include "combinadic.h"
+#include "linalg.h"
 #include "math_config.h"
 
 /**

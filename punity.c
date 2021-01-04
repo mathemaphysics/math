@@ -6,7 +6,7 @@
 #include "trees.h"
 #include "points.h"
 #include "geom.h"
-#include "config.h"
+#include "math_config.h"
 
 #define PUNITY_NEIGHBOR_INC 512
 #define PUNITY_NB_INCREMENT 512

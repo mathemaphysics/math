@@ -1,19 +1,19 @@
 #ifndef VC_GEOM_H
 #define VC_GEOM_H
 
-#include "config.h"
+#include "math_config.h"
 #include "conf.h"
 
+#ifdef USE_GMXLIB_2018
+//#include "gromacs/fileio/tpxio.h"
+//#include "gromacs/pbcutil/pbc.h"
+//#include "gromacs/math/vec.h"
+#endif
 #ifdef USE_GMXLIB_5
 #include "gromacs/legacyheaders/tpxio.h"
 #include "gromacs/legacyheaders/txtdump.h"
 #include "gromacs/legacyheaders/pbc.h"
 #include "gromacs/legacyheaders/vec.h"
-#else
-#include "gromacs/tpxio.h"
-#include "gromacs/txtdump.h"
-#include "gromacs/pbc.h"
-#include "gromacs/vec.h"
 #endif
 
 t_real vnorm_sqr( t_real * );

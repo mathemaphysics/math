@@ -2,6 +2,8 @@
  * Do everything needed to load in the configuration variables
  */
 
+void load_quadrature( char *fn, int *quadn, double **qpts, double **qwts, int *ret );
+
 /* Read command line options */
 while( ( optc = getopt( argc, argv, "C:p:q:r:e:t:o:x:" ) ) != -1 )
 {

@@ -58,5 +58,65 @@
   "directory": "/workspaces/math/build",
   "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/pbc.c.o   -c /workspaces/math/pbc.c",
   "file": "/workspaces/math/pbc.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gfortran  -I/usr/include  -g   -c /workspaces/math/anint.f90 -o CMakeFiles/math.dir/anint.f90.o",
+  "file": "/workspaces/math/anint.f90"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/combinadic.c.o   -c /workspaces/math/combinadic.c",
+  "file": "/workspaces/math/combinadic.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/parse.c.o   -c /workspaces/math/parse.c",
+  "file": "/workspaces/math/parse.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/trees.c.o   -c /workspaces/math/trees.c",
+  "file": "/workspaces/math/trees.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/symtab.c.o   -c /workspaces/math/symtab.c",
+  "file": "/workspaces/math/symtab.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gcc-7   -g   -o CMakeFiles/math.dir/cfgread.c.o   -c /workspaces/math/cfgread.c",
+  "file": "/workspaces/math/cfgread.c"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gfortran   -g   -c /workspaces/math/linalg.f90 -o CMakeFiles/mathext.dir/linalg.f90.o",
+  "file": "/workspaces/math/linalg.f90"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gfortran   -g   -c /workspaces/math/runge.f90 -o CMakeFiles/mathext.dir/runge.f90.o",
+  "file": "/workspaces/math/runge.f90"
+},
+{
+  "directory": "/workspaces/math/build",
+  "command": "/usr/bin/gfortran   -g   -c /workspaces/math/anint.f90 -o CMakeFiles/mathext.dir/anint.f90.o",
+  "file": "/workspaces/math/anint.f90"
+},
+{
+  "directory": "/workspaces/math/build/test",
+  "command": "/usr/bin/gcc-7  -I/workspaces/math  -g   -o CMakeFiles/test46.dir/test46.c.o   -c /workspaces/math/test/test46.c",
+  "file": "/workspaces/math/test/test46.c"
+},
+{
+  "directory": "/workspaces/math/build/test",
+  "command": "/usr/bin/gcc-7  -I/workspaces/math  -g   -o CMakeFiles/test46.dir/mbuild-nsymm.c.o   -c /workspaces/math/test/mbuild-nsymm.c",
+  "file": "/workspaces/math/test/mbuild-nsymm.c"
+},
+{
+  "directory": "/workspaces/math/build/test",
+  "command": "/usr/bin/gcc-7  -I/workspaces/math  -g   -o CMakeFiles/test46.dir/funcs.c.o   -c /workspaces/math/test/funcs.c",
+  "file": "/workspaces/math/test/funcs.c"
 }
 ]

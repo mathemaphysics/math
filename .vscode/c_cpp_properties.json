@@ -5,6 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/usr/include/x86_64-linux-gnu",
+                "/usr/include",
                 "${default}"
             ],
             "defines": [],

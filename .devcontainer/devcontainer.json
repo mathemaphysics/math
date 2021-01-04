@@ -39,11 +39,14 @@
 	"postCreateCommand": "apt-get update && apt-get install -y git",
 
 	// Add the IDs of extensions you want installed when the container is created in the array below.
-	"extensions": ["austin.code-gnu-global",
-				   "ms-vscode.cpptools",
-				   "eamodio.gitlens",
-				   "ms-vscode.cmake-tools",
-				   "twxs.cmake",
-				   "fredericbonnet.cmake-test-adapter",
-				   "vector-of-bool.cmake-tools"]
+	"extensions": [
+		"austin.code-gnu-global",
+		"ms-vscode.cpptools",
+		"eamodio.gitlens",
+		"ms-vscode.cmake-tools",
+		"twxs.cmake",
+		"fredericbonnet.cmake-test-adapter",
+		"vector-of-bool.cmake-tools",
+		"maelvalais.autoconf"
+	]
 }

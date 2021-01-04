@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "parse.h"
-#include "config.h"
+#include "math_config.h"
 
 int sparse_save( char *fn, long n, long k, long *ia, long *ja, double *a, int mode )
 {

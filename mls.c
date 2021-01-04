@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "linalg.h"
 #include "combinadic.h"
 #include "trees.h"
-#include "config.h"
+#include "math_config.h"
 
 typedef struct
 {

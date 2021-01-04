@@ -1818,7 +1818,7 @@ void gelzsvm( int n, int m, double *A, double *b, double *x, double *alpha, doub
 
 #define CGRAD_GELZSVT_INC 256
 
-inline void vchkrealloc( int n, int size, int *alloc, double *x, double *b, double *V, double *U )
+void vchkrealloc( int n, int size, int *alloc, double *x, double *b, double *V, double *U )
 {
     if( size + 1 > *alloc )
     {
